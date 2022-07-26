@@ -1,0 +1,48 @@
+{
+  "name": "internal-dev-sandbox",
+  "base_path": "hello-paas",
+  "envionment": "internal-dev-sandbox",
+  "routes": [
+    {
+       "path": "/hello/user",
+       "access_requirements": {"nhs_login": "P5"},
+       "verbs": ["GET"]
+    },
+    {
+       "path": "/hello/application",
+       "access_requirements": {"app": "level3"},
+       "verbs": ["GET"]
+    },
+    {
+       "path": "/hello/world",
+       "access_requirements": {},
+       "verbs": ["GET"]
+    }
+  ],
+  "access_modes": [
+    {
+      "title": "HelloWorld2 User Restricted",
+      "grants_access": {"nhs_login": "P5"}    
+    },
+    {
+      "title": "HelloWorld2 Application Restricted",
+      "grants_access": {"app": "level3"}
+    }
+  ],
+  "targets": [
+    {
+      "type": "hosted",
+      "containers": [
+        {
+          "name": "hello-world",
+          "image": "958002497996.dkr.ecr.eu-west-2.amazonaws.com/hello-world_hello-world:72537-sha6c0ccdb",
+          "environment": {
+            "LOG_LEVEL": "info",
+            "UPSTREAM": "https://internal-dev-sandbox.api.service.nhs.uk",
+            "NODE_ENV": "production"
+          }
+        }
+      ]
+    }
+  ]
+}
