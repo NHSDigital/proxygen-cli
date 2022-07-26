@@ -14,7 +14,7 @@ def _aud_url(base): return f"{base}/auth/realms/api-producers"
 
 SCOPE = ["openid"]
 
-def get_authenticated_client_token(*, client_id, client_secret, base_url, username=None, private_key=None, get_password=None, token=None):
+def get_authenticated_client_token(client_id, base_url, username=None, private_key=None, get_password=None, token=None, client_secret=None, **kwargs):
 
   def token_saver(_token):
     token = _token

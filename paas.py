@@ -8,7 +8,7 @@ import os
 from pathlib import Path
 
 
-from state import AuthConfig, get_cached_client, update_config, MachineAuth
+from state import AuthConfig, UserAuth, get_cached_client, update_config, MachineAuth
 
 DEFAULT_INSTANCE_JSON = "instance.json"
 DEFAULT_INSTANCE_YAML = "instance.yml"
@@ -49,6 +49,8 @@ def _load_instance(instance_name: str):
 @click.pass_context
 def cli(ctx, instance, api_name):
   ctx.ensure_object(dict)
+  if ctx.invoked_subcommand in ("setup-machine-user", "setup-user"):
+    return
   ctx.obj['INSTANCE_FILE'] = instance
   ctx.obj['INSTANCE'] = _load_instance(instance)
   ctx.obj['API_NAME'] = api_name
@@ -143,20 +145,23 @@ def docker_login(ctx, apply):
 
   click.echo(f"echo docker login -u {resp['user']} --password-stdin {resp['registry']}")
 
-@click.group()
-def cli_vanilla():
-  pass
-
-@cli_vanilla.command()
+@cli.command()
 @click.option('--client-id', type=str, prompt=True)
 @click.option('--base-url', type=str, default='https://identity.ptl.api.platform.nhs.uk')
 @click.option('--private-key', type=click.Path(exists=True), prompt=True)
 def setup_machine_user(client_id, base_url, private_key):
-  config = MachineAuth(auth_type="machine", client_id=client_id, base_url=base_url, private_key=private_key)
+  config = MachineAuth(client_id=client_id, base_url=base_url, private_key=private_key)
   update_config(config)
 
-cli_collection = click.CommandCollection(sources=[cli, cli_vanilla])
+@cli.command()
+@click.option('--client-id', type=str, prompt=True)
+@click.option('--client-secret', type=str, prompt=True)
+@click.option('--user', type=str, prompt=True)
+@click.option('--base-url', type=str, default='https://identity.ptl.api.platform.nhs.uk')
+def setup_user(client_id, client_secret, user, base_url):
+  config = UserAuth(client_id=client_id, client_secret=client_secret, base_url=base_url, username=user)
+  update_config(config)
+
 
 if __name__ == '__main__':
-  # cli(auto_envvar_prefix="PAAS")
-  cli_collection(auto_envvar_prefix="PAAS")
+  cli(auto_envvar_prefix="PAAS")
