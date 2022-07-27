@@ -10,7 +10,9 @@ echo '' >> ~/.profile
 echo '' >> ~/.profile
 
 echo 'export PATH="${HOME}/.paas/bin:$PATH"' >> ~/.profile
+echo 'export PATH="${HOME}/.paas/bin:$PATH"' >> ~/.bashrc
 . ${HOME}/.profile
+. ${HOME}/.bashrc
 
 python3 -m venv ${HOME}/.paas/env && . ${HOME}/.paas/env/bin/activate && pip install -r requirements.txt
 
