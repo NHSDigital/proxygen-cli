@@ -18,8 +18,7 @@ def get_authenticated_client_token(client_id, base_url, username=None, private_k
 
   def token_saver(_token):
     token = _token
-
-  if token and token["expires_at"] >= time() + 5:
+  if token and "expires_at" in token and token["expires_at"] >= time() + 5:
     # Try refresh token login flow first
     try:
       oauth = OAuth2Session(client_id, token=token, auto_refresh_url=_access_token_url(base_url),
