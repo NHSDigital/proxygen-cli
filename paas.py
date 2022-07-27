@@ -1,4 +1,4 @@
-#!/home/domplatypus/apm/scripts/.venv/bin/python
+
 from typing_extensions import Required
 from unittest import case
 import click
@@ -162,6 +162,6 @@ def setup_user(client_id, client_secret, user, base_url):
   config = UserAuth(client_id=client_id, client_secret=client_secret, base_url=base_url, username=user)
   update_config(config)
 
-
-if __name__ == '__main__':
+def main():
   cli(auto_envvar_prefix="PAAS")
+
