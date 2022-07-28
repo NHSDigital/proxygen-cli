@@ -16,7 +16,7 @@ echo 'export PATH="${HOME}/.paas/bin:$PATH"' >> ~/.bashrc
 . ${HOME}/.profile
 . ${HOME}/.bashrc
 
-python3 -m venv ${HOME}/.paas/env && . ${HOME}/.paas/env/bin/activate && pip install -r requirements.txt
+python3 -m venv ${HOME}/.paas/env && . ${HOME}/.paas/env/bin/activate && pip install -r ${HOME}/.paas/requirements.txt
 
 sed -i "1s%.*%#\!${HOME}/.paas/env/bin/python%" ${HOME}/.paas/paas-entry.py
 
