@@ -143,7 +143,7 @@ def docker_login(ctx):
   if resp.status_code != 200:
     raise click.ClickException(f"HTTP error {resp.status_code}:\n{_format_json(resp.json())}")
 
-  click.echo(f"echo docker login -u {resp.json()['user']} --password {resp.json()["password"]} {resp.json()['registry']}")
+  click.echo(f"echo docker login -u {resp.json()['user']} --password {resp.json()['password']} {resp.json()['registry']}")
 
 @cli.command()
 @click.option('--client-id', type=str, prompt=True)
