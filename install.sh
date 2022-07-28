@@ -2,7 +2,7 @@
 set -e
 
 which python || echo "Python not found. Please install Python >= 3.8"
-git clone git@github.com:NHSDigital/paas-client.git ~/.paas
+git clone git@github.com:NHSDigital/proxygen-cli.git ~/.paas
 
 # just adding a newline between existing content
 echo '' >> ~/.bashrc
