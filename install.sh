@@ -22,5 +22,5 @@ sed -i "1s%.*%#\!${HOME}/.paas/env/bin/python%" ${HOME}/.paas/paas-entry.py
 
 base64 -d <<<X19fX19fX19fXyAgX19fX18gICAgICBfX19fXyAgICBfX19fX19fX18KXF9fX19\fXyAgIFwvICBfICBcICAgIC8gIF8gIFwgIC8gICBfX19fXy8KIHwgICAgIF9fXy8gIC9fXCAgXCAgLyAgL19cICBcIFxfX19fXyAgXCAKIHwgICAgfCAgLyAgICB8ICAgIFwvICAgIHwgICAgXC8gICAgICAgIFwKIHxfX19ffCAgXF9fX198X18gIC9cX19fX3xfXyAgL19fX19fX18gIC8KICAgICAgICAgICAgICAgICBcLyAgICAgICAgIFwvICAgICAgICBcLyA= && echo -e "\e[32m...is now installed!\e[0m"
 echo ""
-echo -e "\e[36m* Get in contact with APIM and get your credentials...\e[0m"
-echo -e "\e[35m* For updates and information follow https://github.com/NHSDigital\e[0m"
+echo -e "\e[36m- Get in contact with APIM and get your credentials...\e[0m"
+echo -e "\e[35m- Follow us at: https://github.com/NHSDigital\e[0m"
