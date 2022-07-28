@@ -136,7 +136,7 @@ def destroy(ctx, apply):
 
 @cli.command
 @click.pass_context
-def docker_login(ctx, apply):
+def docker_login(ctx):
   paas_client = ctx.obj["CLIENT"]
   api_name = ctx.obj["API_NAME"]
   resp = paas_client.get(_docker_login(api_name))
