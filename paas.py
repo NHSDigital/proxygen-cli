@@ -102,7 +102,6 @@ def _format_json(_json):
 def plan(api_name, instance):
     paas_client = get_cached_client()
     api_name = api_name
-    instance_file = instance
     instance = _load_instance(instance)
 
     resp = paas_client.post(_post_instance_url(api_name, apply=False), json=instance)
@@ -131,7 +130,6 @@ def plan(api_name, instance):
 def apply(api_name, instance):
     paas_client = get_cached_client()
     api_name = api_name
-    instance_file = instance
     instance = _load_instance(instance)
 
     resp = paas_client.post(_post_instance_url(api_name, apply=True), json=instance)
@@ -167,7 +165,6 @@ def apply(api_name, instance):
 def destroy(api_name, instance, apply):
     paas_client = get_cached_client()
     api_name = api_name
-    instance_file = instance
     instance = _load_instance(instance)
 
     if apply:
