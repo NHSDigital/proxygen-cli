@@ -53,5 +53,5 @@ proxygen setup-machine-user --client-id=<client-id> --private-key=<pathtofile>
 
 ## Uninstall
 ```bash
-curl -o- https://raw.githubusercontent.com/NHSDigital/proxygen-cli/main/uninstall.sh | bash
+~/.paas/uninstall.sh
 ```
