@@ -1,5 +1,7 @@
 # proxygen-cli
-A command line interface to interact with the proxygen service easily.
+A command line interface to interact with the [proxygen service](https://proxygen.ptl.api.platform.nhs.uk/docs).
+
+[What is PaaS/Proxygen?](https://nhsd-confluence.digital.nhs.uk/display/APM/Platform+as+a+service+-+PaaS)
 
 ## Getting started
 
