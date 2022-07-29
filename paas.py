@@ -64,7 +64,7 @@ def cli():
 )
 @click.option(
     "--instance",
-    type=click.Path(exists=True),
+    type=click.Path(exists=True, resolve_path=True, path_type=Path),
     help="PaaS API config. Defaults to instance.json in cwd",
     default=DEFAULT_INSTANCE_FILE,
 )
@@ -95,7 +95,7 @@ def _format_json(_json):
 )
 @click.option(
     "--instance",
-    type=click.Path(exists=True),
+    type=click.Path(exists=True, resolve_path=True, path_type=Path),
     help="PaaS API config. Defaults to instance.json in cwd",
     default=DEFAULT_INSTANCE_FILE,
 )
@@ -123,7 +123,7 @@ def plan(api_name, instance):
 )
 @click.option(
     "--instance",
-    type=click.Path(exists=True),
+    type=click.Path(exists=True, resolve_path=True, path_type=Path),
     help="PaaS API config. Defaults to instance.json in cwd",
     default=DEFAULT_INSTANCE_FILE,
 )
@@ -151,7 +151,7 @@ def apply(api_name, instance):
 )
 @click.option(
     "--instance",
-    type=click.Path(exists=True),
+    type=click.Path(exists=True, resolve_path=True, path_type=Path),
     help="PaaS API config. Defaults to instance.json in cwd",
     default=DEFAULT_INSTANCE_FILE,
 )
@@ -218,7 +218,7 @@ def docker_login(api_name):
 @click.option(
     "--base-url", type=str, default="https://identity.ptl.api.platform.nhs.uk"
 )
-@click.option("--private-key", type=click.Path(exists=True, resolve_path=True), prompt=True)
+@click.option("--private-key", type=click.Path(exists=True, resolve_path=True), prompt=True, path_type=str)
 def setup_machine_user(client_id, base_url, private_key):
     config = MachineAuth(
         client_id=client_id, base_url=base_url, private_key=private_key
