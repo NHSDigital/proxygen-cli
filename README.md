@@ -36,7 +36,7 @@ proxygen apply --api-name=<api-name>
 ## Example Use Cases
 Get a PaaS bearer token so you can call the PaaS API directly.
 ```bash
-proxygen get-token
+curl https://proxygen.ptl.api.platform.nhs.uk/apis/hello-world -H "Authorization: $(proxygen get-token)"
 ```
 
 Login with docker so you can push and pull from the APIM ECR repo.
