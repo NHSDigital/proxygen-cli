@@ -60,7 +60,7 @@ def cli():
 
 @cli.command(help="Checks for service connection")
 @click.option(
-    "--api-name", help="Specify via --api-name or env var PAAS_API_NAME", required=True
+    "--api-name", help="Specify via --api-name or env var PROXYGEN_API_NAME", required=True, default=lambda: os.environ.get('PROXYGEN_API_NAME'),
 )
 @click.option(
     "--instance",
@@ -91,7 +91,7 @@ def _format_json(_json):
 
 @cli.command(help="Plan API changes")
 @click.option(
-    "--api-name", help="Specify via --api-name or env var PAAS_API_NAME", required=True
+    "--api-name", help="Specify via --api-name or env var PROXYGEN_API_NAME", required=True, default=lambda: os.environ.get('PROXYGEN_API_NAME'),
 )
 @click.option(
     "--instance",
@@ -119,7 +119,7 @@ def plan(api_name, instance):
 
 @cli.command(help="Apply API changes")
 @click.option(
-    "--api-name", help="Specify via --api-name or env var PAAS_API_NAME", required=True
+    "--api-name", help="Specify via --api-name or env var PROXYGEN_API_NAME", required=True, default=lambda: os.environ.get('PROXYGEN_API_NAME'),
 )
 @click.option(
     "--instance",
@@ -147,7 +147,7 @@ def apply(api_name, instance):
 
 @cli.command(help="Destroy API changes")
 @click.option(
-    "--api-name", help="Specify via --api-name or env var PAAS_API_NAME", required=True
+    "--api-name", help="Specify via --api-name or env var PROXYGEN_API_NAME", required=True, default=lambda: os.environ.get('PROXYGEN_API_NAME'),
 )
 @click.option(
     "--instance",
@@ -197,7 +197,7 @@ def destroy(api_name, instance, apply):
 
 @cli.command(help="Outputs login command for docker")
 @click.option(
-    "--api-name", help="Specify via --api-name or env var PAAS_API_NAME", required=True
+    "--api-name", help="Specify via --api-name or env var PROXYGEN_API_NAME", required=True, default=lambda: os.environ.get('PROXYGEN_API_NAME'),
 )
 def docker_login(api_name):
     paas_client = get_cached_client()
