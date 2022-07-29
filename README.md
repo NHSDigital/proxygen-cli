@@ -30,7 +30,7 @@ proxygen plan --api-name=<api-name>
 
 Use ```apply``` to update your api
 ```bash
-proxygen plan --api-name=<api-name> 
+proxygen apply --api-name=<api-name> 
 ```
 
 ## Example Use Cases
