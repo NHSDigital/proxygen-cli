@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 
 
-from state import AuthConfig, UserAuth, get_cached_client, update_config, MachineAuth
+from state import AuthConfig, UserAuth, get_cached_client, get_cached_client_and_token, update_config, MachineAuth
 
 DEFAULT_INSTANCE_JSON = "instance.json"
 DEFAULT_INSTANCE_YAML = "instance.yml"
@@ -180,16 +180,18 @@ def destroy(api_name, instance, apply):
     resp = paas_client.delete(
         _delete_instance_url(api_name, instance, apply=apply), timeout=60 * 20
     )
-    if resp.status_code != 200:
+    if resp.status_code != 200 or resp.json()["error"]:
         raise click.ClickException(
-            f"HTTP error {resp.status_code}:\n{_format_json(resp.json())}"
-        )
-    else:
-        click.echo(
-            f"Destroy complete on {api_name} with message: {resp.json()['status']}"
+            f"Destroy error {resp.status_code}:\n{_format_json(resp.json())}"
         )
 
-    if not apply:
+    if apply:
+        click.echo( f"Destroy complete on {api_name} with message: {resp.json()['status']}")
+    
+    else:
+        click.echo(
+            f"Plan complete with steps to apply:\n{_format_steps(resp.json()['steps not applied'])}"
+        )
         click.echo("To apply changes supply the flag '--apply'")
 
 
@@ -243,8 +245,8 @@ def setup_user(client_id, client_secret, user, base_url):
 
 @cli.command(help="Get PaaS Bearer token")
 def get_token():
-    paas_client = get_cached_client()
-    click.echo(f"{paas_client.headers['Authorization']}")
+    _, token = get_cached_client_and_token()
+    click.echo(f"Bearer {token['access_token']}")
 
 
 def main():

@@ -62,8 +62,7 @@ def update_config(config: AuthConfig):
   with open(PAAS_CREDENTIAL_FILE, 'w') as f:
     json.dump(config.dict(), f, indent=4)
 
-
-def get_cached_client():
+def get_cached_client_and_token():
   config = get_config()
   token, client = get_authenticated_client_token(
     **config.dict(), get_password=partial(_prompt_password, config.dict().get("username"))
@@ -72,4 +71,8 @@ def get_cached_client():
   config.token = token
   update_config(config)
 
+  return client, token
+
+def get_cached_client():
+  client, _ = get_cached_client_and_token()
   return client
