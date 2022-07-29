@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-which proxygen || {echo "proxygen is already installed\n If you want to reinstall please first uninstall with ${HOME}/.paas/uninstall.sh"; exit 1;}
-python3 -c "import sys; assert sys.version_info >= (3,8)" || {echo "Python not found. Please install Python >= 3.8"; exit 1;}
+which proxygen || { echo "proxygen is already installed\n If you want to reinstall please first uninstall with ${HOME}/.paas/uninstall.sh"; exit 1; }
+python3 -c "import sys; assert sys.version_info >= (3,8)" || { echo "Python not found. Please install Python >= 3.8"; exit 1; }
 git clone https://github.com/NHSDigital/proxygen-cli.git ~/.paas
 
 # just adding a newline between existing content
