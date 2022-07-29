@@ -218,7 +218,7 @@ def docker_login(api_name):
 @click.option(
     "--base-url", type=str, default="https://identity.ptl.api.platform.nhs.uk"
 )
-@click.option("--private-key", type=click.Path(exists=True, resolve_path=True), prompt=True, path_type=str)
+@click.option("--private-key", type=click.Path(exists=True, resolve_path=True, path_type=str), prompt=True)
 def setup_machine_user(client_id, base_url, private_key):
     config = MachineAuth(
         client_id=client_id, base_url=base_url, private_key=private_key
