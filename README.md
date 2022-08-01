@@ -41,6 +41,14 @@ Get a PaaS bearer token so you can call the PaaS API directly.
 curl https://proxygen.ptl.api.platform.nhs.uk/apis/hello-world -H "Authorization: $(proxygen get-token)"
 ```
 
+Upload your API spec
+```bash
+curl -X POST https://proxygen.ptl.api.platform.nhs.uk/apis/hello-world/spec \
+          -H "Authorization: $(proxygen get-token)" \
+          -H 'Content-Type: application/json' \
+          -d @hello-world.json
+```
+
 Login with docker so you can push and pull from the APIM ECR repo.
 ```bash
 proxygen docker-login | bash  # Login lasts 12 hours
