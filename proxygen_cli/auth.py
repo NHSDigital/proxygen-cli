@@ -4,14 +4,20 @@ import uuid
 from time import time
 from urllib.parse import parse_qs, urlparse
 import json
+import hashlib
 
 import jwt
 import requests
 from lxml import html
 
-
-from .credentials import read_credentials, ClientCredentials, UserCredentials, MachineCredentials, cache_key
+from . import config
+from .credentials import ClientCredentials, UserCredentials, MachineUserCredentials, get_client, get_user
 from .dot_proxygen import token_cache_file
+
+
+def cache_key(client, user):
+    s = json.dumps({"client": client.dict(), "user": user.dict()})
+    return hashlib.md5(s.encode("utf-8")).hexdigest()
 
 
 def _read_cache():
@@ -29,7 +35,10 @@ def _write_cache(cache):
 
 def access_token():
     now = int(time()) + 10  # give ourselves some leeway
-    client, user = read_credentials()
+
+    api = config.get()
+    client = get_client(api.client)
+    user = get_user(api.user)
 
     cache = _read_cache()
     _cache_key = cache_key(client, user)
