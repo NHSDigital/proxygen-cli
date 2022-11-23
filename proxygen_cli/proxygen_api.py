@@ -1,3 +1,4 @@
+from typing import Any, Dict
 from urllib.parse import urlparse, urljoin
 import json
 
@@ -71,6 +72,13 @@ def delete_instance(api: str, environment: LITERAL_ENVS, instance_name: str):
         return resp.json()
     except json.JSONDecodeError:
         pass
+
+def put_instance(api: str, environment: LITERAL_ENVS, instance: str, paas_open_api: Dict[str, Any]):
+    resp = _session(api).put(
+        f"/apis/{api}/environments/{environment}/instances/{instance}",
+        json=paas_open_api,
+    )
+    return resp.json()
 
 
 

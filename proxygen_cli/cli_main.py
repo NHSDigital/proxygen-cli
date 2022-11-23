@@ -3,7 +3,7 @@ from typing import get_args
 
 import click
 
-from proxygen_cli import cli_output, proxygen_api, constants, config
+from proxygen_cli import cli_output, proxygen_api, constants, config, spec
 
 
 @click.group()
@@ -45,6 +45,13 @@ def required(ctx, param, value):
     return value
 
 
+
+
+
+
+
+
+
 @main.group()
 def instance():
     """Create/Update/Delete instances."""
@@ -78,6 +85,42 @@ def rm(api, environment, instance):
     config.set_api_config(api)
     result = proxygen_api.delete_instance(api, environment, instance)
     cli_output.output(result)
+
+@instance.command()
+@click.option("--api", callback=required)
+@click.option("--environment", callback=required)
+@click.option("--base-path", callback=required)
+@click.option("--spec-file", callback=required)
+def deploy(api, environment, base_path, spec_file):
+    """Deploy an instance from a spec file."""
+
+    config.set_api_config(api)
+
+    paas_open_api = spec.resolve(spec_file)
+
+    # Overwrite the servers object to point to the values provided form the cli
+    sub_domain = "api" if environment == "prod" else f"{environment}.api"
+    paas_open_api["servers"] = [
+        {"url": f"https://{sub_domain}.service.nhs.uk/{base_path}"}
+    ]
+    instance = base_path.replace("/","_")
+
+    result = proxygen_api.put_instance(api, environment, instance, paas_open_api)
+    cli_output.output(result)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 @main.group()

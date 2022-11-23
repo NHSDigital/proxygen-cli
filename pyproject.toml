@@ -8,7 +8,7 @@ packages = [{include = "proxygen_cli"}]
 repository = "https://github.com/NHSDigital/proxygen-cli"
 
 [tool.poetry.scripts]
-proxygen = 'proxygen_cli.main:main'
+proxygen = 'proxygen_cli.cli_main:main'
 
 [tool.poetry.dependencies]
 python = "^3.8"
