@@ -4,24 +4,23 @@ import json
 
 import requests
 
-from . import config, auth
-from .constants import LITERAL_ENVS
+from proxygen_cli.lib.settings import SETTINGS
+from proxygen_cli.lib.auth import access_token
+from proxygen_cli.lib.constants import LITERAL_ENVS
 
 
 class ProxygenSession(requests.Session):
     def __init__(self, api_name, **kwargs):
-        self.api_config = config.get()
         super().__init__(**kwargs)
 
     def request(self, method, path, **kwargs):
 
-        if self.api_config.name is not None:
+        if path.startswith("/apis/"):
             headers = kwargs.get("headers", {})
-            headers["Authorization"] = f"Bearer {auth.access_token()}"
+            headers["Authorization"] = f"Bearer {access_token()}"
             kwargs["headers"] = headers
 
-        base_url = self.api_config.endpoint_url
-        url = urljoin(base_url, path)
+        url = urljoin(SETTINGS.endpoint_url, path)
         resp = super().request(method, url, **kwargs)
         return resp
 

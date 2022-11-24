@@ -23,12 +23,12 @@ def _get_create_file(filename) -> pathlib.Path:
     return _file
 
 
-def config_file() -> pathlib.Path:
+def settings_file() -> pathlib.Path:
     """
     Return the proxygen config file as a pathlib.Path object.
     Creates it if it does not exist.
     """
-    return _get_create_file("config")
+    return _get_create_file("settings.yaml")
 
 
 def credentials_file() -> pathlib.Path:
@@ -36,7 +36,7 @@ def credentials_file() -> pathlib.Path:
     Return the proxygen credentials file as a pathlib.Path object.
     Creates it if it does not exist.
     """
-    return _get_create_file("credentials")
+    return _get_create_file("credentials.yaml")
 
 
 def token_cache_file() -> pathlib.Path:

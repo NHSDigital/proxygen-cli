@@ -3,9 +3,6 @@ import yaml
 
 import click
 
-from . import config 
-
-
 
 def yaml_multiline_string_pipe(dumper, data):
     text_list = [line.rstrip() for line in data.splitlines()]
@@ -16,22 +13,8 @@ def yaml_multiline_string_pipe(dumper, data):
 
 yaml.add_representer(str, yaml_multiline_string_pipe)
 
-
-def output(obj):
-    api_config = config.get()
-    if api_config.output == "yaml":
-        _output_yaml(obj)
-    elif api_config.output == "json":
-        _output_json(obj)
-    else:
-        raise ValueError(f"Unknown output {api_config.output}")
-    
-
-def _output_json(obj):
+def print_json(obj):
     return click.echo(json.dumps(obj, indent=2))    
 
-def _output_yaml(obj):
+def print_yaml(obj):
     return click.echo(yaml.dump(obj))
-    
-def output_table(obj):
-    pass

@@ -1,25 +1,27 @@
 import sys
 from typing import get_args
+from urllib import parse
 
 import click
 
-from proxygen_cli import cli_output, proxygen_api, constants, config, spec
+from proxygen_cli.lib import constants, proxygen_api, output, settings
+from proxygen_cli.cli import cli_credentials, cli_settings
 
 
 @click.group()
 def main():
     pass
 
+main.add_command(cli_settings.settings)
+main.add_command(cli_credentials.credentials)
 
 @main.command()
 def status():
     """
     Query the proxygen service status endpoint.
     """
-    cfg = config.set_api_config(None)
     status = proxygen_api.status()
-
-    cli_output.output({"proxygen_url": str(cfg.endpoint_url), "response": status})
+    output.print_json({"proxygen_url": str(settings.SETTINGS.endpoint_url), "response": status})
 
 
 @main.command()
@@ -29,13 +31,24 @@ def ls(api, environment):
     """
     List items, optionally filter by environment.
     """
-    config.set_api_config(api)
 
     if not environment:
-        result = proxygen_api.get_api(api)
+        result = proxygen_api.get_api(api)            
+        
     if environment:
-        result = proxygen_api.get_api_environment(api, environment)
+        result = {"environments": {environment: proxygen_api.get_api_environment(api, environment)}}
 
+    # objects = []    
+    # for env in result["environments"]:
+    #     instances = result["environments"][env]["instances"]
+    #     secrets = result["environments"][env]["secrets"]
+
+    #     for instance in instances:
+    #         objects.append({"type": "instance", "name": instance, "environment": env})
+    #     for secret in secrets:
+    #         objects.append({"type": "secret", "name": instance, "environment": env})
+                
+    # cli_output.output(objects)
     cli_output.output(result)
 
 
@@ -65,10 +78,10 @@ def instance():
     type=click.Choice(get_args(constants.LITERAL_ENVS)),
     callback=required,
 )
-@click.option("--instance", callback=required)
-def describe(api, environment, instance):
+@click.option("--path", callback=required)
+def describe(api, environment, path):
     """Get the OpenAPISpec from which the instance was generated."""
-    config.set_api_config(api)
+    instance = parse.quote(path)
     result = proxygen_api.get_instance(api, environment, instance)
     cli_output.output(result)
 
@@ -79,32 +92,30 @@ def describe(api, environment, instance):
     type=click.Choice(get_args(constants.LITERAL_ENVS)),
     callback=required,
 )
-@click.option("--instance", callback=required)
-def rm(api, environment, instance):
+@click.option("--path", callback=required)
+def rm(api, environment, path):
     """Delete the instance."""
-    config.set_api_config(api)
+    instance = parse.quote(path)
     result = proxygen_api.delete_instance(api, environment, instance)
     cli_output.output(result)
 
 @instance.command()
 @click.option("--api", callback=required)
 @click.option("--environment", callback=required)
-@click.option("--base-path", callback=required)
+@click.option("--path", callback=required)
 @click.option("--spec-file", callback=required)
-def deploy(api, environment, base_path, spec_file):
+def deploy(api, environment, path, spec_file):
     """Deploy an instance from a spec file."""
-
-    config.set_api_config(api)
 
     paas_open_api = spec.resolve(spec_file)
 
     # Overwrite the servers object to point to the values provided form the cli
     sub_domain = "api" if environment == "prod" else f"{environment}.api"
     paas_open_api["servers"] = [
-        {"url": f"https://{sub_domain}.service.nhs.uk/{base_path}"}
+        {"url": f"https://{sub_domain}.service.nhs.uk/{path}"}
     ]
-    instance = base_path.replace("/","_")
 
+    instance = parse.quote(path)
     result = proxygen_api.put_instance(api, environment, instance, paas_open_api)
     cli_output.output(result)
 
@@ -139,8 +150,6 @@ def secret():
 @click.option("--secret", callback=required)
 def describe(api, environment, secret):
     """Describe a secret"""
-    config.set_api_config(api)
-
     result = proxygen_api.get_secret(api, environment, secret)
     cli_output.output(result)
 
@@ -154,7 +163,6 @@ def describe(api, environment, secret):
 @click.option("--secret", callback=required)
 def describe(api, environment, secret):
     """Describe a secret"""
-    config.set_api_config(api)
 
     result = proxygen_api.get_secret(api, environment, secret)
     cli_output.output(result)
@@ -170,7 +178,6 @@ def describe(api, environment, secret):
 @click.option("--secret", callback=required)
 def rm(api, environment, secret):
     """Delete a secret"""
-    config.set_api_config(api)
 
     result = proxygen_api.delete_secret(api, environment, secret)
     cli_output.output(result)
