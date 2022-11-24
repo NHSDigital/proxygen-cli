@@ -88,6 +88,18 @@ def get_secret(api: str, environment: LITERAL_ENVS, secret_name: str):
     )
     return resp.json()
 
+def put_secret(api: str, environment: LITERAL_ENVS, secret_name: str, secret_value: str, _type: str = None):
+
+    params = {}
+    if _type:
+        params["type"] = _type
+    resp = _session(api).put(
+        f"/apis/{api}/environments/{environment}/secrets/{secret_name}",
+        data=secret_value,
+        params=params,
+    )
+    return resp.json()
+
 def delete_secret(api: str, environment: LITERAL_ENVS, secret_name: str):
     resp = _session(api).delete(
         f"/apis/{api}/environments/{environment}/secrets/{secret_name}"

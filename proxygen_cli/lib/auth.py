@@ -14,8 +14,8 @@ from .credentials import CREDENTIALS
 from .dot_proxygen import token_cache_file
 
 
-def cache_key(client, user):
-    s = json.dumps({"client": client.dict(), "user": user.dict()})
+def cache_key():
+    s = CREDENTIALS.json()
     return hashlib.md5(s.encode("utf-8")).hexdigest()
 
 
@@ -35,12 +35,8 @@ def _write_cache(cache):
 def access_token():
     now = int(time()) + 10  # give ourselves some leeway
 
-    api = config.get()
-    client = get_client(api.client)
-    user = get_user(api.user)
-
     cache = _read_cache()
-    _cache_key = cache_key(client, user)
+    _cache_key = cache_key()
     token_data = cache.get(_cache_key)
 
     jwt_decode_options = {"verify_signature": False}
@@ -78,7 +74,7 @@ def _get_token_data_from_refresh_token(
         refresh_token: str
 ):
     token_response = requests.post(
-        f"{client.base_url}/protocol/openid-connect/token",
+        f"{CREDENTIALS.base_url}/protocol/openid-connect/token",
         data={
             "grant_type": "refresh_token",
             "client_id": CREDENTIALS.client_id,
@@ -94,7 +90,7 @@ def _get_token_data_from_user_login():
     session = requests.Session()
     redirect_uri = f"{CREDENTIALS.base_url}/protocol/openid-connect/callback"
     login_page_resp = session.get(
-        f"{client.base_url}/protocol/openid-connect/auth",
+        f"{CREDENTIALS.base_url}/protocol/openid-connect/auth",
         params={
             "client_id": CREDENTIALS.client_id,
             "redirect_uri": redirect_uri,
@@ -136,7 +132,7 @@ def _get_token_data_from_user_login():
         auth_code = auth_code[0]
 
     token_response = session.post(
-        f"{client.base_url}/protocol/openid-connect/token",
+        f"{CREDENTIALS.base_url}/protocol/openid-connect/token",
         data={
             "grant_type": "authorization_code",
             "code": auth_code,

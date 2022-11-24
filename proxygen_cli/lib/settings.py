@@ -13,6 +13,7 @@ def _yaml_settings_file_source(_):
 class Settings(BaseSettings):
     endpoint_url: AnyUrl = "https://proxygen.ptl.api.platform.nhs.uk"
     spec_output_format: Literal["json", "yaml"] = "yaml"
+    api: str = None
 
     class Config:
         env_prefix = "PROXYGEN_CREDENTIALS_"

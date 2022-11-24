@@ -16,6 +16,7 @@ def _get_setting(key):
     except AttributeError as e:
         raise ValueError(f"No such setting: {key}")
 
+
 @credentials.command()
 @click.argument("key")
 def get(key):
@@ -23,7 +24,8 @@ def get(key):
     Read a value from your credentials.
     """
     click.echo(_get_setting(key))
-    
+
+
 @credentials.command()
 @click.argument("key")
 @click.argument("value")
@@ -46,7 +48,7 @@ def rm(key):
     Delete a value from your credentials.
     """
     _get_setting(key)
-    
+
     current_credentials = _yaml_credentials_file_source(None)
     current_credentials.pop(key)
     with credentials_file().open("w") as f:
