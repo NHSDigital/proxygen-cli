@@ -10,7 +10,7 @@ from proxygen_cli.lib.constants import LITERAL_ENVS
 
 
 class ProxygenSession(requests.Session):
-    def __init__(self, api_name, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
     def request(self, method, path, **kwargs):
@@ -25,83 +25,106 @@ class ProxygenSession(requests.Session):
         return resp
 
 
-_PROXYGEN_SESSIONS = {}
+_PROXYGEN_SESSION = None
+
+def _session():
+    global _PROXYGEN_SESSION
+    if _PROXYGEN_SESSION is None:
+        _PROXYGEN_SESSION = ProxygenSession()
+    return _PROXYGEN_SESSION
 
 
-def _session(api):
-    global _PROXYGEN_SESSIONS
-    if api not in _PROXYGEN_SESSIONS:
-        _PROXYGEN_SESSIONS[api] = ProxygenSession(api)
-    return _PROXYGEN_SESSIONS[api]
+def _resp_json(resp, none_on_404=True):
+    if resp.status_code == 200:
+        if resp.text:
+            return resp.json()
+        return ""
+    elif none_on_404 and resp.status_code == 404:
+        return None
+    else:
+        body = resp.text
+        try:
+            body = json.loads(resp.text)
+        except json.JSONDecodeError:
+            pass
+        error_dict = {
+            "error": "Unexpected response from proxygen server",
+            "request": {
+                "url": str(resp.request.url),
+                "method": resp.request.method,
+            },
+            "response": {
+                "status_code": resp.status_code,
+                "body": body,
+            }
+        }
+        
+        raise RuntimeError(json.dumps(error_dict))
 
 
 def status():
-    resp = _session(None).get("/_status")
-    return resp.json()
+    resp = _session().get("/_status")
+    return _resp_json(resp)
 
 
 def get_api(api):
-    resp = _session(api).get(f"/apis/{api}")
-    return resp.json()
-
+    resp = _session().get(f"/apis/{api}")
+    return _resp_json(resp)
 
 def get_api_environment(api: str, environment: LITERAL_ENVS):
-    resp = _session(api).get(f"/apis/{api}/environments/{environment}")
-    return resp.json()
+    resp = _session().get(f"/apis/{api}/environments/{environment}")
+    return _resp_json(resp)
 
 
 def get_instances(api: str, environment: LITERAL_ENVS, instance_name: str):
-    resp = _session(api).get(f"/apis/{api}/environments/{environment}/instances")
-    return resp.json()
+    resp = _session().get(f"/apis/{api}/environments/{environment}/instances")
+    return _resp_json(resp)
 
 
 
 # INSTANCE methods
 def get_instance(api: str, environment: LITERAL_ENVS, instance_name: str):
-    resp = _session(api).get(
+    resp = _session().get(
         f"/apis/{api}/environments/{environment}/instances/{instance_name}"
     )
-    return resp.json()
+    return _resp_json(resp)
 
 def delete_instance(api: str, environment: LITERAL_ENVS, instance_name: str):
-    resp = _session(api).delete(
+    resp = _session().delete(
         f"/apis/{api}/environments/{environment}/instances/{instance_name}"
     )
-    try:
-        return resp.json()
-    except json.JSONDecodeError:
-        pass
+    return _resp_json(resp)
 
 def put_instance(api: str, environment: LITERAL_ENVS, instance: str, paas_open_api: Dict[str, Any]):
-    resp = _session(api).put(
+    resp = _session().put(
         f"/apis/{api}/environments/{environment}/instances/{instance}",
         json=paas_open_api,
     )
-    return resp.json()
+    return _resp_json(resp)
 
 
 
 # SECRET methods
 def get_secret(api: str, environment: LITERAL_ENVS, secret_name: str):
-    resp = _session(api).get(
+    resp = _session().get(
         f"/apis/{api}/environments/{environment}/secrets/{secret_name}"
     )
-    return resp.json()
+    return _resp_json(resp)
 
 def put_secret(api: str, environment: LITERAL_ENVS, secret_name: str, secret_value: str, _type: str = None):
 
     params = {}
     if _type:
         params["type"] = _type
-    resp = _session(api).put(
+    resp = _session().put(
         f"/apis/{api}/environments/{environment}/secrets/{secret_name}",
         data=secret_value,
         params=params,
     )
-    return resp.json()
+    return _resp_json(resp)
 
 def delete_secret(api: str, environment: LITERAL_ENVS, secret_name: str):
-    resp = _session(api).delete(
+    resp = _session().delete(
         f"/apis/{api}/environments/{environment}/secrets/{secret_name}"
     )
-    return resp.json()
+    return _resp_json(resp)

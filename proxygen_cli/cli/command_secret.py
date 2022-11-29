@@ -42,7 +42,12 @@ def list(ctx, env):
     else:
         result = proxygen_api.get_api(api)
 
-    output.print_json(result)
+    objects = []
+    for env in result["environments"]:
+        secrets = result["environments"][env]["secrets"]
+        for secret in secrets:
+            objects.append({"environment": env, **secret})
+    output.print_table(objects)
 
 
 @secret.command()

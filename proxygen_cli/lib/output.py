@@ -1,9 +1,24 @@
+from typing import List, Dict
 import json
 import yaml
+from datetime import datetime
 
 import click
+from tabulate import tabulate
 
 from proxygen_cli.lib.settings import SETTINGS
+
+def _format_time(obj: Dict[str, str], keys: List[str] = None):
+
+    if keys is None:
+        return obj
+
+    for key in keys:
+        _date_time = obj.pop("last_modified")
+        d = datetime.fromisoformat(_date_time)
+        s = d.strftime("%Y-%m-%d %H:%M")
+        obj[key] = s
+    return obj
 
 
 def yaml_multiline_string_pipe(dumper, data):
@@ -26,3 +41,8 @@ def print_json(obj):
 
 def print_yaml(obj):
     return click.echo(yaml.dump(obj))
+
+def print_table(objs: List[Dict[str, str]]):
+    objs = [_format_time(obj, keys=["last_modified"]) for obj in objs]
+    table_string = tabulate(objs,headers="keys")
+    click.echo(table_string)

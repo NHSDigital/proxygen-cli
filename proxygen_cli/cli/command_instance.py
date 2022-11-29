@@ -2,7 +2,8 @@ from typing import get_args
 from urllib import parse
 
 import click
-
+from yaspin import yaspin
+from tabulate import tabulate
 from proxygen_cli.lib import output, proxygen_api, spec
 from proxygen_cli.lib.settings import SETTINGS
 from proxygen_cli.lib.constants import LITERAL_ENVS
@@ -12,6 +13,7 @@ CHOICE_OF_ENVS = click.Choice(get_args(LITERAL_ENVS))
 def url(env, base_path):
     sub_domain = "api" if env == "prod" else f"{env}.api"
     return f"https://{sub_domain}.service.nhs.uk/{base_path}"    
+
 
 
 @click.group()
@@ -41,18 +43,12 @@ def list(ctx, env):
     else:
         result = proxygen_api.get_api(api)
 
-    # objects = []
-    # for env in result["environments"]:
-    #     instances = result["environments"][env]["instances"]
-    #     secrets = result["environments"][env]["secrets"]
-
-    #     for instance in instances:
-    #         objects.append({"type": "instance", "name": instance, "environment": env})
-    #     for secret in secrets:
-    #         objects.append({"type": "secret", "name": instance, "environment": env})
-
-    # cli_output.output(objects)
-    output.print_json(result)
+    objects = []
+    for env in result["environments"]:
+        instances = result["environments"][env]["instances"]
+        for instance in instances:
+            objects.append({"environment": env, **instance})
+    output.print_table(objects)
 
 
 @instance.command()
@@ -63,28 +59,34 @@ def list(ctx, env):
     "--no-confirm", is_flag=True, show_default=True, help="Do not prompt for confirmation."
 )
 @click.pass_context
-def describe(ctx, env, base_path, spec_file, no_confirm):
+def deploy(ctx, env, base_path, spec_file, no_confirm):
     """
-    Deploy <SPEC_FILE> to https://<ENV>.api.service.nhs.uk/<BASE_PATH>
+    Deploy <SPEC_FILE> to <ENV> under <BASE_PATH>
 
-    If <ENV> is "prod" then deploy to https://api.service.nhs.uk/<BASE_PATH>
+    Your instance is deployed at
+    https://<ENV>.api.service.nhs.uk/<BASE_PATH> unless <ENV> is
+    "prod", then deploy to https://api.service.nhs.uk/<BASE_PATH>.
     """
 
     
     paas_open_api = spec.resolve(spec_file)
 
     # Overwrite the servers object to point to the values provided form the cli
-    paas_open_api["servers"] = [{"url": url(env, base_path)}]
+    _url = url(env, base_path)
+    paas_open_api["servers"] = [{"url": _url}]
 
     if not no_confirm:
         output.print_spec(paas_open_api)
-        if not click.confirm(f"Deploy this spec to {url}?"):
+        if not click.confirm(f"Deploy this spec to {_url}?"):
             raise click.Abort()
 
-    api = ctx.obj["api"]
-    instance = parse.quote(base_path)
-    result = proxygen_api.put_instance(api, env, instance, paas_open_api)
-    output.print_spec(result)
+    with yaspin() as sp:
+        sp.text = f"Deploying {_url}"
+        api = ctx.obj["api"]
+        instance = parse.quote(base_path)
+        result = proxygen_api.put_instance(api, env, instance, paas_open_api)
+        sp.ok("✔")
+    # output.print_spec(result)
 
 @instance.command()
 @click.argument("env", type=CHOICE_OF_ENVS)
@@ -113,12 +115,18 @@ def delete(ctx, env, base_path, no_confirm):
     """
     api = ctx.obj["api"]
     instance = parse.quote(base_path)
-
+    _url = url(env, base_path)
     if not no_confirm:
         result = proxygen_api.get_instance(api, env, instance)
+        if not result:
+            raise click.Abort(f"No such instance {_url}")
         output.print_spec(result)
-        if not click.confirm(f"Delete the api at {url(env, base_path)}?"):
+        if not click.confirm(f"Delete the instance at {_url}?"):
             raise click.Abort()
     
-    result = proxygen_api.delete_instance(api, env, instance)
-    output.print_spec(result)
+    with yaspin() as sp:
+        sp.text = f"Deleting {_url}"
+        api = ctx.obj["api"]
+        instance = parse.quote(base_path)
+        result = proxygen_api.delete_instance(api, env, instance)
+        sp.ok("✔")
