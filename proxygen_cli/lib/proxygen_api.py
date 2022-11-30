@@ -27,6 +27,7 @@ class ProxygenSession(requests.Session):
 
 _PROXYGEN_SESSION = None
 
+
 def _session():
     global _PROXYGEN_SESSION
     if _PROXYGEN_SESSION is None:
@@ -56,9 +57,9 @@ def _resp_json(resp, none_on_404=True):
             "response": {
                 "status_code": resp.status_code,
                 "body": body,
-            }
+            },
         }
-        
+
         raise RuntimeError(json.dumps(error_dict))
 
 
@@ -71,6 +72,7 @@ def get_api(api):
     resp = _session().get(f"/apis/{api}")
     return _resp_json(resp)
 
+
 def get_api_environment(api: str, environment: LITERAL_ENVS):
     resp = _session().get(f"/apis/{api}/environments/{environment}")
     return _resp_json(resp)
@@ -81,7 +83,6 @@ def get_instances(api: str, environment: LITERAL_ENVS, instance_name: str):
     return _resp_json(resp)
 
 
-
 # INSTANCE methods
 def get_instance(api: str, environment: LITERAL_ENVS, instance_name: str):
     resp = _session().get(
@@ -89,19 +90,22 @@ def get_instance(api: str, environment: LITERAL_ENVS, instance_name: str):
     )
     return _resp_json(resp)
 
+
 def delete_instance(api: str, environment: LITERAL_ENVS, instance_name: str):
     resp = _session().delete(
         f"/apis/{api}/environments/{environment}/instances/{instance_name}"
     )
     return _resp_json(resp)
 
-def put_instance(api: str, environment: LITERAL_ENVS, instance: str, paas_open_api: Dict[str, Any]):
+
+def put_instance(
+    api: str, environment: LITERAL_ENVS, instance: str, paas_open_api: Dict[str, Any]
+):
     resp = _session().put(
         f"/apis/{api}/environments/{environment}/instances/{instance}",
         json=paas_open_api,
     )
     return _resp_json(resp)
-
 
 
 # SECRET methods
@@ -111,7 +115,14 @@ def get_secret(api: str, environment: LITERAL_ENVS, secret_name: str):
     )
     return _resp_json(resp)
 
-def put_secret(api: str, environment: LITERAL_ENVS, secret_name: str, secret_value: str, _type: str = None):
+
+def put_secret(
+    api: str,
+    environment: LITERAL_ENVS,
+    secret_name: str,
+    secret_value: str,
+    _type: str = None,
+):
 
     params = {}
     if _type:
@@ -122,6 +133,7 @@ def put_secret(api: str, environment: LITERAL_ENVS, secret_name: str, secret_val
         params=params,
     )
     return _resp_json(resp)
+
 
 def delete_secret(api: str, environment: LITERAL_ENVS, secret_name: str):
     resp = _session().delete(

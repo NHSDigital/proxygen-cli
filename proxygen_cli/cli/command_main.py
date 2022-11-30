@@ -4,7 +4,7 @@ from urllib import parse
 
 import click
 
-from proxygen_cli.lib import constants, proxygen_api, settings, output
+from proxygen_cli.lib import constants, proxygen_api, settings, output, version
 from proxygen_cli.cli import (
     command_credentials,
     command_settings,
@@ -15,7 +15,7 @@ from proxygen_cli.cli import (
 
 @click.group()
 def main():
-    pass
+    version.validate_cli_version()
 
 
 main.add_command(command_settings.settings)
