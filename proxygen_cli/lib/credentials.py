@@ -14,13 +14,14 @@ def _yaml_credentials_file_source(_):
 class Credentials(BaseSettings):
     base_url: AnyHttpUrl = "https://identity.ptl.api.platform.nhs.uk/auth/realms/api-producers"
     client_id: str
-    client_secret: str
+    client_secret: str = None
     username: str = None
     password: str = None
     private_key_path: str = None
     
     def private_key(self):
         """read the private key file and self.private_key_file_path."""
+        private_key_file = dot_proxygen.directory().joinpath(self.private_key_path)
         if not private_key_file.exists():
             raise ValueError(
                 f"Could not open private key file {private_key_file} for machine user {self.name}"

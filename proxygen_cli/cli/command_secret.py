@@ -53,9 +53,9 @@ def put(ctx, env, secret_name, secret_value, secret_file, apikey):
     
     """
     if secret_value is None and secret_file is None:
-        raise ValueError("Please specify one of --secret-value and --secret-file.")
+        raise click.UsageError("Please specify one of --secret-value and --secret-file.")
     if secret_value is not None and secret_file is not None:
-        raise ValueError("Please specify one of --secret-value and --secret-file, not both.")
+        raise click.UsageError("Please specify one of --secret-value and --secret-file, not both.")
     elif secret_file is not None:
         try:
             with open(secret_file) as f:

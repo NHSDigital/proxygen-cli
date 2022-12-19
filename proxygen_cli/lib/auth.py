@@ -46,18 +46,19 @@ def access_token():
         )
         if now < access_token_payload["exp"]:
             return token_data["access_token"]
-        refresh_token_payload = jwt.decode(
-            token_data["refresh_token"], options=jwt_decode_options
-        )
-        if now < refresh_token_payload["exp"]:
-            # can try doing a refresh
-            new_token_data = _get_token_data_from_refresh_token(
-                token_data["refresh_token"]
+        if "refresh_token" in token_data:
+            refresh_token_payload = jwt.decode(
+                token_data["refresh_token"], options=jwt_decode_options
             )
-            if new_token_data is not None:
-                cache[_cache_key] = new_token_data
-                _write_cache(cache)
-                return new_token_data["access_token"]
+            if now < refresh_token_payload["exp"]:
+                # can try doing a refresh
+                new_token_data = _get_token_data_from_refresh_token(
+                    token_data["refresh_token"]
+                )
+                if new_token_data is not None:
+                    cache[_cache_key] = new_token_data
+                    _write_cache(cache)
+                    return new_token_data["access_token"]
 
     # If we get here, no cache hit, or token expired or refresh token call failed.
     # So do full login
@@ -100,9 +101,8 @@ def _get_token_data_from_user_login():
         },
     )
 
-    assert (
-        login_page_resp.status_code == 200
-    ), f"Login page get request status was {login_page_resp.status_code} expected to be 200"
+    if login_page_resp.status_code != 200:
+        raise RunTimeError(f"Login page get request status was {login_page_resp.status_code} expected to be 200")
 
     login_form = html.fromstring(login_page_resp.content.decode()).get_element_by_id(
         "kc-form-login"
@@ -117,10 +117,8 @@ def _get_token_data_from_user_login():
         },
         data={"username": CREDENTIALS.username, "password": CREDENTIALS.password, "credentialId": ""},
     )
-    assert (
-        user_login_resp.status_code == 200,
-        f"User password submission returned non-200 response",
-    )
+    if user_login_resp.status_code != 200:
+        raise RuntimeError(f"User password submission returned non-200 response",)
 
     http_error_msg = "Invalid username or password"
     if http_error_msg in user_login_resp.text:
@@ -173,6 +171,7 @@ def _get_token_data_from_machine_user():
             "client_assertion": client_assertion,
         },
     )
-    assert token_response.status_code == 200, f"Token response was {token_response.status_code} expected 200"
-    return token_response.json()["access_token"]
+    if token_response.status_code != 200:
+        raise RuntimeError(f"Token response was {token_response.status_code} expected 200")
+    return token_response.json()
 

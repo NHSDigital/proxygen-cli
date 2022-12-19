@@ -35,8 +35,4 @@ def status():
 
 
 if __name__ == "__main__":
-    try:
-        main()
-    except ValueError as e:
-        click.echo(e, err=True)
-        sys.exit(1)
+    main()
