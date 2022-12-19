@@ -4,6 +4,7 @@ from urllib import parse
 import click
 from yaspin import yaspin
 from tabulate import tabulate
+
 from proxygen_cli.lib import output, proxygen_api, spec
 from proxygen_cli.lib.settings import SETTINGS
 from proxygen_cli.lib.constants import LITERAL_ENVS
@@ -13,7 +14,6 @@ CHOICE_OF_ENVS = click.Choice(get_args(LITERAL_ENVS))
 def url(env, base_path):
     sub_domain = "api" if env == "prod" else f"{env}.api"
     return f"https://{sub_domain}.service.nhs.uk/{base_path}"    
-
 
 
 @click.group()
@@ -55,9 +55,9 @@ def deploy(ctx, env, base_path, spec_file, no_confirm):
 
     Your instance is deployed at
     https://<ENV>.api.service.nhs.uk/<BASE_PATH> unless <ENV> is
-    "prod", then deploy to https://api.service.nhs.uk/<BASE_PATH>.
+    "prod", then it is deployed to
+    https://api.service.nhs.uk/<BASE_PATH>.
     """
-
     
     paas_open_api = spec.resolve(spec_file)
 
@@ -76,8 +76,6 @@ def deploy(ctx, env, base_path, spec_file, no_confirm):
         instance = parse.quote(base_path)
         result = proxygen_api.put_instance(api, env, instance, paas_open_api)
         sp.ok("✔")
-    # output.print_spec(result)
-
 @instance.command()
 @click.argument("env", type=CHOICE_OF_ENVS)
 @click.argument("base_path")

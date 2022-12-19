@@ -2,6 +2,7 @@ from typing import get_args
 from urllib import parse
 
 import click
+from yaspin import yaspin
 
 from proxygen_cli.lib import output, proxygen_api, spec
 from proxygen_cli.lib.settings import SETTINGS
@@ -48,9 +49,9 @@ def list(ctx, env):
 @click.pass_context
 def put(ctx, env, secret_name, secret_value, secret_file, apikey):
     """
-    Make a secret available to your instances.
+    Create or overwrite a secret.
 
-    
+    This command makes the secret available to your instances.
     """
     if secret_value is None and secret_file is None:
         raise click.UsageError("Please specify one of --secret-value and --secret-file.")
@@ -68,7 +69,11 @@ def put(ctx, env, secret_name, secret_value, secret_file, apikey):
     if apikey:
         _type = "apikey"
     
-    result = proxygen_api.put_secret(api, env, secret_name, secret_value, _type=_type)
+    with yaspin() as sp:
+        sp.text = f"Putting secret {secret_name} in {env}"
+        result = proxygen_api.put_secret(api, env, secret_name, secret_value, _type=_type)
+        sp.ok("✔")
+
     output.print_json(result)
 
 
@@ -78,7 +83,7 @@ def put(ctx, env, secret_name, secret_value, secret_file, apikey):
 @click.pass_context
 def describe(ctx, env, secret_name):
     """
-    Get the spec used to deploy the secret in environment <ENV> with base path <NAME>.
+    Describe a secret.
     """
     api = ctx.obj["api"]
     result = proxygen_api.get_secret(api, env, secret_name)
@@ -94,15 +99,19 @@ def describe(ctx, env, secret_name):
 @click.pass_context
 def delete(ctx, env, secret_name, no_confirm):
     """
-    Delete the secret called <NAME> in environment <ENV>.
+    Delete a secret.
     """
     api = ctx.obj["api"]
 
     if not no_confirm:
         result = proxygen_api.get_secret(api, env, secret_name)
+        if result is None:
+            raise click.BadArgumentUsage(f"A secret named {secret_name} does not exist in {env}.")
         output.print_json(result)
         if not click.confirm(f"Delete secret {secret_name} from {env}?"):
             raise click.Abort()
-    
-    result = proxygen_api.delete_secret(api, env, secret_name)
-    output.print_json(result)
+    with yaspin() as sp:
+        sp.text = f"Deleting secret {secret_name} from {env}"
+        result = proxygen_api.delete_secret(api, env, secret_name)
+        sp.ok("✔")
+
