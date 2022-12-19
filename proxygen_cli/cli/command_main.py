@@ -1,7 +1,6 @@
 import sys
 from typing import get_args
 from urllib import parse
-
 import click
 
 from proxygen_cli.lib import constants, proxygen_api, settings, output, version

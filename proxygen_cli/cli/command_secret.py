@@ -32,22 +32,11 @@ def list(ctx, env):
     Optionally just in the specified environment.
     """
     api = ctx.obj["api"]
-
     if env:
-        result = {
-            "environments": {
-                env: proxygen_api.get_api_environment(api, env)
-            }
-        }
+        result = proxygen_api.get_secrets(api, env)
     else:
-        result = proxygen_api.get_api(api)
-
-    objects = []
-    for env in result["environments"]:
-        secrets = result["environments"][env]["secrets"]
-        for secret in secrets:
-            objects.append({"environment": env, **secret})
-    output.print_table(objects)
+        result = proxygen_api.get_resources(api, _type="secret")
+    output.print_table(result)
 
 
 @secret.command()

@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any, Dict, Optional, Literal
 from urllib.parse import urlparse, urljoin
 import json
 
@@ -73,14 +73,35 @@ def get_api(api):
     return _resp_json(resp)
 
 
-def get_api_environment(api: str, environment: LITERAL_ENVS):
-    resp = _session().get(f"/apis/{api}/environments/{environment}")
+
+
+def get_resources(
+    api: str,
+    _type: Optional[Literal["instance", "secret"]] = None,
+):
+    """
+    Get both resource types across all envs.
+    Optionally filter with `_type`.
+    """
+    params = {}
+    if _type:
+        params["type"] = _type
+    resp = _session().get(f"/apis/{api}/environments", params=params)
     return _resp_json(resp)
 
 
-def get_instances(api: str, environment: LITERAL_ENVS, instance_name: str):
+def get_instances(api: str, environment: LITERAL_ENVS):
     resp = _session().get(f"/apis/{api}/environments/{environment}/instances")
     return _resp_json(resp)
+
+
+def get_secrets(api: str, environment: LITERAL_ENVS):
+    resp = _session().get(f"/apis/{api}/environments/{environment}/secrets")
+    return _resp_json(resp)
+
+
+
+
 
 
 # INSTANCE methods

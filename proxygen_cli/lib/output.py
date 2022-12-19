@@ -43,6 +43,7 @@ def print_yaml(obj):
     return click.echo(yaml.dump(obj))
 
 def print_table(objs: List[Dict[str, str]]):
-    objs = [_format_time(obj, keys=["last_modified"]) for obj in objs]
+    objs = [_format_time(obj, keys=["last_modified"]) for obj in sorted(objs, key=lambda x: x["last_modified"])]
+
     table_string = tabulate(objs,headers="keys")
     click.echo(table_string)

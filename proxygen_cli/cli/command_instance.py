@@ -35,19 +35,9 @@ def list(ctx, env):
     api = ctx.obj["api"]
 
     if env:
-        result = {
-            "environments": {
-                env: proxygen_api.get_api_environment(api, env)
-            }
-        }
+        objects = proxygen_api.get_instances(api, env)
     else:
-        result = proxygen_api.get_api(api)
-
-    objects = []
-    for env in result["environments"]:
-        instances = result["environments"][env]["instances"]
-        for instance in instances:
-            objects.append({"environment": env, **instance})
+        objects = proxygen_api.get_resources(api, _type="instance")
     output.print_table(objects)
 
 
