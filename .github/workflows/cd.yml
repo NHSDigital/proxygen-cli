@@ -1,0 +1,30 @@
+name: Release
+on:
+  push:
+    branches:
+      - main
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v3
+
+      - name: Install Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: install deps
+        run: |
+          sudo apt install gnome-keyring
+          make install-deps
+
+      - name: install poetry
+        run: pip install --upgrade pip && pip install poetry
+
+      - name: build
+        run: poetry build
+
+      - name: publish
+        run: poetry publish -u ${{ secrets.PYPI_USERNAME }} -p ${{ secrets.PYPI_PASSWORD }} 

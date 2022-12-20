@@ -1,1 +1,4 @@
-__pycache__/**
+.envrc
+.direnv
+**/__pycache__
+dist
