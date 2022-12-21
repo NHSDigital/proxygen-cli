@@ -8,6 +8,7 @@ from proxygen_cli.cli import (
     command_credentials,
     command_settings,
     command_instance,
+    command_spec,
     command_secret,
 )
 
@@ -20,6 +21,7 @@ def main():
 main.add_command(command_settings.settings)
 main.add_command(command_credentials.credentials)
 main.add_command(command_instance.instance)
+main.add_command(command_spec.spec_cmd, name="spec")
 main.add_command(command_secret.secret)
 
 

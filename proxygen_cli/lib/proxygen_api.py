@@ -128,6 +128,30 @@ def put_instance(
     )
     return _resp_json(resp)
 
+# SPEC methods
+def get_spec(api: str):
+    resp = _session().get(
+        f"/apis/{api}/spec"
+    )
+    return _resp_json(resp)
+
+
+def delete_spec(api: str):
+    resp = _session().delete(
+        f"/apis/{api}/spec"
+    )
+    return _resp_json(resp)
+
+
+def put_spec(
+    api: str, paas_open_api: Dict[str, Any]
+):
+    resp = _session().put(
+        f"/apis/{api}/spec",
+        json=paas_open_api,
+    )
+    return _resp_json(resp)
+
 
 # SECRET methods
 def get_secret(api: str, environment: LITERAL_ENVS, secret_name: str):
