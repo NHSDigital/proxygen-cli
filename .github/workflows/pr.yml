@@ -19,7 +19,7 @@ jobs:
       - name: Extract current version
         id: versions
         run: |
-          echo ::set-output name=current::$(grep version main/pyproject.toml || echo 'version = "1.0.0"' | awk -F\" '{print $2}')
+          echo ::set-output name=current::$(grep version main/pyproject.toml | awk -F\" '{print $2}')
           echo ::set-output name=candidate::$(grep version pr/pyproject.toml | awk -F\" '{print $2}')
 
       - name: Install Python 3.8
