@@ -4,6 +4,7 @@ import json
 
 import requests
 import click
+import platform
 
 from proxygen_cli.lib.settings import SETTINGS
 from proxygen_cli.lib.auth import access_token
@@ -21,7 +22,7 @@ class ProxygenSession(requests.Session):
         if path.startswith("/apis/"):
             headers = kwargs.get("headers", {})
             headers["Authorization"] = f"Bearer {access_token()}"
-            headers["User-Agent"] = f"{proxygen_package_name}/{proxygen_cli_version}"
+            headers["User-Agent"] = f"{proxygen_package_name}/{proxygen_cli_version} Python/{platform.python_version()}"
             kwargs["headers"] = headers
 
         url = urljoin(SETTINGS.endpoint_url, path)

@@ -31,11 +31,11 @@ def spec_cmd(ctx, api):
     help="Do not prompt for confirmation.",
 )
 @click.pass_context
-def release(ctx, env, base_path, spec_file, no_confirm):
+def publish(ctx, env, base_path, spec_file, no_confirm):
     """
-    Release <SPEC_FILE>, rendered with <ENV> and <BASE_PATH>
+    Publish <SPEC_FILE>, rendered with <ENV> and <BASE_PATH>
 
-    Your spec is released under <API>.
+    Your spec is published under <API>.
     """
 
     api = ctx.obj["api"]
@@ -56,7 +56,7 @@ def release(ctx, env, base_path, spec_file, no_confirm):
 @click.pass_context
 def get(ctx):
     """
-    Get the released spec.
+    Get the API published spec.
     """
     api = ctx.obj["api"]
     result = proxygen_api.get_spec(api)
@@ -73,7 +73,7 @@ def get(ctx):
 @click.pass_context
 def delete(ctx, no_confirm):
     """
-    Delete the released spec.
+    Delete the published spec.
     """
     api = ctx.obj["api"]
     if not no_confirm:
