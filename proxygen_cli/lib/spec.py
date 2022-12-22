@@ -53,7 +53,11 @@ def resolve(file_name, api, env, base_path):
     if not root_file.exists() or root_file.is_dir():
         raise click.ClickException(f"No such file {root_file}")
 
-    jinja_env = jinja2.Environment(undefined=jinja2.StrictUndefined)
+    jinja_env = jinja2.Environment(
+        undefined=jinja2.StrictUndefined,
+        variable_start_string="${",  # Use var syntax as ${ VARIABLE } so that param spec file is valid YAML.
+        variable_end_string="}",
+    )
     default_config_vars = get_default_config_vars(api, env, base_path)
     # Jinja vars set as implied (from CLI params) vars and environment vars
     jinja_vars = {**default_config_vars, **os.environ}
