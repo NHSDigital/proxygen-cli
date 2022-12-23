@@ -11,10 +11,6 @@ from proxygen_cli.lib.constants import LITERAL_ENVS
 
 CHOICE_OF_ENVS = click.Choice(get_args(LITERAL_ENVS))
 
-def url(env, base_path):
-    sub_domain = "api" if env == "prod" else f"{env}.api"
-    return f"https://{sub_domain}.service.nhs.uk/{base_path}"    
-
 
 @click.group()
 @click.option(
@@ -59,10 +55,11 @@ def deploy(ctx, env, base_path, spec_file, no_confirm):
     https://api.service.nhs.uk/<BASE_PATH>.
     """
     
-    paas_open_api = spec.resolve(spec_file)
+    api = ctx.obj["api"]
+    paas_open_api = spec.resolve(spec_file, api, env, base_path)
 
-    # Overwrite the servers object to point to the values provided form the cli
-    _url = url(env, base_path)
+    # Overwrite the servers object to point to the values provided from the cli
+    _url = spec.url(env, base_path)
     paas_open_api["servers"] = [{"url": _url}]
 
     if not no_confirm:
@@ -72,7 +69,6 @@ def deploy(ctx, env, base_path, spec_file, no_confirm):
 
     with yaspin() as sp:
         sp.text = f"Deploying {_url}"
-        api = ctx.obj["api"]
         instance = parse.quote(base_path)
         result = proxygen_api.put_instance(api, env, instance, paas_open_api)
         sp.ok("✔")
@@ -103,11 +99,11 @@ def delete(ctx, env, base_path, no_confirm):
     """
     api = ctx.obj["api"]
     instance = parse.quote(base_path)
-    _url = url(env, base_path)
+    _url = spec.url(env, base_path)
     if not no_confirm:
         result = proxygen_api.get_instance(api, env, instance)
         if not result:
-            raise click.Abort(f"No such instance {_url}")
+            raise click.ClickException(f"No such instance {_url}")
         output.print_spec(result)
         if not click.confirm(f"Delete the instance at {_url}?"):
             raise click.Abort()

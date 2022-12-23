@@ -3,9 +3,13 @@ from urllib.parse import urlparse, urljoin
 import json
 
 import requests
+import click
+import platform
 
 from proxygen_cli.lib.settings import SETTINGS
 from proxygen_cli.lib.auth import access_token
+from proxygen_cli import __version__ as proxygen_cli_version
+from proxygen_cli import _package_name as proxygen_package_name
 from proxygen_cli.lib.constants import LITERAL_ENVS
 
 
@@ -18,6 +22,7 @@ class ProxygenSession(requests.Session):
         if path.startswith("/apis/"):
             headers = kwargs.get("headers", {})
             headers["Authorization"] = f"Bearer {access_token()}"
+            headers["User-Agent"] = f"{proxygen_package_name}/{proxygen_cli_version} Python/{platform.python_version()}"
             kwargs["headers"] = headers
 
         url = urljoin(SETTINGS.endpoint_url, path)
@@ -60,7 +65,7 @@ def _resp_json(resp, none_on_404=True):
             },
         }
 
-        raise RuntimeError(json.dumps(error_dict))
+        raise click.ClickException(json.dumps(error_dict))
 
 
 def status():
@@ -73,6 +78,9 @@ def get_api(api):
     return _resp_json(resp)
 
 
+def get_docker_login(api: str):
+    resp = _session().get(f"/apis/{api}/docker-token")
+    return _resp_json(resp)
 
 
 def get_resources(
@@ -124,6 +132,30 @@ def put_instance(
 ):
     resp = _session().put(
         f"/apis/{api}/environments/{environment}/instances/{instance}",
+        json=paas_open_api,
+    )
+    return _resp_json(resp)
+
+# SPEC methods
+def get_spec(api: str):
+    resp = _session().get(
+        f"/apis/{api}/spec"
+    )
+    return _resp_json(resp)
+
+
+def delete_spec(api: str):
+    resp = _session().delete(
+        f"/apis/{api}/spec"
+    )
+    return _resp_json(resp)
+
+
+def put_spec(
+    api: str, paas_open_api: Dict[str, Any]
+):
+    resp = _session().put(
+        f"/apis/{api}/spec",
         json=paas_open_api,
     )
     return _resp_json(resp)
