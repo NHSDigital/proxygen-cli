@@ -10,12 +10,12 @@ import jwt
 import requests
 from lxml import html
 
-from .credentials import CREDENTIALS
+from .credentials import get_credentials
 from .dot_proxygen import token_cache_file
 
 
 def cache_key():
-    s = CREDENTIALS.json()
+    s = get_credentials().json()
     return hashlib.md5(s.encode("utf-8")).hexdigest()
 
 
@@ -62,6 +62,7 @@ def access_token():
 
     # If we get here, no cache hit, or token expired or refresh token call failed.
     # So do full login
+    CREDENTIALS = get_credentials()
     if CREDENTIALS.username and CREDENTIALS.password:
         token_data = _get_token_data_from_user_login()
     else:
@@ -74,6 +75,7 @@ def access_token():
 def _get_token_data_from_refresh_token(
         refresh_token: str
 ):
+    CREDENTIALS = get_credentials()
     token_response = requests.post(
         f"{CREDENTIALS.base_url}/protocol/openid-connect/token",
         data={
@@ -89,6 +91,7 @@ def _get_token_data_from_refresh_token(
 
 def _get_token_data_from_user_login():
     session = requests.Session()
+    CREDENTIALS = get_credentials()
     redirect_uri = f"{CREDENTIALS.base_url}/protocol/openid-connect/callback"
     login_page_resp = session.get(
         f"{CREDENTIALS.base_url}/protocol/openid-connect/auth",
@@ -148,6 +151,7 @@ def _get_token_data_from_user_login():
 
 
 def _get_token_data_from_machine_user():
+    CREDENTIALS = get_credentials()
     aud = CREDENTIALS.base_url
     token_endpoint = aud + "/protocol/openid-connect/token"
     private_key = CREDENTIALS.private_key()
