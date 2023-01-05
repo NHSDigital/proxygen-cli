@@ -16,7 +16,7 @@ from proxygen_cli.cli import (
 
 @click.group()
 def main():
-    version.validate_cli_version()
+    pass
 
 
 main.add_command(command_settings.settings)

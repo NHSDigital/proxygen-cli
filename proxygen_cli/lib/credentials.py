@@ -1,4 +1,5 @@
 import pathlib
+from typing import Optional
 
 import yaml
 from pydantic import BaseSettings, validator, root_validator, AnyHttpUrl
@@ -17,7 +18,7 @@ class Credentials(BaseSettings):
     client_secret: str = None
     username: str = None
     password: str = None
-    private_key_path: str = None
+    private_key_path: Optional[str] = None
     
     def private_key(self):
         """read the private key file and self.private_key_file_path."""
@@ -35,6 +36,8 @@ class Credentials(BaseSettings):
         Pydantic only allows relative to cwd with FilePath.
         So take string.
         """
+        if not private_key_path:
+            return
         private_key_path= pathlib.Path(private_key_path)
         if private_key_path.is_absolute():
             private_key_file = private_key_path

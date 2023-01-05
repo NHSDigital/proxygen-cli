@@ -117,8 +117,6 @@ def _get_token_data_from_user_login():
         },
         data={"username": CREDENTIALS.username, "password": CREDENTIALS.password, "credentialId": ""},
     )
-    if user_login_resp.status_code != 200:
-        raise RuntimeError(f"User password submission returned non-200 response",)
 
     http_error_msg = "Invalid username or password"
     if http_error_msg in user_login_resp.text:
