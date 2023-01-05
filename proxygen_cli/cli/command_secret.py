@@ -4,7 +4,7 @@ from urllib import parse
 import click
 from yaspin import yaspin
 
-from proxygen_cli.lib import output, proxygen_api, spec
+from proxygen_cli.lib import output, proxygen_api, spec, version
 from proxygen_cli.lib.settings import SETTINGS
 from proxygen_cli.lib.constants import LITERAL_ENVS
 
@@ -17,6 +17,7 @@ CHOICE_OF_ENVS = click.Choice(get_args(LITERAL_ENVS))
 )
 @click.pass_context
 def secret(ctx, api):
+    version.validate_cli_version()
     ctx.ensure_object(dict)
     ctx.obj["api"] = api
 
