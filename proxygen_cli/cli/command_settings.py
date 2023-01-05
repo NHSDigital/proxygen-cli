@@ -12,6 +12,9 @@ CHOICE_OF_SETTINGS_KEYS = click.Choice(Settings.__fields__.keys())
 
 @click.group()
 def settings():
+    """
+    Get/set settings for the proxygen-cli.
+    """
     pass
 
 

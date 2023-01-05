@@ -18,6 +18,9 @@ CHOICE_OF_ENVS = click.Choice(get_args(LITERAL_ENVS))
 )
 @click.pass_context
 def instance(ctx, api):
+    """
+    Create/Update/Delete instances of your API.
+    """
     version.validate_cli_version()
     ctx.ensure_object(dict)
     ctx.obj["api"] = api

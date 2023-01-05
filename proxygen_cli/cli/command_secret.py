@@ -17,6 +17,9 @@ CHOICE_OF_ENVS = click.Choice(get_args(LITERAL_ENVS))
 )
 @click.pass_context
 def secret(ctx, api):
+    """
+    Create/Update/Delete secrets used by your API.
+    """
     version.validate_cli_version()
     ctx.ensure_object(dict)
     ctx.obj["api"] = api
