@@ -23,6 +23,8 @@ def secret(ctx, api):
     version.validate_cli_version()
     ctx.ensure_object(dict)
     ctx.obj["api"] = api
+    if api is None:
+        raise click.UsageError("You must set the API before using this command: see `proxygen settings`")
 
 
 @secret.command()

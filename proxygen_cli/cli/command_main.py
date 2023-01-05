@@ -45,6 +45,9 @@ def docker_get_login(api):
     """
     Generate docker login command for AWS ECR repo with credentials from proxygen.
     """
+    if api is None:
+        raise click.UsageError("You must set the API before using this command: see `proxygen settings`")
+
     resp = proxygen_api.get_docker_login(api)
     click.echo(f"docker login -u {resp['user']} --password {resp['password']} {resp['registry']}")
 

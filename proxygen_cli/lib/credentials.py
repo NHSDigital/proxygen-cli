@@ -1,11 +1,20 @@
 import pathlib
+import json
 from typing import Optional
-
 import yaml
-from pydantic import BaseSettings, validator, root_validator, AnyHttpUrl
+import sys
+
+import click
+from pydantic import (
+    BaseSettings,
+    validator,
+    AnyHttpUrl,
+    ValidationError,
+)
 
 from . import dot_proxygen
-    
+
+
 def _yaml_credentials_file_source(_):
     with dot_proxygen.credentials_file().open() as yaml_file:
         credentials = yaml.safe_load(yaml_file)
@@ -13,13 +22,21 @@ def _yaml_credentials_file_source(_):
 
 
 class Credentials(BaseSettings):
-    base_url: AnyHttpUrl = "https://identity.ptl.api.platform.nhs.uk/auth/realms/api-producers"
+    base_url: AnyHttpUrl = (
+        "https://identity.ptl.api.platform.nhs.uk/auth/realms/api-producers"
+    )
+    private_key_path: Optional[str] = None
     client_id: str
     client_secret: str = None
     username: str = None
     password: str = None
-    private_key_path: Optional[str] = None
-    
+
+    @validator("username", "password", "client_secret", "client_id")
+    def validate_humans_users(cls, value, values):
+        if values.get("private_key_path") is None and value is None:
+            raise ValueError("field required")
+        return value
+
     def private_key(self):
         """read the private key file and self.private_key_file_path."""
         private_key_file = dot_proxygen.directory().joinpath(self.private_key_path)
@@ -38,7 +55,7 @@ class Credentials(BaseSettings):
         """
         if not private_key_path:
             return
-        private_key_path= pathlib.Path(private_key_path)
+        private_key_path = pathlib.Path(private_key_path)
         if private_key_path.is_absolute():
             private_key_file = private_key_path
         else:
@@ -49,18 +66,11 @@ class Credentials(BaseSettings):
         if private_key_file.is_dir():
             raise ValueError(f"{private_key_path} is a directory, not a file")
         return str(private_key_file)
-    
-    @root_validator()
-    def validate_credentials(cls, credentials):
-        if credentials.get("username") is not None and credentials.get("password") is not None:
-            return credentials
-        elif credentials.get("private_key_path") is not None:
-            return credentials
-        raise ValueError("Need username/password for human user or private_key_path for machine user.")
-    
+
     class Config:
         env_prefix = "PROXYGEN_CREDENTIALS_"
-        case_sensitive=True
+        case_sensitive = True
+
         @classmethod
         def customise_sources(
             cls,
@@ -72,7 +82,32 @@ class Credentials(BaseSettings):
                 init_settings,
                 env_settings,
                 _yaml_credentials_file_source,
-            )        
-        
-    
-CREDENTIALS = Credentials()
+            )
+
+
+_CREDENTIALS = None
+try:
+    _CREDENTIALS = Credentials()
+except ValidationError as e:
+
+    errors = json.loads(e.json())
+    print("*" * 100, file=sys.stderr)
+    print(
+        "Warning: Credentials invalid or not configured. See `proxygen credentials`.",
+        file=sys.stderr,
+    )
+    details = "  " + "\n  ".join(
+        f"{error['loc'][0]}: {error['msg']}" for error in errors
+    )
+    print(details, file=sys.stderr)
+    print("*" * 100, file=sys.stderr)
+    _CREDENTIALS = None
+
+
+def get_credentials():
+    global _CREDENTIALS
+    if _CREDENTIALS is None:
+        raise click.UsageError(
+            "This command requires credentials which are invalid or not configured"
+        )
+    return _CREDENTIALS
