@@ -82,3 +82,10 @@ def resolve(file_name, api):
 
 
 
+def host(env):
+    sub_domain = "api" if env == "prod" else f"{env}.api"
+    return f"https://{sub_domain}.service.nhs.uk"
+
+
+def url(env, base_path):
+    return f"{host(env)}/{base_path}"
