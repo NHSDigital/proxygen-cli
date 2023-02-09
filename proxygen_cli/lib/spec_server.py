@@ -26,10 +26,13 @@ class SpecHttpRequestHandler(BaseHTTPRequestHandler):
         self.wfile.write(spec_str.encode())
 
 
-def serve(*args, server_class=HTTPServer, handler_class=SpecHttpRequestHandler, port=8008):
+def serve(*args, **kwargs):
+    """
+    Passes *args, **kwargs to spec.resolve
+    """
     global _RENDER_SPEC_METHOD
-    _RENDER_SPEC_METHOD = partial(resolve, *args)
+    _RENDER_SPEC_METHOD = partial(resolve, *args, **kwargs)
 
-    server_address = ("", port)
-    httpd = server_class(server_address, handler_class)
+    server_address = ("", 8008)
+    httpd = HTTPServer(server_address, SpecHttpRequestHandler)
     httpd.serve_forever()

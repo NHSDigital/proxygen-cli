@@ -47,7 +47,11 @@ def _update_obj(obj, keys, sub_obj):
         raise ValueError("Cannot update obj with no keys.")
 
 
-def resolve(file_name, api):
+def resolve(file_name, pop_keys=None):
+
+    if pop_keys is None:
+        pop_keys = []
+
     root_file = pathlib.Path(file_name)
     if not root_file.exists() or root_file.is_dir():
         raise click.ClickException(f"No such file {root_file}")
@@ -64,8 +68,8 @@ def resolve(file_name, api):
     with root_file.open() as f:
         spec = load_templated_yaml(f.read())
 
-    # Don't include deployment data in the spec.
-    spec.pop("x-nhsd-apim", None)
+    for key in pop_keys:
+        spec.pop(key, None)
 
     file_refs = _find_file_refs(spec)
     spec_dir = root_file.parent.absolute().resolve()
@@ -82,3 +86,10 @@ def resolve(file_name, api):
 
 
 
+def host(env):
+    sub_domain = "api" if env == "prod" else f"{env}.api"
+    return f"https://{sub_domain}.service.nhs.uk"
+
+
+def url(env, base_path):
+    return f"{host(env)}/{base_path}"
