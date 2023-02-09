@@ -1,9 +1,10 @@
+from http import server
 from typing import get_args
 
 import click
 from yaspin import yaspin
 
-from proxygen_cli.lib import output, proxygen_api, spec
+from proxygen_cli.lib import output, proxygen_api, spec, spec_server
 from proxygen_cli.lib.settings import SETTINGS
 from proxygen_cli.lib.constants import LITERAL_ENVS
 
@@ -21,8 +22,6 @@ def spec_cmd(ctx, api):
 
 
 @spec_cmd.command()
-@click.argument("env", type=CHOICE_OF_ENVS)
-@click.argument("base_path")
 @click.argument("spec_file")
 @click.option(
     "--no-confirm",
@@ -31,26 +30,43 @@ def spec_cmd(ctx, api):
     help="Do not prompt for confirmation.",
 )
 @click.pass_context
-def publish(ctx, env, base_path, spec_file, no_confirm):
+def publish(ctx, spec_file, no_confirm):
     """
-    Publish <SPEC_FILE>, rendered with <ENV> and <BASE_PATH>
-
-    Your spec is published under <API>.
+    Publish <SPEC_FILE>.
     """
 
     api = ctx.obj["api"]
-    paas_open_api = spec.resolve(spec_file, api, env, base_path)
+    paas_open_api = spec.resolve(spec_file, api)
 
     if not no_confirm:
         output.print_spec(paas_open_api)
-        if not click.confirm(f"Deploy this spec for {api}?"):
+        if not click.confirm(f"Publish this spec for {api}?"):
             raise click.Abort()
 
     with yaspin() as sp:
-        sp.text = f"Releasing spec {api}"
+        sp.text = f"Publishing spec {api}"
         proxygen_api.put_spec(api, paas_open_api)
         sp.ok("✔")
 
+
+@spec_cmd.command()
+@click.argument("spec_file")
+@click.pass_context
+def serve(ctx, spec_file):
+    """
+    Serve API spec in <spec_file> locally on port 8008.
+    """
+    api = ctx.obj["api"]
+    print(f"""
+    Serving {spec_file} on port 8008.
+    To preview go to "https://editor.swagger.io".
+    Click "File -> Import URL".
+    Provide the location "http://localhost:8008".
+
+    Note that any edits you make here will *NOT* be propagated back to {spec_file}.
+    """)
+    spec_server.serve(spec_file, api)
+    
 
 @spec_cmd.command()
 @click.pass_context

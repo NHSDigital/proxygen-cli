@@ -30,17 +30,26 @@ def yaml_multiline_string_pipe(dumper, data):
 
 yaml.add_representer(str, yaml_multiline_string_pipe)
 
-def print_spec(spec):
+def to_spec(spec):
     if SETTINGS.spec_output_format == "yaml":
-        return print_yaml(spec)
+        return to_yaml(spec)
     elif SETTINGS.spec_output_format == "json":
-        return print_json(spec)
+        return to_json(spec)
+
+def print_spec(spec):
+    return click.echo(to_spec(spec))
+
+def to_json(obj):
+    return json.dumps(obj, indent=2, default=str)
 
 def print_json(obj):
-    return click.echo(json.dumps(obj, indent=2))    
+    return click.echo(to_json(obj))
+
+def to_yaml(obj):
+    return yaml.dump(obj)
 
 def print_yaml(obj):
-    return click.echo(yaml.dump(obj))
+    return click.echo(to_yaml(obj))
 
 def print_table(objs: List[Dict[str, str]]):
     objs = [_format_time(obj, keys=["last_modified"]) for obj in sorted(objs, key=lambda x: x["last_modified"])]

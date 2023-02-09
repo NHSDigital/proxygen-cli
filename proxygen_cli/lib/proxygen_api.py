@@ -22,7 +22,9 @@ class ProxygenSession(requests.Session):
         if path.startswith("/apis/"):
             headers = kwargs.get("headers", {})
             headers["Authorization"] = f"Bearer {access_token()}"
-            headers["User-Agent"] = f"{proxygen_package_name}/{proxygen_cli_version} Python/{platform.python_version()}"
+            headers[
+                "User-Agent"
+            ] = f"{proxygen_package_name}/{proxygen_cli_version} Python/{platform.python_version()}"
             kwargs["headers"] = headers
 
         url = urljoin(SETTINGS.endpoint_url, path)
@@ -108,10 +110,6 @@ def get_secrets(api: str, environment: LITERAL_ENVS):
     return _resp_json(resp)
 
 
-
-
-
-
 # INSTANCE methods
 def get_instance(api: str, environment: LITERAL_ENVS, instance_name: str):
     resp = _session().get(
@@ -130,33 +128,31 @@ def delete_instance(api: str, environment: LITERAL_ENVS, instance_name: str):
 def put_instance(
     api: str, environment: LITERAL_ENVS, instance: str, paas_open_api: Dict[str, Any]
 ):
+
     resp = _session().put(
         f"/apis/{api}/environments/{environment}/instances/{instance}",
-        json=paas_open_api,
+        data=json.dumps(paas_open_api, default=str),
+        headers={"Content-Type": "application/json"},
     )
     return _resp_json(resp)
 
+
 # SPEC methods
 def get_spec(api: str):
-    resp = _session().get(
-        f"/apis/{api}/spec"
-    )
+    resp = _session().get(f"/apis/{api}/spec")
     return _resp_json(resp)
 
 
 def delete_spec(api: str):
-    resp = _session().delete(
-        f"/apis/{api}/spec"
-    )
+    resp = _session().delete(f"/apis/{api}/spec")
     return _resp_json(resp)
 
 
-def put_spec(
-    api: str, paas_open_api: Dict[str, Any]
-):
+def put_spec(api: str, paas_open_api: Dict[str, Any]):
     resp = _session().put(
         f"/apis/{api}/spec",
-        json=paas_open_api,
+        data=json.dumps(paas_open_api, default=str),
+        headers={"Content-Type": "application/json"},
     )
     return _resp_json(resp)
 
