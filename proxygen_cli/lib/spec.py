@@ -71,17 +71,21 @@ def resolve(file_name, pop_keys=None):
     for key in pop_keys:
         spec.pop(key, None)
 
-    file_refs = _find_file_refs(spec)
-    spec_dir = root_file.parent.absolute().resolve()
+    # We need this while loop to handle the case where a file a $ref has a $ref inside it.
+    # The first loop replaces the outer ref, but also adds a ref.
+    # This Very Hacky Method can almost certainly be replaced with something more elegant.
+    # but... tomorrow is my last day, so it won't be me doing it.
+    while file_refs := _find_file_refs(spec):
+        spec_dir = root_file.parent.absolute().resolve()
 
-    for keys, file_ref in file_refs:
-        file_path = spec_dir.joinpath(file_ref)
-        if not file_path.exists() or file_path.is_dir():
-            raise click.ClickException(f"Unable to resolve $ref {file_path} at {keys}")
-        with file_path.open() as f:
-            sub_spec = load_templated_yaml(f.read())
+        for keys, file_ref in file_refs:
+            file_path = spec_dir.joinpath(file_ref)
+            if not file_path.exists() or file_path.is_dir():
+                raise click.ClickException(f"Unable to resolve $ref {file_path} at {keys}")
+            with file_path.open() as f:
+                sub_spec = load_templated_yaml(f.read())
 
-        spec = _update_obj(spec, keys, sub_spec)
+            spec = _update_obj(spec, keys, sub_spec)
     return spec
 
 
