@@ -62,7 +62,7 @@ def deploy(ctx, env, base_path, spec_file, no_confirm):
     """
     
     api = ctx.obj["api"]
-    paas_open_api = spec.resolve(spec_file, api, env, base_path)
+    paas_open_api = spec.resolve(spec_file)
 
     # Overwrite the servers object to point to the values provided from the cli
     _url = spec.url(env, base_path)
