@@ -23,7 +23,7 @@ def _yaml_credentials_file_source(_):
 
 class Credentials(BaseSettings):
     base_url: AnyHttpUrl = (
-        "https://identity.ptl.api.platform.nhs.uk/auth/realms/api-producers"
+        "https://identity.prod.api.platform.nhs.uk/auth/realms/api-producers"
     )
     private_key_path: Optional[str] = None
     client_id: str
