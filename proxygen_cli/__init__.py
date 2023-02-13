@@ -1,3 +1,5 @@
+"""Pypi packaging init"""
+
 try:
     import importlib.metadata as importlib_metadata
 except ModuleNotFoundError:
