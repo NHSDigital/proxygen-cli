@@ -1,7 +1,7 @@
 import click
 
 from proxygen_cli.lib.settings import SETTINGS
-from proxygen_cli.lib import output, proxygen_api, spec, version
+from proxygen_cli.lib import proxygen_api, version
 
 
 @click.group()

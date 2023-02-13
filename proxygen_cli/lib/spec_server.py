@@ -3,8 +3,6 @@ A simple HTTP server for your spec.
 """
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from functools import partial
-import json
-import yaml
 
 from .settings import SETTINGS
 from .spec import resolve

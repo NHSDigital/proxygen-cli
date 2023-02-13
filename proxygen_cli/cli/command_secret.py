@@ -1,10 +1,9 @@
 from typing import get_args
-from urllib import parse
 
 import click
 from yaspin import yaspin
 
-from proxygen_cli.lib import output, proxygen_api, spec, version
+from proxygen_cli.lib import output, proxygen_api, version
 from proxygen_cli.lib.settings import SETTINGS
 from proxygen_cli.lib.constants import LITERAL_ENVS
 

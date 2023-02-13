@@ -1,5 +1,4 @@
 import json
-import pydantic
 import yaml
 import click
 

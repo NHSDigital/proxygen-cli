@@ -1,5 +1,4 @@
 """Proxygen test utility functions"""
-import functools
 import uuid
 from time import time
 from urllib.parse import parse_qs, urlparse
@@ -97,7 +96,7 @@ def _get_token_data_from_user_login():
     )
 
     if login_page_resp.status_code != 200:
-        raise RunTimeError(f"Login page get request status was {login_page_resp.status_code} expected to be 200")
+        raise RuntimeError(f"Login page get request status was {login_page_resp.status_code} expected to be 200")
 
     login_form = html.fromstring(login_page_resp.content.decode()).get_element_by_id("kc-form-login")
 

@@ -1,5 +1,5 @@
 from typing import Any, Dict, Optional, Literal
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urljoin
 import json
 
 import requests

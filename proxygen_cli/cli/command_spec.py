@@ -1,4 +1,3 @@
-from http import server
 from typing import get_args
 
 import click
@@ -55,7 +54,6 @@ def serve(ctx, spec_file):
     """
     Serve API spec in <spec_file> locally on port 8008.
     """
-    api = ctx.obj["api"]
     print(
         f"""
     Serving {spec_file} on port 8008.

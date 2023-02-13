@@ -3,7 +3,6 @@ from urllib import parse
 
 import click
 from yaspin import yaspin
-from tabulate import tabulate
 
 from proxygen_cli.lib import output, proxygen_api, spec, version
 from proxygen_cli.lib.settings import SETTINGS
@@ -70,7 +69,7 @@ def deploy(ctx, env, base_path, spec_file, no_confirm):
     with yaspin() as sp:
         sp.text = f"Deploying {_url}"
         instance = parse.quote(base_path)
-        result = proxygen_api.put_instance(api, env, instance, paas_open_api)
+        proxygen_api.put_instance(api, env, instance, paas_open_api)
         sp.ok("✔")
 
 

@@ -2,7 +2,6 @@
 Proxygen resolves internal file refs and remote refs.
 We only need to resolve external file refs.
 """
-import os
 from typing import Dict, List, Union
 import pathlib
 from urllib.parse import urlparse

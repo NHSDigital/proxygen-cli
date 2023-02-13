@@ -22,7 +22,7 @@ def _get_setting(key):
     try:
         return getattr(SETTINGS, key)
     except AttributeError as e:
-        raise ValueError(f"No such setting: {key}")
+        raise ValueError(f"No such setting: {key}") from e
 
 
 @settings.command()
