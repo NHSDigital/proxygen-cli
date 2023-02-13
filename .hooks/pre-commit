@@ -12,8 +12,9 @@ if [ $(echo $?) != "0" ]; then
     git status
     echo "${RED}Failed to commit changes as above files were auto-formatted by'black'.${NC}" && \
     echo "${RED}Please check formatted files and repeat commit.${NC}"
+    # If any files were modified, stage the changes
+    echo $FILES | xargs git add
     exit 1
 fi
 
-# If any files were modified, stage the changes
-echo $FILES | xargs git add
+
