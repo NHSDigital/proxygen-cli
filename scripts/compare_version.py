@@ -13,7 +13,6 @@ def parse(version):
 
 
 def main(_current, _candidate):
-
     current = parse(_current)
     candidate = parse(_candidate)
 

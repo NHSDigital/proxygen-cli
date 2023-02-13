@@ -37,7 +37,6 @@ def _find_file_refs(obj, obj_loc: List[Union[str, int]] = None):
 
 
 def _update_obj(obj, keys, sub_obj):
-
     if len(keys) > 1:
         obj[keys[0]] = _update_obj(obj[keys[0]], keys[1:], sub_obj)
         return obj
@@ -48,7 +47,6 @@ def _update_obj(obj, keys, sub_obj):
 
 
 def resolve(file_name, pop_keys=None):
-
     if pop_keys is None:
         pop_keys = []
 
@@ -61,9 +59,7 @@ def resolve(file_name, pop_keys=None):
             return yaml.safe_load(yml_str)
 
         except yaml.YAMLError as exc:
-            raise click.ClickException(
-                f"{exc}\nHint: Spec file is most likely not valid YAML"
-            )
+            raise click.ClickException(f"{exc}\nHint: Spec file is most likely not valid YAML")
 
     with root_file.open() as f:
         spec = load_templated_yaml(f.read())
@@ -87,7 +83,6 @@ def resolve(file_name, pop_keys=None):
 
             spec = _update_obj(spec, keys, sub_spec)
     return spec
-
 
 
 def host(env):

@@ -41,20 +41,14 @@ def access_token():
 
     jwt_decode_options = {"verify_signature": False}
     if token_data is not None:
-        access_token_payload = jwt.decode(
-            token_data["access_token"], options=jwt_decode_options
-        )
+        access_token_payload = jwt.decode(token_data["access_token"], options=jwt_decode_options)
         if now < access_token_payload["exp"]:
             return token_data["access_token"]
         if "refresh_token" in token_data:
-            refresh_token_payload = jwt.decode(
-                token_data["refresh_token"], options=jwt_decode_options
-            )
+            refresh_token_payload = jwt.decode(token_data["refresh_token"], options=jwt_decode_options)
             if now < refresh_token_payload["exp"]:
                 # can try doing a refresh
-                new_token_data = _get_token_data_from_refresh_token(
-                    token_data["refresh_token"]
-                )
+                new_token_data = _get_token_data_from_refresh_token(token_data["refresh_token"])
                 if new_token_data is not None:
                     cache[_cache_key] = new_token_data
                     _write_cache(cache)
@@ -72,9 +66,7 @@ def access_token():
     return token_data["access_token"]
 
 
-def _get_token_data_from_refresh_token(
-        refresh_token: str
-):
+def _get_token_data_from_refresh_token(refresh_token: str):
     CREDENTIALS = get_credentials()
     token_response = requests.post(
         f"{CREDENTIALS.base_url}/protocol/openid-connect/token",
@@ -107,9 +99,7 @@ def _get_token_data_from_user_login():
     if login_page_resp.status_code != 200:
         raise RunTimeError(f"Login page get request status was {login_page_resp.status_code} expected to be 200")
 
-    login_form = html.fromstring(login_page_resp.content.decode()).get_element_by_id(
-        "kc-form-login"
-    )
+    login_form = html.fromstring(login_page_resp.content.decode()).get_element_by_id("kc-form-login")
 
     url = login_form.action
     user_login_resp = session.post(
@@ -141,13 +131,8 @@ def _get_token_data_from_user_login():
         },
     )
     if token_response.status_code != 200:
-        raise RuntimeError(
-            f"Token response was {token_response.status_code} expected 200"
-        )
+        raise RuntimeError(f"Token response was {token_response.status_code} expected 200")
     return token_response.json()
-
-
-
 
 
 def _get_token_data_from_machine_user():
@@ -176,4 +161,3 @@ def _get_token_data_from_machine_user():
     if token_response.status_code != 200:
         raise RuntimeError(f"Token response was {token_response.status_code} expected 200")
     return token_response.json()
-

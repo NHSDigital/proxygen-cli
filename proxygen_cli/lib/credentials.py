@@ -22,9 +22,7 @@ def _yaml_credentials_file_source(_):
 
 
 class Credentials(BaseSettings):
-    base_url: AnyHttpUrl = (
-        "https://identity.prod.api.platform.nhs.uk/auth/realms/api-producers"
-    )
+    base_url: AnyHttpUrl = "https://identity.prod.api.platform.nhs.uk/auth/realms/api-producers"
     private_key_path: Optional[str] = None
     client_id: str
     client_secret: str = None
@@ -41,9 +39,7 @@ class Credentials(BaseSettings):
         """read the private key file and self.private_key_file_path."""
         private_key_file = dot_proxygen.directory().joinpath(self.private_key_path)
         if not private_key_file.exists():
-            raise ValueError(
-                f"Could not open private key file {private_key_file} for machine user {self.name}"
-            )
+            raise ValueError(f"Could not open private key file {private_key_file} for machine user {self.name}")
         with private_key_file.open() as f:
             return f.read()
 
@@ -89,16 +85,13 @@ _CREDENTIALS = None
 try:
     _CREDENTIALS = Credentials()
 except ValidationError as e:
-
     errors = json.loads(e.json())
     print("*" * 100, file=sys.stderr)
     print(
         "Warning: Credentials invalid or not configured. See `proxygen credentials`.",
         file=sys.stderr,
     )
-    details = "  " + "\n  ".join(
-        f"{error['loc'][0]}: {error['msg']}" for error in errors
-    )
+    details = "  " + "\n  ".join(f"{error['loc'][0]}: {error['msg']}" for error in errors)
     print(details, file=sys.stderr)
     print("*" * 100, file=sys.stderr)
     _CREDENTIALS = None
@@ -107,7 +100,5 @@ except ValidationError as e:
 def get_credentials():
     global _CREDENTIALS
     if _CREDENTIALS is None:
-        raise click.UsageError(
-            "This command requires credentials which are invalid or not configured"
-        )
+        raise click.UsageError("This command requires credentials which are invalid or not configured")
     return _CREDENTIALS

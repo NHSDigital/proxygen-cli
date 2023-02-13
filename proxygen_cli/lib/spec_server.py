@@ -17,7 +17,7 @@ class SpecHttpRequestHandler(BaseHTTPRequestHandler):
     def _set_headers(self):
         self.send_response(200)
         self.send_header("Content-type", f"application/{SETTINGS.spec_output_format}")
-        self.send_header("Access-Control-Allow-Origin", "*") # Enable CORS for swagger import
+        self.send_header("Access-Control-Allow-Origin", "*")  # Enable CORS for swagger import
         self.end_headers()
 
     def do_GET(self):

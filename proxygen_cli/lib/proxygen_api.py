@@ -18,13 +18,10 @@ class ProxygenSession(requests.Session):
         super().__init__(**kwargs)
 
     def request(self, method, path, **kwargs):
-
         if path.startswith("/apis/"):
             headers = kwargs.get("headers", {})
             headers["Authorization"] = f"Bearer {access_token()}"
-            headers[
-                "User-Agent"
-            ] = f"{proxygen_package_name}/{proxygen_cli_version} Python/{platform.python_version()}"
+            headers["User-Agent"] = f"{proxygen_package_name}/{proxygen_cli_version} Python/{platform.python_version()}"
             kwargs["headers"] = headers
 
         url = urljoin(SETTINGS.endpoint_url, path)
@@ -112,23 +109,16 @@ def get_secrets(api: str, environment: LITERAL_ENVS):
 
 # INSTANCE methods
 def get_instance(api: str, environment: LITERAL_ENVS, instance_name: str):
-    resp = _session().get(
-        f"/apis/{api}/environments/{environment}/instances/{instance_name}"
-    )
+    resp = _session().get(f"/apis/{api}/environments/{environment}/instances/{instance_name}")
     return _resp_json(resp)
 
 
 def delete_instance(api: str, environment: LITERAL_ENVS, instance_name: str):
-    resp = _session().delete(
-        f"/apis/{api}/environments/{environment}/instances/{instance_name}"
-    )
+    resp = _session().delete(f"/apis/{api}/environments/{environment}/instances/{instance_name}")
     return _resp_json(resp)
 
 
-def put_instance(
-    api: str, environment: LITERAL_ENVS, instance: str, paas_open_api: Dict[str, Any]
-):
-
+def put_instance(api: str, environment: LITERAL_ENVS, instance: str, paas_open_api: Dict[str, Any]):
     resp = _session().put(
         f"/apis/{api}/environments/{environment}/instances/{instance}",
         data=json.dumps(paas_open_api, default=str),
@@ -159,9 +149,7 @@ def put_spec(api: str, paas_open_api: Dict[str, Any]):
 
 # SECRET methods
 def get_secret(api: str, environment: LITERAL_ENVS, secret_name: str):
-    resp = _session().get(
-        f"/apis/{api}/environments/{environment}/secrets/{secret_name}"
-    )
+    resp = _session().get(f"/apis/{api}/environments/{environment}/secrets/{secret_name}")
     return _resp_json(resp)
 
 
@@ -172,7 +160,6 @@ def put_secret(
     secret_value: str,
     _type: str = None,
 ):
-
     params = {}
     if _type:
         params["type"] = _type
@@ -185,7 +172,5 @@ def put_secret(
 
 
 def delete_secret(api: str, environment: LITERAL_ENVS, secret_name: str):
-    resp = _session().delete(
-        f"/apis/{api}/environments/{environment}/secrets/{secret_name}"
-    )
+    resp = _session().delete(f"/apis/{api}/environments/{environment}/secrets/{secret_name}")
     return _resp_json(resp)

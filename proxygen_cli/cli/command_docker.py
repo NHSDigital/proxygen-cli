@@ -5,9 +5,7 @@ from proxygen_cli.lib import output, proxygen_api, spec, version
 
 
 @click.group()
-@click.option(
-    "--api", default=SETTINGS.api, help="Override the default API", show_default=True
-)
+@click.option("--api", default=SETTINGS.api, help="Override the default API", show_default=True)
 @click.pass_context
 def docker(ctx, api):
     """
@@ -29,7 +27,6 @@ def get_login(ctx):
     api = ctx.obj["api"]
     resp = proxygen_api.get_docker_login(api)
     click.echo(f"docker login -u {resp['user']} --password {resp['password']} {resp['registry']}")
-
 
 
 @docker.command()

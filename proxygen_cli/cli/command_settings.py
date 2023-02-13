@@ -32,6 +32,7 @@ def list():
     """
     output.print_spec(json.loads(SETTINGS.json(exclude_none=True)))
 
+
 @settings.command()
 @click.argument("key", type=CHOICE_OF_SETTINGS_KEYS)
 def get(key):
@@ -40,7 +41,7 @@ def get(key):
     """
     click.echo(_get_setting(key))
 
-    
+
 @settings.command()
 @click.argument("key", type=CHOICE_OF_SETTINGS_KEYS)
 @click.argument("value")
@@ -68,7 +69,7 @@ def rm(key):
     Delete a value from your settings.
     """
     _get_setting(key)
-    
+
     current_settings = _yaml_settings_file_source(None)
     current_settings.pop(key, None)
     with settings_file().open("w") as f:

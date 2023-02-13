@@ -12,9 +12,7 @@ CHOICE_OF_ENVS = click.Choice(get_args(LITERAL_ENVS))
 
 
 @click.group()
-@click.option(
-    "--api", default=SETTINGS.api, help="Override the default API", show_default=True
-)
+@click.option("--api", default=SETTINGS.api, help="Override the default API", show_default=True)
 @click.pass_context
 def secret(ctx, api):
     """
@@ -29,9 +27,7 @@ def secret(ctx, api):
 
 @secret.command()
 @click.pass_context
-@click.option(
-    "--env", type=CHOICE_OF_ENVS, help="Only print secrets in the choice environment."
-)
+@click.option("--env", type=CHOICE_OF_ENVS, help="Only print secrets in the choice environment.")
 def list(ctx, env):
     """
     List secrets.
@@ -74,7 +70,7 @@ def put(ctx, env, secret_name, secret_value, secret_file, apikey):
     _type = None
     if apikey:
         _type = "apikey"
-    
+
     with yaspin() as sp:
         sp.text = f"Putting secret {secret_name} in {env}"
         result = proxygen_api.put_secret(api, env, secret_name, secret_value, _type=_type)
@@ -94,14 +90,12 @@ def describe(ctx, env, secret_name):
     api = ctx.obj["api"]
     result = proxygen_api.get_secret(api, env, secret_name)
     output.print_json(result)
-    
+
 
 @secret.command()
 @click.argument("env", type=CHOICE_OF_ENVS)
 @click.argument("secret_name")
-@click.option(
-    "--no-confirm", is_flag=True, show_default=True, help="Do not prompt for confirmation."
-)
+@click.option("--no-confirm", is_flag=True, show_default=True, help="Do not prompt for confirmation.")
 @click.pass_context
 def delete(ctx, env, secret_name, no_confirm):
     """
@@ -120,4 +114,3 @@ def delete(ctx, env, secret_name, no_confirm):
         sp.text = f"Deleting secret {secret_name} from {env}"
         result = proxygen_api.delete_secret(api, env, secret_name)
         sp.ok("✔")
-

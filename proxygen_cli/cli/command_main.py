@@ -34,9 +34,7 @@ def status():
     Query the proxygen service status endpoint.
     """
     status = proxygen_api.status()
-    output.print_json(
-        {"proxygen_url": str(settings.SETTINGS.endpoint_url), "response": status}
-    )
+    output.print_json({"proxygen_url": str(settings.SETTINGS.endpoint_url), "response": status})
 
 
 if __name__ == "__main__":

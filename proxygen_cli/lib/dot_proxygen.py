@@ -5,7 +5,8 @@ Should be at ~/.proxygen.
 """
 import pathlib
 
-def directory() ->pathlib.Path:
+
+def directory() -> pathlib.Path:
     """
     Return the proxygen config directory as a pathlib.Path object.
     Creates it if it does not exist.

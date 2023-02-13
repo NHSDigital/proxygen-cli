@@ -24,6 +24,7 @@ def list():
     creds = get_credentials()
     output.print_spec(json.loads(creds.json(exclude_none=True)))
 
+
 @credentials.command()
 @click.argument("key", type=CHOICE_OF_CREDENTIAL_KEYS)
 def get(key):

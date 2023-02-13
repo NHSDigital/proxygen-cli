@@ -13,9 +13,7 @@ PUBLISH_SPEC_POP_KEYS = ["x-nhsd-apim"]  # Don't publish deployment information
 
 
 @click.group()
-@click.option(
-    "--api", default=SETTINGS.api, help="Override the default API", show_default=True
-)
+@click.option("--api", default=SETTINGS.api, help="Override the default API", show_default=True)
 @click.pass_context
 def spec_cmd(ctx, api):
     ctx.ensure_object(dict)
@@ -58,16 +56,18 @@ def serve(ctx, spec_file):
     Serve API spec in <spec_file> locally on port 8008.
     """
     api = ctx.obj["api"]
-    print(f"""
+    print(
+        f"""
     Serving {spec_file} on port 8008.
     To preview go to "https://editor.swagger.io".
     Click "File -> Import URL".
     Provide the location "http://localhost:8008".
 
     Note that any edits you make here will *NOT* be propagated back to {spec_file}.
-    """)
+    """
+    )
     spec_server.serve(spec_file, pop_keys=PUBLISH_SPEC_POP_KEYS)
-    
+
 
 @spec_cmd.command()
 @click.pass_context

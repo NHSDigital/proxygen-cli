@@ -10,4 +10,3 @@ def validate_cli_version():
     current_cli_version = parse_version(proxygen_cli_version)
     if current_cli_version < required_cli_version:
         raise RuntimeError(f"This version proxygen-cli is out-of-date. Please update to {required_cli_version}")
-    

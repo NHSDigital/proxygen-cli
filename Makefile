@@ -18,3 +18,6 @@ lint: flake8 pylint mypy
 
 black-check:
 	poetry run black proxygen_cli scripts --line-length=120 --check	
+
+black:
+	poetry run black proxygen_cli scripts --line-length=120
