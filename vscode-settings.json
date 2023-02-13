@@ -1,0 +1,32 @@
+{
+    "python.envFile": "${workspaceFolder}/.env",
+    "python.analysis.typeCheckingMode": "basic",
+    "[python]": {
+      "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+      },
+      "editor.defaultFormatter": "ms-python.python"
+    },
+    "editor.formatOnSave": true,
+    "editor.renderIndentGuides": true,
+    "files.exclude": {
+      "**/*.pyc": {
+        "when": "$(basename).py"
+      },
+      "**/.DS_Store": true,
+      "**/__pycache__": true
+    },
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+    "files.trimTrailingWhitespace": true,
+    "python.formatting.blackArgs": ["--line-length", "120"],
+    "python.formatting.provider": "black",
+    "python.linting.enabled": true,
+    "python.linting.flake8Enabled": true,
+    "python.linting.flake8Args": ["--config=tox.ini"],
+    "python.linting.lintOnSave": true,
+    "python.linting.pylintEnabled": true,
+    "python.linting.pylintArgs": ["--rcfile=tox.ini"],
+    "python.sortImports.args": ["--profile", "black"]
+  }
+  

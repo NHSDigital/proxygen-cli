@@ -1,0 +1,19 @@
+#!/bin/sh
+
+RED='\033[1;31m'
+NC='\033[0m' # No Color
+
+# Dry run black to see if any formatting needs updating
+poetry run black proxygen_cli --line-length=120 --quiet --check
+
+# Auto format the files and show what has been changed
+if [ $(echo $?) != "0" ]; then
+    poetry run black --line-length=120 
+    git status
+    echo "${RED}Failed to commit changes as above files were auto-formatted by'black'.${NC}" && \
+    echo "${RED}Please check formatted files and repeat commit.${NC}"
+    exit 1
+fi
+
+# If any files were modified, stage the changes
+echo $FILES | xargs git add

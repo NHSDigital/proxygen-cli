@@ -1,0 +1,40 @@
+name: lint
+
+on:
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  build:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Python 3.8
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+
+      - name: Install dependencies
+        if: always()
+        run: python -m pip install -r .github/workflows/lint-requirements.txt
+
+      - name: Black
+        if: always()
+        run: make black-check
+
+      - name: Flake8
+        if: always()
+        run: make flake8
+
+      - name: Pylint
+        if: always()
+        run: make pylint
+
+      - name: Mypy
+        if: always()
+        run: make mypy
+
