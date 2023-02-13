@@ -1,14 +1,14 @@
 import click
 
-from proxygen_cli.lib import proxygen_api, settings, output
 from proxygen_cli.cli import (
     command_credentials,
-    command_settings,
-    command_instance,
-    command_spec,
-    command_secret,
     command_docker,
+    command_instance,
+    command_secret,
+    command_settings,
+    command_spec,
 )
+from proxygen_cli.lib import output, proxygen_api, settings
 
 
 @click.group()
@@ -29,8 +29,8 @@ def status():
     """
     Query the proxygen service status endpoint.
     """
-    status = proxygen_api.status()
-    output.print_json({"proxygen_url": str(settings.SETTINGS.endpoint_url), "response": status})
+    api_status = proxygen_api.status()
+    output.print_json({"proxygen_url": str(settings.SETTINGS.endpoint_url), "response": api_status})
 
 
 if __name__ == "__main__":

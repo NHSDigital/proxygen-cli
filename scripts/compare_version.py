@@ -52,7 +52,7 @@ Please increment the major, minor or patch as appropriate.
 
 
 if __name__ == "__main__":
-    current = sys.argv[1]
-    candidate = sys.argv[2]
+    CURRENT = sys.argv[1]
+    CANDIDATE = sys.argv[2]
 
-    main(current, candidate)
+    main(CURRENT, CANDIDATE)

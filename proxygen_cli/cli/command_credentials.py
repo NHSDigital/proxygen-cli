@@ -1,18 +1,22 @@
 import json
-import yaml
+
 import click
+import yaml
 
 from proxygen_cli.lib import output
-from proxygen_cli.lib.credentials import Credentials, get_credentials, _yaml_credentials_file_source
+from proxygen_cli.lib.credentials import (
+    Credentials,
+    _yaml_credentials_file_source,
+    get_credentials,
+)
 from proxygen_cli.lib.dot_proxygen import credentials_file
 
-CHOICE_OF_CREDENTIAL_KEYS = click.Choice(Credentials.__fields__.keys())
+CHOICE_OF_CREDENTIAL_KEYS = click.Choice(Credentials.__fields__.keys())  # type: ignore[arg-type]
 
 
 @click.group()
 def credentials():
     """Get/set credentials."""
-    pass
 
 
 @credentials.command()
@@ -43,7 +47,7 @@ def set(key, value):
     """
     current_credentials = _yaml_credentials_file_source(None)
     current_credentials[key] = value
-    with credentials_file().open("w") as f:
+    with credentials_file().open("w", encoding="utf-8") as f:
         yaml.safe_dump(current_credentials, f)
 
 
@@ -55,5 +59,5 @@ def rm(key):
     """
     current_credentials = _yaml_credentials_file_source(None)
     current_credentials.pop(key, None)
-    with credentials_file().open("w") as f:
+    with credentials_file().open("w", encoding="utf-8") as f:
         yaml.safe_dump(current_credentials, f)

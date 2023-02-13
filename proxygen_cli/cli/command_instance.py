@@ -5,8 +5,8 @@ import click
 from yaspin import yaspin
 
 from proxygen_cli.lib import output, proxygen_api, spec, version
-from proxygen_cli.lib.settings import SETTINGS
 from proxygen_cli.lib.constants import LITERAL_ENVS
+from proxygen_cli.lib.settings import SETTINGS
 
 CHOICE_OF_ENVS = click.Choice(get_args(LITERAL_ENVS))
 
@@ -66,11 +66,11 @@ def deploy(ctx, env, base_path, spec_file, no_confirm):
         if not click.confirm(f"Deploy this spec to {_url}?"):
             raise click.Abort()
 
-    with yaspin() as sp:
-        sp.text = f"Deploying {_url}"
+    with yaspin() as spin:
+        spin.text = f"Deploying {_url}"
         instance = parse.quote(base_path)
         proxygen_api.put_instance(api, env, instance, paas_open_api)
-        sp.ok("✔")
+        spin.ok("✔")
 
 
 @instance.command()
@@ -107,9 +107,9 @@ def delete(ctx, env, base_path, no_confirm):
         if not click.confirm(f"Delete the instance at {_url}?"):
             raise click.Abort()
 
-    with yaspin() as sp:
-        sp.text = f"Deleting {_url}"
+    with yaspin() as spin:
+        spin.text = f"Deleting {_url}"
         api = ctx.obj["api"]
         instance = parse.quote(base_path)
         result = proxygen_api.delete_instance(api, env, instance)
-        sp.ok("✔")
+        spin.ok("✔")

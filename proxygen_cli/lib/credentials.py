@@ -1,16 +1,11 @@
-import pathlib
 import json
-from typing import Optional
-import yaml
+import pathlib
 import sys
+from typing import Optional
 
 import click
-from pydantic import (
-    BaseSettings,
-    validator,
-    AnyHttpUrl,
-    ValidationError,
-)
+import yaml
+from pydantic import AnyHttpUrl, BaseSettings, ValidationError, validator
 
 from . import dot_proxygen
 
@@ -22,12 +17,14 @@ def _yaml_credentials_file_source(_):
 
 
 class Credentials(BaseSettings):
-    base_url: AnyHttpUrl = "https://identity.prod.api.platform.nhs.uk/auth/realms/api-producers"
+    base_url: AnyHttpUrl = AnyHttpUrl(
+        "https://identity.prod.api.platform.nhs.uk/auth/realms/api-producers", scheme="https"
+    )
     private_key_path: Optional[str] = None
     client_id: str
-    client_secret: str = None
-    username: str = None
-    password: str = None
+    client_secret: Optional[str] = None
+    username: Optional[str] = None
+    password: Optional[str] = None
 
     @validator("username", "password", "client_secret", "client_id")
     def validate_humans_users(cls, value, values):
@@ -72,7 +69,7 @@ class Credentials(BaseSettings):
             cls,
             init_settings,
             env_settings,
-            file_secret_settings,
+            _,
         ):
             return (
                 init_settings,
@@ -91,14 +88,13 @@ except ValidationError as e:
         "Warning: Credentials invalid or not configured. See `proxygen credentials`.",
         file=sys.stderr,
     )
-    details = "  " + "\n  ".join(f"{error['loc'][0]}: {error['msg']}" for error in errors)
-    print(details, file=sys.stderr)
+    DETAILS = "  " + "\n  ".join(f"{error['loc'][0]}: {error['msg']}" for error in errors)
+    print(DETAILS, file=sys.stderr)
     print("*" * 100, file=sys.stderr)
     _CREDENTIALS = None
 
 
 def get_credentials():
-    global _CREDENTIALS
     if _CREDENTIALS is None:
         raise click.UsageError("This command requires credentials which are invalid or not configured")
     return _CREDENTIALS

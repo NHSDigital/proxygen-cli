@@ -158,7 +158,7 @@ def put_secret(
     environment: LITERAL_ENVS,
     secret_name: str,
     secret_value: str,
-    _type: str = None,
+    _type: Optional[str] = None,
 ):
     params = {}
     if _type:

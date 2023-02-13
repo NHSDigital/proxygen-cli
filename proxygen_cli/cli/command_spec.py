@@ -4,8 +4,8 @@ import click
 from yaspin import yaspin
 
 from proxygen_cli.lib import output, proxygen_api, spec, spec_server
-from proxygen_cli.lib.settings import SETTINGS
 from proxygen_cli.lib.constants import LITERAL_ENVS
+from proxygen_cli.lib.settings import SETTINGS
 
 CHOICE_OF_ENVS = click.Choice(get_args(LITERAL_ENVS))
 PUBLISH_SPEC_POP_KEYS = ["x-nhsd-apim"]  # Don't publish deployment information
@@ -41,10 +41,10 @@ def publish(ctx, spec_file, no_confirm):
         if not click.confirm(f"Publish this spec for {api}?"):
             raise click.Abort()
 
-    with yaspin() as sp:
-        sp.text = f"Publishing spec {api}"
+    with yaspin() as spin:
+        spin.text = f"Publishing spec {api}"
         proxygen_api.put_spec(api, paas_open_api)
-        sp.ok("✔")
+        spin.ok("✔")
 
 
 @spec_cmd.command()
@@ -99,7 +99,7 @@ def delete(ctx, no_confirm):
         if not click.confirm(f"Delete the spec at {api}?"):
             raise click.Abort()
 
-    with yaspin() as sp:
-        sp.text = f"Deleting spec {api}"
+    with yaspin() as spin:
+        spin.text = f"Deleting spec {api}"
         result = proxygen_api.delete_spec(api)
-        sp.ok("✔")
+        spin.ok("✔")

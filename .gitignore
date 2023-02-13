@@ -4,3 +4,5 @@
 dist
 .venv/
 .python-version
+.vscode/
+.mypy_cache/

@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Optional
 import json
 import yaml
 from datetime import datetime
@@ -9,7 +9,7 @@ from tabulate import tabulate
 from proxygen_cli.lib.settings import SETTINGS
 
 
-def _format_time(obj: Dict[str, str], keys: List[str] = None):
+def _format_time(obj: Dict[str, str], keys: Optional[List[str]] = None):
     if keys is None:
         return obj
 

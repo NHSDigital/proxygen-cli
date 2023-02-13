@@ -4,8 +4,8 @@ import click
 from yaspin import yaspin
 
 from proxygen_cli.lib import output, proxygen_api, version
-from proxygen_cli.lib.settings import SETTINGS
 from proxygen_cli.lib.constants import LITERAL_ENVS
+from proxygen_cli.lib.settings import SETTINGS
 
 CHOICE_OF_ENVS = click.Choice(get_args(LITERAL_ENVS))
 
@@ -49,6 +49,7 @@ def list(ctx, env):
 @click.option("--apikey", is_flag=True, help="Tag this secret as an apikey")
 @click.pass_context
 def put(ctx, env, secret_name, secret_value, secret_file, apikey):
+    # pylint: disable=too-many-arguments
     """
     Create or overwrite a secret.
 
@@ -58,22 +59,22 @@ def put(ctx, env, secret_name, secret_value, secret_file, apikey):
         raise click.UsageError("Please specify one of --secret-value and --secret-file.")
     if secret_value is not None and secret_file is not None:
         raise click.UsageError("Please specify one of --secret-value and --secret-file, not both.")
-    elif secret_file is not None:
+    if secret_file is not None:
         try:
-            with open(secret_file) as f:
-                secret_value = f.read()
-        except FileNotFoundError:
-            raise ValueError(f"Cannot find secret file {secret_file}.")
+            with open(secret_file, "r", encoding="utf-8") as _file:
+                secret_value = _file.read()
+        except FileNotFoundError as e:
+            raise ValueError(f"Cannot find secret file {secret_file}.") from e
 
     api = ctx.obj["api"]
     _type = None
     if apikey:
         _type = "apikey"
 
-    with yaspin() as sp:
-        sp.text = f"Putting secret {secret_name} in {env}"
+    with yaspin() as spin:
+        spin.text = f"Putting secret {secret_name} in {env}"
         result = proxygen_api.put_secret(api, env, secret_name, secret_value, _type=_type)
-        sp.ok("✔")
+        spin.ok("✔")
 
     output.print_json(result)
 
@@ -109,7 +110,7 @@ def delete(ctx, env, secret_name, no_confirm):
         output.print_json(result)
         if not click.confirm(f"Delete secret {secret_name} from {env}?"):
             raise click.Abort()
-    with yaspin() as sp:
-        sp.text = f"Deleting secret {secret_name} from {env}"
+    with yaspin() as spin:
+        spin.text = f"Deleting secret {secret_name} from {env}"
         result = proxygen_api.delete_secret(api, env, secret_name)
-        sp.ok("✔")
+        spin.ok("✔")
