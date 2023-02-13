@@ -1,5 +1,7 @@
 install-hooks:
+	rm .git/hooks/*
 	cp .hooks/* .git/hooks
+	chmod +x .git/hooks/*
 
 install-editor-settings:
 	mkdir -p .vscode
