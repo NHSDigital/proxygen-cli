@@ -3,6 +3,7 @@ from unittest.mock import patch
 import pytest
 
 from proxygen_cli.lib.settings import Settings
+from proxygen_cli.test.mock_private_key import MOCK_PRIVATE_KEY
 
 
 @pytest.fixture(autouse=True, name="default_config")
@@ -15,25 +16,34 @@ def default_config_files_fixture(tmp_path):
     dot_proxygen_dir.mkdir()
     settings = dot_proxygen_dir / "settings.yaml"
     credentials = dot_proxygen_dir / "credentials.yaml"
-    credentials.touch()
+    private_key_dir = dot_proxygen_dir / "path_to"
+    private_key_dir.mkdir()
+    private_key = private_key_dir / "private_key.pem"
 
     # Add some default settings
-    default_settings = "\n".join([
-        "api: hello-world",
-        "endpoint_url: https://proxygen.prod.api.platform.nhs.uk",
-        "spec_output_format: yaml"
-    ])
+    default_settings = "\n".join(
+        [
+            "api: hello-world",
+            "endpoint_url: https://proxygen.prod.api.platform.nhs.uk",
+            "spec_output_format: yaml",
+        ]
+    )
     settings.write_text(default_settings)
 
     # Add some default credentials
-    default_credentials = "\n".join([
-        "client_id: hello-world-client",
-        "client_secret: 12345",
-        "private_key_path: private_key_path.pem",
-        "username: deathstar",
-        "password: mock-password",
-    ])
+    default_credentials = "\n".join(
+        [
+            "client_id: hello-world-client",
+            "client_secret: 12345",
+            "private_key_path: private_key_path.pem",
+            "username: deathstar",
+            "password: mock-password",
+        ]
+    )
     credentials.write_text(default_credentials)
+
+    # Add a made up private key
+    private_key.write_text(MOCK_PRIVATE_KEY)
 
     # Patch the directory function which tells the cli where to look for the config files
     with patch("proxygen_cli.lib.dot_proxygen.directory") as _dir:
@@ -42,22 +52,21 @@ def default_config_files_fixture(tmp_path):
         # Patch the settings object everywhere it's called
         mocked_settings = Settings()
         with (
-            patch("proxygen_cli.cli.command_settings.SETTINGS",  mocked_settings),
-            patch("proxygen_cli.cli.command_docker.SETTINGS",  mocked_settings),
-            patch("proxygen_cli.cli.command_instance.SETTINGS",  mocked_settings),
-            patch("proxygen_cli.cli.command_main.SETTINGS",  mocked_settings),
-            patch("proxygen_cli.cli.command_secret.SETTINGS",  mocked_settings),
-            patch("proxygen_cli.cli.command_spec.SETTINGS",  mocked_settings),
-            patch("proxygen_cli.lib.output.SETTINGS",  mocked_settings),
-            patch("proxygen_cli.lib.proxygen_api.SETTINGS",  mocked_settings),
-            patch("proxygen_cli.lib.settings.SETTINGS",  mocked_settings),
-            patch("proxygen_cli.lib.spec_server.SETTINGS",  mocked_settings),
-
+            patch("proxygen_cli.cli.command_settings.SETTINGS", mocked_settings),
+            patch("proxygen_cli.cli.command_docker.SETTINGS", mocked_settings),
+            patch("proxygen_cli.cli.command_instance.SETTINGS", mocked_settings),
+            patch("proxygen_cli.cli.command_main.SETTINGS", mocked_settings),
+            patch("proxygen_cli.cli.command_secret.SETTINGS", mocked_settings),
+            patch("proxygen_cli.cli.command_spec.SETTINGS", mocked_settings),
+            patch("proxygen_cli.lib.output.SETTINGS", mocked_settings),
+            patch("proxygen_cli.lib.proxygen_api.SETTINGS", mocked_settings),
+            patch("proxygen_cli.lib.settings.SETTINGS", mocked_settings),
+            patch("proxygen_cli.lib.spec_server.SETTINGS", mocked_settings),
         ):
             yield settings, credentials
 
 
-@ pytest.fixture(name="update_config")
+@pytest.fixture(name="update_config")
 def overwrite_default_config(default_config):
     """
     Overwrite default settings on a per test basis.
@@ -76,9 +85,9 @@ def overwrite_default_config(default_config):
 
     yield overwrite_func
 
+
 @pytest.fixture(name="mock_response")
 def mock_response_fixture():
-
     class MockResponse:
         def __init__(self, text, json_data, status_code):
             self.json_data = json_data

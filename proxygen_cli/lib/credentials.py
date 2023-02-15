@@ -37,16 +37,6 @@ class Credentials(BaseSettings):
             raise ValueError("field required")
         return value
 
-    def private_key(self):
-        """read the private key file and self.private_key_file_path."""
-        private_key_file = dot_proxygen.directory().joinpath(self.private_key_path)
-        if not private_key_file.exists():
-            raise ValueError(
-                f"Could not open private key file {private_key_file} for machine user {self.name}"
-            )
-        with private_key_file.open() as f:
-            return f.read()
-
     @validator("private_key_path")
     def validate_private_key_path(cls, private_key_path):
         """
@@ -88,7 +78,7 @@ class Credentials(BaseSettings):
 _CREDENTIALS = None
 try:
     _CREDENTIALS = Credentials()
-except ValidationError as e:
+except ValidationError as e: # pragma: no cover
 
     errors = json.loads(e.json())
     print("*" * 100, file=sys.stderr)
@@ -106,8 +96,4 @@ except ValidationError as e:
 
 def get_credentials():
     global _CREDENTIALS
-    if _CREDENTIALS is None:
-        raise click.UsageError(
-            "This command requires credentials which are invalid or not configured"
-        )
     return _CREDENTIALS

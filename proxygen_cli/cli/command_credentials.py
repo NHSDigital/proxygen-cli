@@ -42,8 +42,15 @@ def set(key, value):
     """
     current_credentials = _yaml_credentials_file_source(None)
     current_credentials[key] = value
+    try:
+        new_credentials = json.loads(Credentials(**current_credentials).json(exclude_none=True))
+    except pydantic.ValidationError as e:
+        errors = json.loads(e.json())
+        raise click.BadParameter("\n".join(error["msg"] for error in errors))
     with credentials_file().open("w") as f:
-        yaml.safe_dump(current_credentials, f)
+        yaml.safe_dump(new_credentials, f)
+
+    
 
 
 @credentials.command()
