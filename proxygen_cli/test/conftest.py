@@ -27,7 +27,11 @@ def default_config_files_fixture(tmp_path):
 
     # Add some default credentials
     default_credentials = "\n".join([
-
+        "client_id: hello-world-client",
+        "client_secret: 12345",
+        "private_key_path: private_key_path.pem",
+        "username: deathstar",
+        "password: mock-password",
     ])
     credentials.write_text(default_credentials)
 
@@ -71,3 +75,17 @@ def overwrite_default_config(default_config):
         return settings_file, credentials_file
 
     yield overwrite_func
+
+@pytest.fixture(name="mock_response")
+def mock_response_fixture():
+
+    class MockResponse:
+        def __init__(self, text, json_data, status_code):
+            self.json_data = json_data
+            self.status_code = status_code
+            self.text = text
+
+        def json(self):
+            return self.json_data
+
+    yield MockResponse

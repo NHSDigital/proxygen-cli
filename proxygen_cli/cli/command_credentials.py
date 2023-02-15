@@ -13,7 +13,6 @@ CHOICE_OF_CREDENTIAL_KEYS = click.Choice(Credentials.__fields__.keys())
 @click.group()
 def credentials():
     """Get/set credentials."""
-    pass
 
 
 @credentials.command()
