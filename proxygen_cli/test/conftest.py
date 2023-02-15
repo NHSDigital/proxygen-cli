@@ -68,4 +68,6 @@ def overwrite_default_config(default_config):
         if credentials:
             credentials_file.write_text(credentials)
 
+        return settings_file, credentials_file
+
     yield overwrite_func
