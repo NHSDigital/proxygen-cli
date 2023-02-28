@@ -1,11 +1,13 @@
 import json
-import yaml
+
 import click
 import pydantic
+import yaml
 
 from proxygen_cli.lib import output
-from proxygen_cli.lib.settings import SETTINGS, Settings, _yaml_settings_file_source
 from proxygen_cli.lib.dot_proxygen import settings_file
+from proxygen_cli.lib.settings import (SETTINGS, Settings,
+                                       _yaml_settings_file_source)
 
 CHOICE_OF_SETTINGS_KEYS = click.Choice(Settings.__fields__.keys())
 
@@ -15,14 +17,11 @@ def settings():
     """
     Get/set settings for the proxygen-cli.
     """
-    pass
+
 
 
 def _get_setting(key):
-    try:
-        return getattr(SETTINGS, key)
-    except AttributeError as e:
-        raise ValueError(f"No such setting: {key}")
+    return getattr(SETTINGS, key)
 
 
 @settings.command()
@@ -40,7 +39,7 @@ def get(key):
     """
     click.echo(_get_setting(key))
 
-    
+
 @settings.command()
 @click.argument("key", type=CHOICE_OF_SETTINGS_KEYS)
 @click.argument("value")
@@ -68,7 +67,7 @@ def rm(key):
     Delete a value from your settings.
     """
     _get_setting(key)
-    
+
     current_settings = _yaml_settings_file_source(None)
     current_settings.pop(key, None)
     with settings_file().open("w") as f:

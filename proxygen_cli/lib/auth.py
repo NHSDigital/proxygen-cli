@@ -1,10 +1,10 @@
 """Proxygen test utility functions"""
 import functools
+import hashlib
+import json
 import uuid
 from time import time
 from urllib.parse import parse_qs, urlparse
-import json
-import hashlib
 
 import jwt
 import requests
@@ -176,4 +176,3 @@ def _get_token_data_from_machine_user():
     if token_response.status_code != 200:
         raise RuntimeError(f"Token response was {token_response.status_code} expected 200")
     return token_response.json()
-

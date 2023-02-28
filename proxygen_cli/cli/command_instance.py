@@ -2,12 +2,12 @@ from typing import get_args
 from urllib import parse
 
 import click
-from yaspin import yaspin
 from tabulate import tabulate
+from yaspin import yaspin
 
 from proxygen_cli.lib import output, proxygen_api, spec, version
-from proxygen_cli.lib.settings import SETTINGS
 from proxygen_cli.lib.constants import LITERAL_ENVS
+from proxygen_cli.lib.settings import SETTINGS
 
 CHOICE_OF_ENVS = click.Choice(get_args(LITERAL_ENVS))
 
@@ -60,7 +60,7 @@ def deploy(ctx, env, base_path, spec_file, no_confirm):
     "prod", then it is deployed to
     https://api.service.nhs.uk/<BASE_PATH>.
     """
-    
+
     api = ctx.obj["api"]
     paas_open_api = spec.resolve(spec_file)
 
@@ -70,7 +70,7 @@ def deploy(ctx, env, base_path, spec_file, no_confirm):
 
     if not no_confirm:
         output.print_spec(paas_open_api)
-        if not click.confirm(f"Deploy this spec to {_url}?"):
+        if not click.confirm(f"Deploy this spec to {_url}?"): # pragma: no cover
             raise click.Abort()
 
     with yaspin() as sp:
@@ -90,7 +90,7 @@ def get(ctx, env, base_path):
     instance = parse.quote(base_path)
     result = proxygen_api.get_instance(api, env, instance)
     output.print_spec(result)
-    
+
 
 @instance.command()
 @click.argument("env", type=CHOICE_OF_ENVS)
@@ -113,7 +113,7 @@ def delete(ctx, env, base_path, no_confirm):
         output.print_spec(result)
         if not click.confirm(f"Delete the instance at {_url}?"):
             raise click.Abort()
-    
+
     with yaspin() as sp:
         sp.text = f"Deleting {_url}"
         api = ctx.obj["api"]

@@ -17,7 +17,7 @@ from proxygen_cli.cli import (
 
 @click.group()
 def main():
-    pass
+    """Main group"""
 
 
 main.add_command(command_settings.settings)
@@ -35,7 +35,7 @@ def status():
     """
     status = proxygen_api.status()
     output.print_json(
-        {"proxygen_url": str(settings.SETTINGS.endpoint_url), "response": status}
+        {"proxygen_url": str(SETTINGS.endpoint_url), "response": status}
     )
 
 
