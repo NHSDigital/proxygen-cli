@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -101,14 +101,16 @@ def mock_response_fixture():
     yield MockResponse
 
 
-@pytest.fixture(name="mock_path")
-def mock_path_fixture():
-    def _func(file_contents):
-        class MockFile:
+@pytest.fixture(name="patch_pathlib")
+def patch_pathlib_fixture():
+    """Yields a function that patches pathlib with an object that can be treated like a file"""
+
+    def patch_pathlib(file_contents):
+        class MockFileContents:
             def read(self):
                 return file_contents
 
-        class MockPath:
+        class MockFile:
             def __init__(self, *_):
                 pass
 
@@ -118,12 +120,42 @@ def mock_path_fixture():
 
             @contextmanager
             def open(_):
-                return (x for x in [MockFile()])
+                return (x for x in [MockFileContents()])
 
             @staticmethod
             def is_dir():
                 return False
 
-        return MockPath
+            def __call__(self, *_):
+                return self
 
-    yield _func
+        return patch(
+            "proxygen_cli.lib.spec.pathlib.Path",
+            MockFile("test-yaml-key: test-yaml-value"),
+        )
+
+    yield patch_pathlib
+
+
+@pytest.fixture(name="patch_request")
+def patch_request_fixture(mock_response):
+    """Yields a function that returns a patch of the proxygen cli request function"""
+
+    def patched_request_func(status, response, _type="text"):
+        response = Mock(return_value=mock_response(_type, response, status))
+        return patch("proxygen_cli.lib.proxygen_api.requests.Session.request", response)
+
+    yield patched_request_func
+
+
+@pytest.fixture(name="patch_access_token")
+def patch_access_token_fixture():
+    """Yields a function that returns a patch of the proxygen cli access_token function"""
+
+    def patched_access_token_func(return_value="12345"):
+        return patch(
+            "proxygen_cli.lib.proxygen_api.access_token",
+            Mock(return_value=return_value),
+        )
+
+    yield patched_access_token_func

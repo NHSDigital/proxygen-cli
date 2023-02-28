@@ -100,14 +100,10 @@ MOCK_INSTANCE_LIST = [
 
 
 @patch("proxygen_cli.lib.proxygen_api.status")
-def test_instance_list(_, mock_response):
+def test_instance_list(_, patch_access_token, patch_request):
     runner = CliRunner()
-    with patch("proxygen_cli.lib.proxygen_api.access_token") as _access_token:
-        _access_token.return_value = "12345"
-        with patch(
-            "proxygen_cli.lib.proxygen_api.requests.Session.request"
-        ) as _request:
-            _request.return_value = mock_response("text", MOCK_INSTANCE_LIST, 200)
+    with patch_access_token():
+        with patch_request(200, MOCK_INSTANCE_LIST):
             result = runner.invoke(cmd_instance.list, obj={"api": "mock-api"})
 
     assert result.output.strip() == "\n".join(
@@ -131,19 +127,15 @@ def test_instance_list(_, mock_response):
     )
 
 
-def test_instance_list_with_env(mock_response):
+def test_instance_list_with_env(patch_request, patch_access_token):
     env = "internal-dev"
 
     runner = CliRunner()
-    with patch("proxygen_cli.lib.proxygen_api.access_token") as _access_token:
-        _access_token.return_value = "12345"
+    with patch_access_token():
         filtered_envs = [
             e for e in MOCK_INSTANCE_LIST if e.get("environment") == "internal-dev"
         ]
-        with patch(
-            "proxygen_cli.lib.proxygen_api.requests.Session.request"
-        ) as _request:
-            _request.return_value = mock_response("text", filtered_envs, 200)
+        with patch_request(200, filtered_envs):
             result = runner.invoke(
                 cmd_instance.list, ["--env", env], obj={"api": "mock-api"}
             )
@@ -161,18 +153,16 @@ def test_instance_list_with_env(mock_response):
     )
 
 
-def test_instance_deploy_no_confirm(mock_response, mock_path):
+def test_instance_deploy_no_confirm(patch_pathlib, patch_request):
     env = "internal-dev"
 
     runner = CliRunner()
-    with patch("proxygen_cli.lib.proxygen_api.access_token") as _access_token, patch(
-        "proxygen_cli.lib.proxygen_api.requests.Session.request"
-    ) as _request, patch(
-        "proxygen_cli.lib.spec.pathlib.Path",
-        mock_path("test-yaml-key: test-yaml-value"),
+    with patch(
+        "proxygen_cli.lib.proxygen_api.access_token"
+    ) as _access_token, patch_request(200, {}), patch_pathlib(
+        "test-yaml-key: test-yaml-value"
     ):
         _access_token.return_value = "12345"
-        _request.return_value = mock_response("text", {}, 200)
         result = runner.invoke(
             cmd_instance.deploy,
             [env, "mock-api-base-path", "specification/mock-api-spec", "--no-confirm"],
@@ -185,18 +175,13 @@ def test_instance_deploy_no_confirm(mock_response, mock_path):
     )
 
 
-def test_instance_deploy_with_confirm(mock_response, mock_path):
+def test_instance_deploy_with_confirm(patch_pathlib, patch_access_token, patch_request):
     env = "internal-dev"
 
     runner = CliRunner()
-    with patch("proxygen_cli.lib.proxygen_api.access_token") as _access_token, patch(
-        "proxygen_cli.lib.proxygen_api.requests.Session.request"
-    ) as _request, patch(
-        "proxygen_cli.lib.spec.pathlib.Path",
-        mock_path("test-yaml-key: test-yaml-value"),
+    with patch_access_token(), patch_request(200, {}), patch_pathlib(
+        "test-yaml-key: test-yaml-value"
     ):
-        _access_token.return_value = "12345"
-        _request.return_value = mock_response("text", {}, 200)
         result = runner.invoke(
             cmd_instance.deploy,
             [env, "mock-api-base-path", "specification/mock-api-spec"],
@@ -206,20 +191,13 @@ def test_instance_deploy_with_confirm(mock_response, mock_path):
     assert "Aborted!" in result.output.strip()
 
 
-def test_instance_get(mock_response, mock_path):
+def test_instance_get(patch_request, patch_pathlib, patch_access_token):
     env = "internal-dev"
 
     runner = CliRunner()
-    with patch("proxygen_cli.lib.proxygen_api.access_token") as _access_token, patch(
-        "proxygen_cli.lib.proxygen_api.requests.Session.request"
-    ) as _request, patch(
-        "proxygen_cli.lib.spec.pathlib.Path",
-        mock_path("test-yaml-key: test-yaml-value"),
-    ):
-        _access_token.return_value = "12345"
-        _request.return_value = mock_response(
-            "text", "mocked-spec-yaml: mocked-spec-goes-here", 200
-        )
+    with patch_access_token(), patch_request(
+        200, "mocked-spec-yaml: mocked-spec-goes-here"
+    ), patch_pathlib("test-yaml-key: test-yaml-value"):
         result = runner.invoke(
             cmd_instance.get,
             ["internal-dev", "gp-registrations-mi-109"],
