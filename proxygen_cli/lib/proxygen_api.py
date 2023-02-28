@@ -139,7 +139,7 @@ def put_instance(
 
 # SPEC methods
 def get_spec(api: str):
-    resp = _session().get(f"/apis/{api}/spec")
+    resp = _session().get(f"/apis/{api}")
     return _resp_json(resp)
 
 

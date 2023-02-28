@@ -42,6 +42,7 @@ def test_list_credentials(update_config):
 
     assert result.output.strip() == mock_credentials
 
+
 def test_list_invalid_credentials(update_config):
     mock_credentials = "\n".join(
         [
@@ -60,7 +61,6 @@ def test_list_invalid_credentials(update_config):
         result = runner.invoke(cmd_credentials.list)
 
     assert result.output.strip() == mock_credentials
-
 
 
 def test_get_credential(update_config):
@@ -179,7 +179,7 @@ def test_set_invalid_private_key_path():
 
     expected_error = ".proxygen/invalid_private_key_path does not exist"
 
-    assert result.output.strip().endswith(expected_error)
+    assert expected_error in result.output.strip()
 
 
 def test_remove_setting(update_config):

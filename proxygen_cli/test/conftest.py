@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 from unittest.mock import patch
 
 import pytest
@@ -6,7 +7,7 @@ from proxygen_cli.lib.settings import Settings
 from proxygen_cli.test.mock_private_key import MOCK_PRIVATE_KEY
 
 
-@pytest.fixture(autouse=True, name="default_config")
+@pytest.fixture(name="default_config")
 def default_config_files_fixture(tmp_path):
     # tmp_path fixture creates a new directory in tmp/
     # this is done for every test as it's inexpensive and allows test independence
@@ -98,3 +99,31 @@ def mock_response_fixture():
             return self.json_data
 
     yield MockResponse
+
+
+@pytest.fixture(name="mock_path")
+def mock_path_fixture():
+    def _func(file_contents):
+        class MockFile:
+            def read(self):
+                return file_contents
+
+        class MockPath:
+            def __init__(self, *_):
+                pass
+
+            @staticmethod
+            def exists():
+                return True
+
+            @contextmanager
+            def open(_):
+                return (x for x in [MockFile()])
+
+            @staticmethod
+            def is_dir():
+                return False
+
+        return MockPath
+
+    yield _func

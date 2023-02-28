@@ -37,6 +37,16 @@ class Credentials(BaseSettings):
             raise ValueError("field required")
         return value
 
+    def private_key(self):
+        """read the private key file and self.private_key_file_path."""
+        private_key_file = dot_proxygen.directory().joinpath(self.private_key_path)
+        if not private_key_file.exists():
+            raise ValueError(
+                f"Could not open private key file {private_key_file} for machine user {self.name}"
+            )
+        with private_key_file.open() as f:
+            return f.read()
+
     @validator("private_key_path")
     def validate_private_key_path(cls, private_key_path):
         """
