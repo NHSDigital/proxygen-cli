@@ -129,15 +129,4 @@ def test_remove_invalid_setting(patch_config):
         runner = CliRunner()
         result = runner.invoke(cmd_credentials.rm, ["invalid"])
 
-        expected_error = "\n".join(
-            [
-                "Usage: rm [OPTIONS]",
-                "          {base_url|private_key_path|client_id|client_secret|username|password}",
-                "Try 'rm --help' for help.",
-                "",
-                "Error: Invalid value for '{base_url|private_key_path|client_id|client_secret|username|password}': "
-                "'invalid' is not one of 'base_url', 'private_key_path', 'client_id', 'client_secret', 'username', 'password'.",
-            ]
-        )
-
         assert "'invalid' is not one of 'base_url'" in result.output.strip()
