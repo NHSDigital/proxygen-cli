@@ -5,8 +5,8 @@ import click
 from yaspin import yaspin
 
 from proxygen_cli.lib import output, proxygen_api, spec, spec_server
-from proxygen_cli.lib.settings import SETTINGS
 from proxygen_cli.lib.constants import LITERAL_ENVS
+from proxygen_cli.lib.settings import SETTINGS
 
 CHOICE_OF_ENVS = click.Choice(get_args(LITERAL_ENVS))
 PUBLISH_SPEC_POP_KEYS = ["x-nhsd-apim"]  # Don't publish deployment information
@@ -67,7 +67,7 @@ def serve(ctx, spec_file):
     Note that any edits you make here will *NOT* be propagated back to {spec_file}.
     """)
     spec_server.serve(spec_file, pop_keys=PUBLISH_SPEC_POP_KEYS)
-    
+
 
 @spec_cmd.command()
 @click.pass_context

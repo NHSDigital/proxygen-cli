@@ -88,7 +88,7 @@ class Credentials(BaseSettings):
 _CREDENTIALS = None
 try:
     _CREDENTIALS = Credentials()
-except ValidationError as e:
+except ValidationError as e: # pragma: no cover
 
     errors = json.loads(e.json())
     print("*" * 100, file=sys.stderr)
@@ -106,8 +106,4 @@ except ValidationError as e:
 
 def get_credentials():
     global _CREDENTIALS
-    if _CREDENTIALS is None:
-        raise click.UsageError(
-            "This command requires credentials which are invalid or not configured"
-        )
     return _CREDENTIALS
