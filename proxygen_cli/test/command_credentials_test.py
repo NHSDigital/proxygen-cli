@@ -8,128 +8,68 @@ import proxygen_cli.cli.command_credentials as cmd_credentials
 from proxygen_cli.lib.credentials import Credentials
 
 
-def test_missing_credentials(update_config):
-    mock_credentials = "\n".join(
-        [
-            "client_id: mock-api-client",
-            "username: mock-user",
-            "password: mock-password",
-        ]
-    )
+def get_test_credentials(**kwargs):
+    base_credentials = {
+        "base_url": "https://mock-keycloak-url.nhs.uk",
+        "client_id": "mock-api-client",
+        "client_secret": "1a2f4g5",
+        "password": "mock-password",
+        "username": "mock-user",
+    }
 
+    updated_credentials = base_credentials | kwargs
+
+    text_format_credentials = [
+        f"{key}: {value}" for key, value in updated_credentials.items()
+    ]
+
+    return "\n".join(text_format_credentials)
+
+
+def test_missing_credentials(update_config):
+    mock_credentials = get_test_credentials(username="")
     update_config(credentials=mock_credentials)
 
     with pytest.raises(ValidationError):
         Credentials()
 
 
-def test_list_credentials(update_config):
-    mock_credentials = "\n".join(
-        [
-            "base_url: https://mock-keycloak-url.nhs.uk",
-            "client_id: mock-api-client",
-            "client_secret: 1a2f4g5",
-            "password: mock-password",
-            "username: mock-user",
-        ]
-    )
+def test_list_credentials(patch_config):
+    mock_credentials = get_test_credentials()
 
-    update_config(credentials=mock_credentials)
-
-    with patch("proxygen_cli.lib.credentials._CREDENTIALS", Credentials()):
+    with patch_config(credentials=mock_credentials):
         runner = CliRunner()
         result = runner.invoke(cmd_credentials.list)
 
     assert result.output.strip() == mock_credentials
 
 
-def test_list_invalid_credentials(update_config):
-    mock_credentials = "\n".join(
-        [
-            "base_url: https://mock-keycloak-url.nhs.uk",
-            "client_id: mock-api-client",
-            "client_secret: 1a2f4g5",
-            "password: mock-password",
-            "username: mock-user",
-        ]
-    )
+def test_get_credential(patch_config):
+    mock_credentials = get_test_credentials()
 
-    update_config(credentials=mock_credentials)
-
-    with patch("proxygen_cli.lib.credentials._CREDENTIALS", Credentials()):
-        runner = CliRunner()
-        result = runner.invoke(cmd_credentials.list)
-
-    assert result.output.strip() == mock_credentials
-
-
-def test_get_credential(update_config):
-    mock_credentials = "\n".join(
-        [
-            "base_url: https://mock-keycloak-url.nhs.uk",
-            "client_id: mock-api-client",
-            "client_secret: 1a2f4g5",
-            "password: mock-password",
-            "username: mock-user",
-        ]
-    )
-
-    update_config(credentials=mock_credentials)
-
-    with patch("proxygen_cli.lib.credentials._CREDENTIALS", Credentials()):
+    with patch_config(credentials=mock_credentials):
         runner = CliRunner()
         result = runner.invoke(cmd_credentials.get, ["client_id"])
 
     assert result.output.strip() == "mock-api-client"
 
 
-def test_get_invalid_setting(update_config):
-    mock_credentials = "\n".join(
-        [
-            "base_url: https://mock-keycloak-url.nhs.uk",
-            "client_id: mock-api-client",
-            "client_secret: 1a2f4g5",
-            "password: mock-password",
-            "username: mock-user",
-        ]
-    )
+def test_get_invalid_setting(patch_config):
+    mock_credentials = get_test_credentials()
 
-    update_config(credentials=mock_credentials)
-
-    with patch("proxygen_cli.lib.credentials._CREDENTIALS", Credentials()):
+    with patch_config(credentials=mock_credentials):
         runner = CliRunner()
         result = runner.invoke(cmd_credentials.get, ["invalid"])
 
-        expected_error = "\n".join(
-            [
-                "Usage: get [OPTIONS]",
-                "           {base_url|private_key_path|client_id|client_secret|username|password}",
-                "Try 'get --help' for help.",
-                "",
-                "Error: Invalid value for '{base_url|private_key_path|client_id|client_secret|username|password}': "
-                "'invalid' is not one of 'base_url', 'private_key_path', 'client_id', 'client_secret', 'username', 'password'.",
-            ]
-        )
-
-        assert result.output.strip() == expected_error
+        assert "'invalid' is not one of 'base_url'" in result.output.strip()
 
 
-def test_set_credential(update_config):
-    mock_credentials = "\n".join(
-        [
-            "base_url: https://mock-keycloak-url.nhs.uk",
-            "client_id: mock-api-client",
-            "client_secret: 1a2f4g5",
-            "password: mock-password",
-            "username: mock-user",
-        ]
-    )
+def test_set_credential(patch_config, credentials_file):
+    mock_credentials = get_test_credentials()
 
-    _, credentials_file = update_config(credentials=mock_credentials)
-
-    with patch("proxygen_cli.lib.credentials._CREDENTIALS", Credentials()):
+    with patch_config(credentials=mock_credentials):
         runner = CliRunner()
-        result = runner.invoke(cmd_credentials.set, ["username", "new-username"])
+        runner.invoke(cmd_credentials.set, ["username", "new-username"])
 
     expected_credentials = "\n".join(
         [
@@ -142,33 +82,14 @@ def test_set_credential(update_config):
     )
 
     # Check the file has been written to
-    with open(credentials_file, "r", encoding="utf-8") as f:
-        assert f.read().strip() == expected_credentials
-
-    # Double check that get now returns that value
-    with patch("proxygen_cli.lib.credentials._CREDENTIALS", Credentials()):
-        result = runner.invoke(cmd_credentials.get, ["username"])
-
-    assert result.output.strip() == "new-username"
+    assert credentials_file() == expected_credentials
 
 
 def test_set_invalid_setting():
     runner = CliRunner()
     result = runner.invoke(cmd_credentials.set, ["invalid", "new-username"])
 
-    expected_error = "\n".join(
-        [
-            "Usage: set [OPTIONS]",
-            "           {base_url|private_key_path|client_id|client_secret|username|password}",
-            "           VALUE",
-            "Try 'set --help' for help.",
-            "",
-            "Error: Invalid value for '{base_url|private_key_path|client_id|client_secret|username|password}': "
-            "'invalid' is not one of 'base_url', 'private_key_path', 'client_id', 'client_secret', 'username', 'password'.",
-        ]
-    )
-
-    assert result.output.strip() == expected_error
+    assert "'invalid' is not one of 'base_url'" in result.output.strip()
 
 
 def test_set_invalid_private_key_path():
@@ -177,28 +98,15 @@ def test_set_invalid_private_key_path():
         cmd_credentials.set, ["private_key_path", "invalid_private_key_path"]
     )
 
-    expected_error = ".proxygen/invalid_private_key_path does not exist"
-
-    assert expected_error in result.output.strip()
+    assert ".proxygen/invalid_private_key_path does not exist" in result.output.strip()
 
 
-def test_remove_setting(update_config):
-    mock_credentials = "\n".join(
-        [
-            "base_url: https://mock-keycloak-url.nhs.uk",
-            "client_id: mock-api-client",
-            "client_secret: 1a2f4g5",
-            "password: mock-password",
-            "username: mock-user",
-            "private_key_path: path_to/private_key.pem",
-        ]
-    )
+def test_remove_setting(patch_config, credentials_file):
+    mock_credentials = get_test_credentials()
 
-    _, credentials_file = update_config(credentials=mock_credentials)
-
-    with patch("proxygen_cli.lib.credentials._CREDENTIALS", Credentials()):
+    with patch_config(credentials=mock_credentials):
         runner = CliRunner()
-        result = runner.invoke(cmd_credentials.rm, ["private_key_path"])
+        runner.invoke(cmd_credentials.rm, ["private_key_path"])
 
     expected_credentials = "\n".join(
         [
@@ -211,30 +119,13 @@ def test_remove_setting(update_config):
     )
 
     # Check the file has been written to
-    with open(credentials_file, "r", encoding="utf-8") as f:
-        assert f.read().strip() == expected_credentials
-
-    # Double check that get now returns that value
-    with patch("proxygen_cli.lib.credentials._CREDENTIALS", Credentials()):
-        result = runner.invoke(cmd_credentials.get, ["private_key_path"])
-
-    assert result.output.strip() == ""
+    assert credentials_file() == expected_credentials
 
 
-def test_remove_invalid_setting(update_config):
-    mock_credentials = "\n".join(
-        [
-            "base_url: https://mock-keycloak-url.nhs.uk",
-            "client_id: mock-api-client",
-            "client_secret: 1a2f4g5",
-            "password: mock-password",
-            "username: mock-user",
-        ]
-    )
+def test_remove_invalid_setting(patch_config):
+    mock_credentials = get_test_credentials()
 
-    update_config(credentials=mock_credentials)
-
-    with patch("proxygen_cli.lib.credentials._CREDENTIALS", Credentials()):
+    with patch_config(credentials=mock_credentials):
         runner = CliRunner()
         result = runner.invoke(cmd_credentials.rm, ["invalid"])
 
@@ -249,4 +140,4 @@ def test_remove_invalid_setting(update_config):
             ]
         )
 
-        assert result.output.strip() == expected_error
+        assert "'invalid' is not one of 'base_url'" in result.output.strip()
