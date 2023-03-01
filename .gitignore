@@ -2,3 +2,5 @@
 .direnv
 **/__pycache__
 dist
+.python-version
+.venv/
