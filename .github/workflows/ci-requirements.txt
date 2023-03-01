@@ -1,1 +1,2 @@
+proxygen-cli >= ^2.0.7
 pytest >= ^7.2.1
