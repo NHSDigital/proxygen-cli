@@ -75,8 +75,8 @@ def get(ctx):
     """
     Get the API published spec.
     """
-    #api = ctx.obj["api"]
-    result = proxygen_api.get_spec("hello-world")
+    api = ctx.obj["api"]
+    result = proxygen_api.get_spec(api)
     output.print_spec(result)
 
 

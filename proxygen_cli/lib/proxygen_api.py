@@ -1,16 +1,16 @@
-from typing import Any, Dict, Optional, Literal
-from urllib.parse import urlparse, urljoin
 import json
-
-import requests
-import click
 import platform
+from typing import Any, Dict, Literal, Optional
+from urllib.parse import urljoin, urlparse
 
-from proxygen_cli.lib.settings import SETTINGS
-from proxygen_cli.lib.auth import access_token
+import click
+import requests
+
 from proxygen_cli import __version__ as proxygen_cli_version
 from proxygen_cli import _package_name as proxygen_package_name
+from proxygen_cli.lib.auth import access_token
 from proxygen_cli.lib.constants import LITERAL_ENVS
+from proxygen_cli.lib.settings import SETTINGS
 
 
 class ProxygenSession(requests.Session):
@@ -139,7 +139,7 @@ def put_instance(
 
 # SPEC methods
 def get_spec(api: str):
-    resp = _session().get(f"/apis/{api}")
+    resp = _session().get(f"/apis/{api}/spec")
     return _resp_json(resp)
 
 
