@@ -65,6 +65,11 @@ def test_get_invalid_setting(patch_config):
 
 @patch.object(Credentials, '_validate_private_key_path')
 def test_private_key_id_missing(patch_config):
+    """
+    Ensure that if the private_key_path is set, then we validate key_id.
+    We mock out the file path validation using an extra patch as we're already mocking part of Credentials 
+    with the patch_config mark.
+    """
     mock_credentials = get_test_credentials()
 
     with patch_config(credentials=mock_credentials):
@@ -103,14 +108,6 @@ def test_set_invalid_setting():
 
 
 def test_set_invalid_private_key_path():
-    runner = CliRunner()
-    result = runner.invoke(
-        cmd_credentials.set, ["private_key_path", "invalid_private_key_path"]
-    )
-
-    assert ".proxygen/invalid_private_key_path does not exist" in result.output.strip()
-
-def test_set_invalid_key_id():
     runner = CliRunner()
     result = runner.invoke(
         cmd_credentials.set, ["private_key_path", "invalid_private_key_path"]
