@@ -26,7 +26,7 @@ class Credentials(BaseSettings):
         "https://identity.prod.api.platform.nhs.uk/realms/api-producers"
     )
     private_key_path: Optional[str] = None
-    machine_key_id: Optional[str] = None
+    key_id: Optional[str] = None
     client_id: str
     client_secret: str = None
     username: str = None
@@ -48,7 +48,7 @@ class Credentials(BaseSettings):
         with private_key_file.open() as f:
             return f.read()
         
-    @validator("machine_key_id")
+    @validator("key_id")
     def validate_kid(cls, kid, values):
         """
         If authenticating using a machine (with an associated jwks configured in Keycloak) key, then the key id is required 

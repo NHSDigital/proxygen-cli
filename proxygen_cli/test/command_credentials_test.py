@@ -64,19 +64,14 @@ def test_get_invalid_setting(patch_config):
         assert "'invalid' is not one of 'base_url'" in result.output.strip()
 
 @patch.object(Credentials, '_validate_private_key_path')
-def test_private_key_id_missing(mocked_validator):
+def test_private_key_id_missing(patch_config):
+    mock_credentials = get_test_credentials()
 
-    mocked_validator.return_value = "TEST"
+    with patch_config(credentials=mock_credentials):
+        runner = CliRunner()
+        result = runner.invoke(cmd_credentials.set, ["private_key_path", "not_a_valid_file"])
 
-    with pytest.raises(ValidationError) as ve:
-        
-        creds = Credentials(private_key_path="not_a_real_file", client_id="Walter")
-        creds.machine_key_id
-        p = "f"
-
-    validation_errors = []
-        
-    assert(ve.value.errors() == [{'loc': ('machine_key_id',), 'msg': 'Private key specified with no associated Key ID (KID)', 'type': 'value_error'}])
+        assert "Private key specified with no associated Key ID" in result.output.strip()
     
 
 def test_set_credential(patch_config, credentials_file):
@@ -108,6 +103,14 @@ def test_set_invalid_setting():
 
 
 def test_set_invalid_private_key_path():
+    runner = CliRunner()
+    result = runner.invoke(
+        cmd_credentials.set, ["private_key_path", "invalid_private_key_path"]
+    )
+
+    assert ".proxygen/invalid_private_key_path does not exist" in result.output.strip()
+
+def test_set_invalid_key_id():
     runner = CliRunner()
     result = runner.invoke(
         cmd_credentials.set, ["private_key_path", "invalid_private_key_path"]
