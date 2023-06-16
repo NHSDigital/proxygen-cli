@@ -26,6 +26,7 @@ class Credentials(BaseSettings):
         "https://identity.prod.api.platform.nhs.uk/realms/api-producers"
     )
     private_key_path: Optional[str] = None
+    key_id: Optional[str] = None
     client_id: str
     client_secret: str = None
     username: str = None
@@ -46,12 +47,29 @@ class Credentials(BaseSettings):
             )
         with private_key_file.open() as f:
             return f.read()
+        
+    @validator("key_id")
+    def validate_kid(cls, kid, values):
+        """
+        If authenticating using a machine (with an associated jwks configured in Keycloak) key, then the key id is required 
+        for newer versions of Keycloak.
+        """
+        if values.get("private_key_path") and not kid:
+            raise ValueError("Private key specified with no associated Key ID (KID)")
+        return kid
 
     @validator("private_key_path")
     def validate_private_key_path(cls, private_key_path):
         """
         Pydantic only allows relative to cwd with FilePath.
         So take string.
+        """
+        return cls._validate_private_key_path(private_key_path)
+    
+    @staticmethod
+    def _validate_private_key_path(private_key_path):
+        """
+        Patchable version of the private key path validator logic.
         """
         if not private_key_path:
             return

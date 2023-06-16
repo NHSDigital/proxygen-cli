@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "proxygen-cli"
-version = "2.0.12"
+version = "2.0.13"
 description = "CLI for interacting with NHSD APIM's proxygen service"
 authors = ["Ben Strutt <ben.strutt1@nhs.net>"]
 readme = "README.md"
@@ -11,7 +11,7 @@ repository = "https://github.com/NHSDigital/proxygen-cli"
 proxygen = 'proxygen_cli.cli.command_main:main'
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 pydantic = "^1.9.1"
 click = "^8.1.3"
 pyjwt = "^2.3.0"
