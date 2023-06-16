@@ -63,6 +63,21 @@ def test_get_invalid_setting(patch_config):
 
         assert "'invalid' is not one of 'base_url'" in result.output.strip()
 
+@patch.object(Credentials, '_validate_private_key_path')
+def test_private_key_id_missing(mocked_validator):
+
+    mocked_validator.return_value = "TEST"
+
+    with pytest.raises(ValidationError) as ve:
+        
+        creds = Credentials(private_key_path="not_a_real_file", client_id="Walter")
+        creds.machine_key_id
+        p = "f"
+
+    validation_errors = []
+        
+    assert(ve.value.errors() == [{'loc': ('machine_key_id',), 'msg': 'Private key specified with no associated Key ID (KID)', 'type': 'value_error'}])
+    
 
 def test_set_credential(patch_config, credentials_file):
     mock_credentials = get_test_credentials()
