@@ -164,7 +164,10 @@ def _get_token_data_from_machine_user():
         "exp": int(time()) + 300,  # 5mins in the future
     }
 
-    client_assertion = jwt.encode(claims, private_key, algorithm="RS512")
+    additional_jwt_headers = {
+        'kid': CREDENTIALS.key_id
+    }
+    client_assertion = jwt.encode(claims, private_key, algorithm="RS512", headers=additional_jwt_headers)
     token_response = requests.post(
         token_endpoint,
         data={
