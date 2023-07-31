@@ -52,6 +52,7 @@ def set(key, value):
 
 
 
+
 @credentials.command()
 @click.argument("key", type=CHOICE_OF_CREDENTIAL_KEYS)
 def rm(key):
