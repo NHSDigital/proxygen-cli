@@ -157,15 +157,15 @@ def patch_request_fixture(mock_response):
 
     yield patched_request_func
 
-@pytest.fixture(name="patch_proxygen_session")
-def patch_proxygen_session_fixture():
-    """Yields a function that returns a patch of the proxygen session object"""
 
-    def patched_proxygen_session_func():
-        return patch("proxygen_cli.lib.proxygen_api.ProxygenSession")
+@pytest.fixture(name="patch_click_confirm")
+def patch_click_confirm_fixture():
+    """Mocks out the click.confirm() method to always return True"""
 
-    yield patched_proxygen_session_func
+    def patched_click_confirm_func():
+        return patch("click.confirm", return_value=True)
 
+    yield patched_click_confirm_func
 
 @pytest.fixture(name="patch_access_token")
 def patch_access_token_fixture():

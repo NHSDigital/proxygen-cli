@@ -143,8 +143,8 @@ def get_spec(api: str, uat: bool = False):
     return _resp_json(resp)
 
 
-def delete_spec(api: str):
-    resp = _session().delete(f"/apis/{api}/spec")
+def delete_spec(api: str, uat: bool = False):
+    resp = _session().delete(f"/apis/{api}/spec{'/uat' if uat else ''}")
     return _resp_json(resp)
 
 

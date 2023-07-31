@@ -91,14 +91,17 @@ def get(ctx, uat):
     show_default=True,
     help="Do not prompt for confirmation.",
 )
+@click.option(
+    "--uat", default=False, help="Spec for UAT environment", is_flag=True
+)
 @click.pass_context
-def delete(ctx, no_confirm):
+def delete(ctx, no_confirm, uat):
     """
     Delete the published spec.
     """
     api = ctx.obj["api"]
     if not no_confirm:
-        result = proxygen_api.get_spec(api)
+        result = proxygen_api.get_spec(api, uat)
         if not result:
             raise click.ClickException(f"No such spec under {api}")
         output.print_spec(result)
@@ -107,5 +110,5 @@ def delete(ctx, no_confirm):
 
     with yaspin() as sp:
         sp.text = f"Deleting spec {api}"
-        result = proxygen_api.delete_spec(api)
+        result = proxygen_api.delete_spec(api, uat)
         sp.ok("✔")
