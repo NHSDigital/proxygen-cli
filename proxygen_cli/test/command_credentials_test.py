@@ -63,21 +63,28 @@ def test_get_invalid_setting(patch_config):
 
         assert "'invalid' is not one of 'base_url'" in result.output.strip()
 
-@patch.object(Credentials, '_validate_private_key_path')
+
 def test_private_key_id_missing(patch_config):
     """
     Ensure that if the private_key_path is set, then we validate key_id.
-    We mock out the file path validation using an extra patch as we're already mocking part of Credentials 
-    with the patch_config mark.
+    We mock out the file path validation using an extra patch as we're already
+    mocking part of Credentials with the patch_config mark.
     """
     mock_credentials = get_test_credentials()
 
-    with patch_config(credentials=mock_credentials):
+    with patch_config(credentials=mock_credentials),\
+            patch(("proxygen_cli.lib.credentials.Credentials."
+                   "_validate_private_key_path")) as mock_creds:
+        mock_creds.return_value = True
         runner = CliRunner()
-        result = runner.invoke(cmd_credentials.set, ["private_key_path", "not_a_valid_file"])
+        result = runner.invoke(
+            cmd_credentials.set,
+            ["private_key_path", "not_a_valid_file"]
+        )
 
-        assert "Private key specified with no associated Key ID" in result.output.strip()
-    
+        assert "Private key specified with no associated Key ID" in \
+            result.output.strip()
+
 
 def test_set_credential(patch_config, credentials_file):
     mock_credentials = get_test_credentials()
