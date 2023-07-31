@@ -148,9 +148,9 @@ def delete_spec(api: str, uat: bool = False):
     return _resp_json(resp)
 
 
-def put_spec(api: str, paas_open_api: Dict[str, Any]):
+def put_spec(api: str, paas_open_api: Dict[str, Any], uat: bool = False):
     resp = _session().put(
-        f"/apis/{api}/spec",
+        f"/apis/{api}/spec{'/uat' if uat else ''}",
         data=json.dumps(paas_open_api, default=str),
         headers={"Content-Type": "application/json"},
     )

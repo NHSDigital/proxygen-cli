@@ -15,14 +15,10 @@ PUBLISH_SPEC_POP_KEYS = ["x-nhsd-apim"]  # Don't publish deployment information
 @click.option(
     "--api", default=SETTINGS.api, help="Override the default API", show_default=True
 )
-@click.option(
-    "--uat", default=False, help="Spec for UAT environment"
-)
 @click.pass_context
-def spec_cmd(ctx, api, uat):
+def spec_cmd(ctx, api):
     ctx.ensure_object(dict)
     ctx.obj["api"] = api
-    ctx.obj["uat"] = bool(uat)
 
 
 @spec_cmd.command()
@@ -33,8 +29,11 @@ def spec_cmd(ctx, api, uat):
     show_default=True,
     help="Do not prompt for confirmation.",
 )
+@click.option(
+    "--uat", default=False, help="Spec for UAT environment", is_flag=True
+)
 @click.pass_context
-def publish(ctx, spec_file, no_confirm):
+def publish(ctx, spec_file, no_confirm, uat):
     """
     Publish <SPEC_FILE>.
     """
@@ -49,7 +48,7 @@ def publish(ctx, spec_file, no_confirm):
 
     with yaspin() as sp:
         sp.text = f"Publishing spec {api}"
-        proxygen_api.put_spec(api, paas_open_api)
+        proxygen_api.put_spec(api, paas_open_api, uat)
         sp.ok("✔")
 
 
