@@ -138,8 +138,8 @@ def put_instance(
 
 
 # SPEC methods
-def get_spec(api: str):
-    resp = _session().get(f"/apis/{api}/spec")
+def get_spec(api: str, uat: bool = False):
+    resp = _session().get(f"/apis/{api}/spec{'/uat' if uat else ''}")
     return _resp_json(resp)
 
 

@@ -157,6 +157,15 @@ def patch_request_fixture(mock_response):
 
     yield patched_request_func
 
+@pytest.fixture(name="patch_proxygen_session")
+def patch_proxygen_session_fixture():
+    """Yields a function that returns a patch of the proxygen session object"""
+
+    def patched_proxygen_session_func():
+        return patch("proxygen_cli.lib.proxygen_api.ProxygenSession")
+
+    yield patched_proxygen_session_func
+
 
 @pytest.fixture(name="patch_access_token")
 def patch_access_token_fixture():

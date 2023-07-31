@@ -1,4 +1,3 @@
-from http import server
 from typing import get_args
 
 import click
@@ -16,10 +15,14 @@ PUBLISH_SPEC_POP_KEYS = ["x-nhsd-apim"]  # Don't publish deployment information
 @click.option(
     "--api", default=SETTINGS.api, help="Override the default API", show_default=True
 )
+@click.option(
+    "--uat", default=False, help="Spec for UAT environment"
+)
 @click.pass_context
-def spec_cmd(ctx, api):
+def spec_cmd(ctx, api, uat):
     ctx.ensure_object(dict)
     ctx.obj["api"] = api
+    ctx.obj["uat"] = bool(uat)
 
 
 @spec_cmd.command()
@@ -50,14 +53,12 @@ def publish(ctx, spec_file, no_confirm):
         sp.ok("✔")
 
 
-@spec_cmd.command()
+@click.command()
 @click.argument("spec_file")
-@click.pass_context
-def serve(ctx, spec_file):
+def serve(spec_file):
     """
     Serve API spec in <spec_file> locally on port 8008.
     """
-    api = ctx.obj["api"]
     print(f"""
     Serving {spec_file} on port 8008.
     To preview go to "https://editor.swagger.io".
@@ -70,13 +71,16 @@ def serve(ctx, spec_file):
 
 
 @spec_cmd.command()
+@click.option(
+    "--uat", default=False, help="Spec for UAT environment", is_flag=True
+)
 @click.pass_context
-def get(ctx):
+def get(ctx, uat):
     """
     Get the API published spec.
     """
     api = ctx.obj["api"]
-    result = proxygen_api.get_spec(api)
+    result = proxygen_api.get_spec(api, uat)
     output.print_spec(result)
 
 

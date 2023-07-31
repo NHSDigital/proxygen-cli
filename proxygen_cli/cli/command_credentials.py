@@ -50,7 +50,6 @@ def set(key, value):
     with credentials_file().open("w") as f:
         yaml.safe_dump(new_credentials, f)
 
-    
 
 
 @credentials.command()
