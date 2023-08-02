@@ -138,19 +138,19 @@ def put_instance(
 
 
 # SPEC methods
-def get_spec(api: str):
-    resp = _session().get(f"/apis/{api}/spec")
+def get_spec(api: str, uat: bool = False):
+    resp = _session().get(f"/apis/{api}/spec{'/uat' if uat else ''}")
     return _resp_json(resp)
 
 
-def delete_spec(api: str):
-    resp = _session().delete(f"/apis/{api}/spec")
+def delete_spec(api: str, uat: bool = False):
+    resp = _session().delete(f"/apis/{api}/spec{'/uat' if uat else ''}")
     return _resp_json(resp)
 
 
-def put_spec(api: str, paas_open_api: Dict[str, Any]):
+def put_spec(api: str, paas_open_api: Dict[str, Any], uat: bool = False):
     resp = _session().put(
-        f"/apis/{api}/spec",
+        f"/apis/{api}/spec{'/uat' if uat else ''}",
         data=json.dumps(paas_open_api, default=str),
         headers={"Content-Type": "application/json"},
     )

@@ -158,6 +158,27 @@ def patch_request_fixture(mock_response):
     yield patched_request_func
 
 
+@pytest.fixture(name="patch_spec_resolver")
+def patch_spec_resolver_fixture():
+    """
+    Yields a function that returns a patch of the proxygen spec resolver which
+    skips validation and returns an empty spec dictionary.
+    """
+
+    def patched_spec_resolver_func():
+        return patch("proxygen_cli.lib.spec.resolve", Mock(return_value={}))
+
+    yield patched_spec_resolver_func
+
+@pytest.fixture(name="patch_click_confirm")
+def patch_click_confirm_fixture():
+    """Mocks out the click.confirm() method to always return True"""
+
+    def patched_click_confirm_func():
+        return patch("click.confirm", return_value=True)
+
+    yield patched_click_confirm_func
+
 @pytest.fixture(name="patch_access_token")
 def patch_access_token_fixture():
     """Yields a function that returns a patch of the proxygen cli access_token function"""

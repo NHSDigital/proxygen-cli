@@ -1,4 +1,3 @@
-from http import server
 from typing import get_args
 
 import click
@@ -30,8 +29,11 @@ def spec_cmd(ctx, api):
     show_default=True,
     help="Do not prompt for confirmation.",
 )
+@click.option(
+    "--uat", default=False, help="Spec for UAT environment", is_flag=True
+)
 @click.pass_context
-def publish(ctx, spec_file, no_confirm):
+def publish(ctx, spec_file, no_confirm, uat):
     """
     Publish <SPEC_FILE>.
     """
@@ -46,18 +48,16 @@ def publish(ctx, spec_file, no_confirm):
 
     with yaspin() as sp:
         sp.text = f"Publishing spec {api}"
-        proxygen_api.put_spec(api, paas_open_api)
+        proxygen_api.put_spec(api, paas_open_api, uat)
         sp.ok("✔")
 
 
-@spec_cmd.command()
+@click.command()
 @click.argument("spec_file")
-@click.pass_context
-def serve(ctx, spec_file):
+def serve(spec_file):
     """
     Serve API spec in <spec_file> locally on port 8008.
     """
-    api = ctx.obj["api"]
     print(f"""
     Serving {spec_file} on port 8008.
     To preview go to "https://editor.swagger.io".
@@ -70,13 +70,16 @@ def serve(ctx, spec_file):
 
 
 @spec_cmd.command()
+@click.option(
+    "--uat", default=False, help="Spec for UAT environment", is_flag=True
+)
 @click.pass_context
-def get(ctx):
+def get(ctx, uat):
     """
     Get the API published spec.
     """
     api = ctx.obj["api"]
-    result = proxygen_api.get_spec(api)
+    result = proxygen_api.get_spec(api, uat)
     output.print_spec(result)
 
 
@@ -87,14 +90,17 @@ def get(ctx):
     show_default=True,
     help="Do not prompt for confirmation.",
 )
+@click.option(
+    "--uat", default=False, help="Spec for UAT environment", is_flag=True
+)
 @click.pass_context
-def delete(ctx, no_confirm):
+def delete(ctx, no_confirm, uat):
     """
     Delete the published spec.
     """
     api = ctx.obj["api"]
     if not no_confirm:
-        result = proxygen_api.get_spec(api)
+        result = proxygen_api.get_spec(api, uat)
         if not result:
             raise click.ClickException(f"No such spec under {api}")
         output.print_spec(result)
@@ -103,5 +109,5 @@ def delete(ctx, no_confirm):
 
     with yaspin() as sp:
         sp.text = f"Deleting spec {api}"
-        result = proxygen_api.delete_spec(api)
+        result = proxygen_api.delete_spec(api, uat)
         sp.ok("✔")

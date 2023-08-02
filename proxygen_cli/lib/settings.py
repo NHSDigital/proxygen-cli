@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     api: str = None
 
     class Config:
-        env_prefix = "PROXYGEN_CREDENTIALS_"
+        env_prefix: Literal["PROXYGEN_CREDENTIALS_"]
 
         @classmethod
         def customise_sources(
