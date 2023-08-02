@@ -103,7 +103,7 @@ def test_delete_spec_uat(patch_request, patch_access_token,
     with patch_access_token(), patch_request(200, "TEST") as patched_request, \
             patch_click_confirm():
 
-        runner.invoke(spec_delete, {"--uat"}, obj={"api": "mock-api"})
+        runner.invoke(spec_delete, ["--uat"], obj={"api": "mock-api"})
 
         path = _extract_request_path(patched_request, "DELETE")
 
