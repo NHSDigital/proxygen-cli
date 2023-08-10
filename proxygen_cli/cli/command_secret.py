@@ -140,7 +140,8 @@ def put(ctx, env, secret_name, secret_value, secret_file, apikey,
             result = proxygen_api.put_mtls_secret(
                 api, env, secret_name, mtls_cert, mtls_key)
         else:
-            secret_contents = _read_or_fail(secret_file, "secret")
+            secret_contents = secret_value or \
+                _read_or_fail(secret_file, "secret")
             result = proxygen_api.put_secret(
                 api, env, secret_name, secret_contents,
                 secret_type=secret_type
