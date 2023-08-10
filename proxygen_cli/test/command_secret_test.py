@@ -29,14 +29,14 @@ def _url_path(url) -> str:
     return parsed.path
 
 
-def test_secret_put(patch_access_token, patch_request):
+def test_secret_put_file(patch_access_token, patch_request):
     """
-    Ensure that the PUT reqeust for secrets contains the expected fields
+    Ensure that the PUT request for secrets contains the expected fields
     and is to the correct URL.
     """
     runner = CliRunner()
 
-    file_path, file_contents = _parse_fixture("valid_pkcs12.pks")
+    file_path, file_contents = _parse_fixture("secret.txt")
 
     with patch_access_token(), patch_request(200, {}) as patched_request:
         runner.invoke(
@@ -61,7 +61,8 @@ def test_secret_put(patch_access_token, patch_request):
 def test_secret_put_apikey(patch_access_token, patch_request):
     """
     Ensure that the PUT request for an apikey secret contains the expected
-    fields and is to the correct URL.
+    fields and is to the correct URL. Doucbles as a test for the --secret-value
+    option.
     """
     runner = CliRunner()
     secret_value = "TESTSECRET"
@@ -89,12 +90,11 @@ def test_secret_put_apikey(patch_access_token, patch_request):
 
 def test_secret_put_mtls(patch_access_token, patch_request):
     """
-    Ensure that the PUT request for an mtls secret contains the expected
-    fields and is to the correct URL.
-    The Proxygen server contains PKCS12 validation logic.
+    Ensure that the PUT request for an mtls secret validates the parameters
+    correctly, contains the expected fields and is to the correct URL.
+
     """
     runner = CliRunner()
-    secret_value = "TESTSECRET"
 
     with patch_access_token(), patch_request(200, {}) as patched_request:
         runner.invoke(

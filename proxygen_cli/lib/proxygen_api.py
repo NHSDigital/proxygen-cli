@@ -170,16 +170,40 @@ def put_secret(
     environment: LITERAL_ENVS,
     secret_name: str,
     secret_value: str,
-    _type: str = None,
+    secret_type: str = None,
 ):
 
     params = {}
-    if _type:
-        params["type"] = _type
+    if secret_type:
+        params["type"] = secret_type
     resp = _session().put(
         f"/apis/{api}/environments/{environment}/secrets/{secret_name}",
         data=secret_value,
         params=params,
+    )
+    return _resp_json(resp)
+
+
+def put_mtls_secret(
+    api: str,
+    environment: LITERAL_ENVS,
+    secret_name: str,
+    mtls_cert: str,
+    mtls_key: str
+) -> dict:
+    """
+    Upload an mTLS certificate and key as a secret.
+    """
+
+    resp = _session().put(
+        f"/apis/{api}/environments/{environment}/secrets/{secret_name}",
+        files={
+            'cert': ('cert.pem', mtls_cert),
+            'key': ('key.pem', mtls_key)
+        },
+        params={
+            'type': 'mtls'
+        },
     )
     return _resp_json(resp)
 
