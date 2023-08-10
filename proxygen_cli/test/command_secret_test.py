@@ -96,15 +96,17 @@ def test_secret_put_mtls(patch_access_token, patch_request):
     """
     runner = CliRunner()
 
+    key_path, key_contents = _parse_fixture("client.key")
+    cert_path, cert_contents = _parse_fixture("client.pem")
+
     with patch_access_token(), patch_request(200, {}) as patched_request:
         runner.invoke(
             cmd_secret.put,
             [
                 API_ENV,
                 "test-secret",
-                "--apikey",
-                "--secret-value",
-                secret_value
+                "--mtls-cert", cert_path,
+                "--mtls-key", key_path
             ],
             obj={"api": API_NAME},
         )
@@ -114,4 +116,5 @@ def test_secret_put_mtls(patch_access_token, patch_request):
         assert _url_path(url) \
             == f"/apis/{API_NAME}/environments/{API_ENV}/secrets/{SECRET_NAME}"
         assert content['params']['type'] == 'mtls'
-        assert content['data'] == secret_value
+        assert content['files']['cert'] == ('cert.pem', cert_contents)
+        assert content['files']['key'] == ('key.pem', key_contents)
