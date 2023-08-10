@@ -1,10 +1,9 @@
 from typing import get_args
-from urllib import parse
 
 import click
 from yaspin import yaspin
 
-from proxygen_cli.lib import output, proxygen_api, spec, version
+from proxygen_cli.lib import output, proxygen_api, version
 from proxygen_cli.lib.settings import SETTINGS
 from proxygen_cli.lib.constants import LITERAL_ENVS
 from typing import Optional
@@ -14,7 +13,8 @@ CHOICE_OF_ENVS = click.Choice(get_args(LITERAL_ENVS))
 
 @click.group()
 @click.option(
-    "--api", default=SETTINGS.api, help="Override the default API", show_default=True
+    "--api", default=SETTINGS.api, help="Override the default API",
+    show_default=True
 )
 @click.pass_context
 def secret(ctx, api):
