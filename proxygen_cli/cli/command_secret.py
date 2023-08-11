@@ -65,16 +65,20 @@ def _validate_put_options(
         if not all([mtls_cert, mtls_key]):
             raise click.UsageError(
                 "Please specify both --mtls-cert and --mtls-key.")
-    else:
-        if secret_value is None and secret_file is None:
-            raise click.UsageError(
-                "Please specify one of --secret-value and --secret-file.")
+        secret_type = "mtls"
 
-        if secret_value is not None and secret_file is not None:
-            raise click.UsageError(
-                "Please specify one of --secret-value"
-                " and --secret-file, not both."
-            )
+    if (secret_type == "mtls" and (secret_value or secret_file))\
+            or (secret_type != "mtls" and not any([secret_value, secret_file])):
+        raise click.UsageError(
+            "Please specify either of --secret-value and --secret-file, "
+            "or --mtls-cert with --mtls-key."
+        )
+
+    if secret_value is not None and secret_file is not None:
+        raise click.UsageError(
+            "Please specify one of --secret-value"
+            " and --secret-file, not both."
+        )
 
     if apikey:
         secret_type = "apikey"

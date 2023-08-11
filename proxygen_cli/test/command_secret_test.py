@@ -4,6 +4,8 @@ from urllib.parse import urlparse
 from click.testing import CliRunner
 
 import proxygen_cli.cli.command_secret as cmd_secret
+import pytest
+import click
 
 API_NAME = "mock-api"
 API_ENV = "internal-dev"
@@ -11,6 +13,9 @@ SECRET_NAME = "test-secret"
 
 
 class TestSecretCliCommands:
+    """
+    Tets related to specific workflows around secrets management with the CLI.
+    """
 
     @staticmethod
     def _parse_fixture(filename):
@@ -122,3 +127,83 @@ class TestSecretCliCommands:
             assert content['params']['type'] == 'mtls'
             assert content['files']['cert'] == ('cert.pem', cert_contents)
             assert content['files']['key'] == ('key.pem', key_contents)
+
+
+class TestPutOptionValidation:
+    """
+    Tests for the command_secret._validate_put_options() function.
+    """
+
+    # Defining these outside of the code we're testing makes us resilient to
+    # inadvertent error message changes.
+    ERR_TYPE_CONFLICT = (
+        "Please specify either of --secret-value and --secret-file, "
+        "or --mtls-cert with --mtls-key."
+    )
+    ERR_MTLS_BOTH = "Please specify both --mtls-cert and --mtls-key."
+    ERR_FILE_OR_VALUE = (
+        "Please specify one of --secret-value"
+        " and --secret-file, not both."
+    )
+
+    # pylint: disable=protected-access
+
+    def test_no_options(self):
+        """
+        Ensure that the function raises an exception if no options are
+        provided.
+        """
+        with pytest.raises(click.UsageError) as ex:
+            cmd_secret._validate_put_options(None, None, None, None, None)
+        assert ex.value.message == self.ERR_TYPE_CONFLICT
+
+    def test_cert_no_key(self):
+        """
+        Ensure that we can't provide only a mTLS cert
+        """
+        with pytest.raises(click.UsageError) as ex:
+            cmd_secret._validate_put_options(None, None, None, "TEST", None)
+        assert ex.value.message == self.ERR_MTLS_BOTH
+
+    def test_key_no_cert(self):
+        """
+        Ensure that we can't provide only a mTLS key
+        """
+        with pytest.raises(click.UsageError) as ex:
+            cmd_secret._validate_put_options(None, None, None, None, "TEST")
+        assert ex.value.message == self.ERR_MTLS_BOTH
+
+    def test_value_and_mtls(self):
+        """
+        Ensure that we can't provide value and mTLS details
+        """
+        with pytest.raises(click.UsageError) as ex:
+            cmd_secret._validate_put_options("TEST", None, None, "TEST",
+                                             "TEST")
+        assert ex.value.message == self.ERR_TYPE_CONFLICT
+
+    def test_file_and_mtls(self):
+        """
+        Ensure that we can't provide file and mTLS details
+        """
+        with pytest.raises(click.UsageError) as ex:
+            cmd_secret._validate_put_options(None, "TEST", None, "TEST",
+                                             "TEST")
+        assert ex.value.message == self.ERR_TYPE_CONFLICT
+
+    def test_file_and_value_and_mtls(self):
+        """
+        Ensure that we can't provide file, value and mTLS details
+        """
+        with pytest.raises(click.UsageError) as ex:
+            cmd_secret._validate_put_options("TEST", "TEST", None, "TEST",
+                                             "TEST")
+        assert ex.value.message == self.ERR_TYPE_CONFLICT
+
+    def test_value_and_file(self):
+        """
+        Ensure that we can't provide value and file
+        """
+        with pytest.raises(click.UsageError) as ex:
+            cmd_secret._validate_put_options("TEST", "TEST", None, None, None)
+        assert ex.value.message == self.ERR_FILE_OR_VALUE
