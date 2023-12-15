@@ -3,6 +3,7 @@ import json
 from typing import Optional
 import yaml
 import sys
+import os
 
 import click
 from pydantic import (
@@ -21,6 +22,14 @@ def _yaml_credentials_file_source(_):
         return credentials or {}
 
 
+def create_yaml_credentials_file():
+    file_path = os.path.expanduser("~/.proxygen/credentials.yaml")
+
+    if not os.path.exists(file_path):
+        with open(file_path, 'w'):
+            pass
+
+
 class Credentials(BaseSettings):
     base_url: AnyHttpUrl = (
         "https://identity.prod.api.platform.nhs.uk/realms/api-producers"
@@ -29,13 +38,21 @@ class Credentials(BaseSettings):
     key_id: Optional[str] = None
     client_id: str
     client_secret: str = None
-    username: str = None
-    password: str = None
+    username: Optional[str] = None
+    password: Optional[str] = None
+
+    _initialised = False
 
     @validator("username", "password", "client_secret", "client_id")
     def validate_humans_users(cls, value, values):
-        if values.get("private_key_path") is None and value is None:
-            raise ValueError("field required")
+        if not cls._initialised:
+            return value
+
+        private_key_path = values.get("private_key_path")
+        if private_key_path is None and value is None and any(
+            key in values for key in ["username", "password", "client_secret", "client_id"]
+        ):
+            raise ValueError(f"{value} field required")
         return value
 
     def private_key(self):
@@ -47,12 +64,12 @@ class Credentials(BaseSettings):
             )
         with private_key_file.open() as f:
             return f.read()
-        
+
     @validator("key_id")
     def validate_kid(cls, kid, values):
         """
-        If authenticating using a machine (with an associated jwks configured in Keycloak) key, then the key id is required 
-        for newer versions of Keycloak.
+        If authenticating using a machine (with an associated jwks configured in Keycloak) key,
+        then the key id is required for newer versions of Keycloak.
         """
         if values.get("private_key_path") and not kid:
             raise ValueError("Private key specified with no associated Key ID (KID)")
@@ -65,7 +82,7 @@ class Credentials(BaseSettings):
         So take string.
         """
         return cls._validate_private_key_path(private_key_path)
-    
+
     @staticmethod
     def _validate_private_key_path(private_key_path):
         """
@@ -106,7 +123,7 @@ class Credentials(BaseSettings):
 _CREDENTIALS = None
 try:
     _CREDENTIALS = Credentials()
-except ValidationError as e: # pragma: no cover
+except ValidationError as e:  # pragma: no cover
 
     errors = json.loads(e.json())
     print("*" * 100, file=sys.stderr)

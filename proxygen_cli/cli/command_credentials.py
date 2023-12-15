@@ -4,7 +4,8 @@ import yaml
 import click
 
 from proxygen_cli.lib import output
-from proxygen_cli.lib.credentials import Credentials, get_credentials, _yaml_credentials_file_source
+from proxygen_cli.lib.credentials import (
+    Credentials, get_credentials, _yaml_credentials_file_source, create_yaml_credentials_file)
 from proxygen_cli.lib.dot_proxygen import credentials_file
 
 CHOICE_OF_CREDENTIAL_KEYS = click.Choice(Credentials.__fields__.keys())
@@ -23,6 +24,7 @@ def list():
     creds = get_credentials()
     output.print_spec(json.loads(creds.json(exclude_none=True)))
 
+
 @credentials.command()
 @click.argument("key", type=CHOICE_OF_CREDENTIAL_KEYS)
 def get(key):
@@ -40,17 +42,20 @@ def set(key, value):
     """
     Write a value to your credentials.
     """
+    if not _yaml_credentials_file_source(None):
+        create_yaml_credentials_file()
+
     current_credentials = _yaml_credentials_file_source(None)
     current_credentials[key] = value
+
     try:
         new_credentials = json.loads(Credentials(**current_credentials).json(exclude_none=True))
     except pydantic.ValidationError as e:
         errors = json.loads(e.json())
         raise click.BadParameter("\n".join(error["msg"] for error in errors))
+
     with credentials_file().open("w") as f:
         yaml.safe_dump(new_credentials, f)
-
-    
 
 
 @credentials.command()
