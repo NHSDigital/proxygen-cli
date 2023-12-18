@@ -41,18 +41,10 @@ class Credentials(BaseSettings):
     username: Optional[str] = None
     password: Optional[str] = None
 
-    _initialised = False
-
     @validator("username", "password", "client_secret", "client_id")
     def validate_humans_users(cls, value, values):
-        if not cls._initialised:
-            return value
-
-        private_key_path = values.get("private_key_path")
-        if private_key_path is None and value is None and any(
-            key in values for key in ["username", "password", "client_secret", "client_id"]
-        ):
-            raise ValueError(f"{value} field required")
+        if values.get("private_key_path") is None and value is None:
+            raise ValueError("field required")
         return value
 
     def private_key(self):
