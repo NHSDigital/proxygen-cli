@@ -5,7 +5,7 @@ import pydantic
 
 from proxygen_cli.lib import output
 from proxygen_cli.lib.credentials import (
-    Credentials, get_credentials, _yaml_credentials_file_source, create_yaml_credentials_file)
+    Credentials, get_credentials, _yaml_credentials_file_source, create_yaml_credentials_file, initialise_credentials)
 from proxygen_cli.lib.dot_proxygen import credentials_file
 
 CHOICE_OF_CREDENTIAL_KEYS = click.Choice(Credentials.__fields__.keys())
@@ -21,6 +21,10 @@ def list():
     """
     List all credentials values.
     """
+    if not _yaml_credentials_file_source(None):
+        click.echo("Credentials file does not exist. Please run 'proxygen credentials set'")
+        exit()
+
     creds = get_credentials()
     output.print_spec(json.loads(creds.json(exclude_none=True)))
 
@@ -31,6 +35,10 @@ def get(key):
     """
     Read a value from your credentials.
     """
+    if not _yaml_credentials_file_source(None):
+        click.echo("Credentials file does not exist. Please run 'proxygen credentials set'")
+        exit()
+
     creds = get_credentials()
     click.echo(getattr(creds, key))
 
@@ -77,6 +85,8 @@ def set(custom_pairs, force):
 
     with credentials_file().open("w") as f:
         yaml.safe_dump(new_credentials, f)
+
+    initialise_credentials()
 
 
 @credentials.command()

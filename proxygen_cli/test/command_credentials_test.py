@@ -158,18 +158,22 @@ def test_add_key_id(patch_config, credentials_file):
     assert credentials_file() == expected_credentials
 
 
-def test_set_invalid_setting():
-    runner = CliRunner()
-    result = runner.invoke(cmd_credentials.set, ["invalid", "new-username"])
+def test_set_invalid_setting(patch_config):
+    mock_credentials = get_test_credentials()
+    with patch_config(credentials=mock_credentials):
+        runner = CliRunner()
+        result = runner.invoke(cmd_credentials.set, ["invalid", "new-username"])
 
     assert "Error: Invalid value: extra fields not permitted" in result.output.strip()
 
 
-def test_set_invalid_private_key_path():
-    runner = CliRunner()
-    result = runner.invoke(
-        cmd_credentials.set, ["private_key_path", "invalid_private_key_path"]
-    )
+def test_set_invalid_private_key_path(patch_config):
+    mock_credentials = get_test_credentials()
+    with patch_config(credentials=mock_credentials):
+        runner = CliRunner()
+        result = runner.invoke(
+            cmd_credentials.set, ["private_key_path", "invalid_private_key_path"]
+        )
 
     assert ".proxygen/invalid_private_key_path does not exist" in result.output.strip()
 

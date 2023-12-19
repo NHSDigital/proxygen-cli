@@ -113,24 +113,26 @@ class Credentials(BaseSettings):
 
 
 _CREDENTIALS = None
-try:
-    _CREDENTIALS = Credentials()
-except ValidationError as e:  # pragma: no cover
-
-    errors = json.loads(e.json())
-    print("*" * 100, file=sys.stderr)
-    print(
-        "Warning: Credentials invalid or not configured. See `proxygen credentials`.",
-        file=sys.stderr,
-    )
-    details = "  " + "\n  ".join(
-        f"{error['loc'][0]}: {error['msg']}" for error in errors
-    )
-    print(details, file=sys.stderr)
-    print("*" * 100, file=sys.stderr)
-    _CREDENTIALS = None
+def initialise_credentials():
+    global _CREDENTIALS
+    try:
+        _CREDENTIALS = Credentials()
+    except ValidationError as e:
+        errors = json.loads(e.json())
+        print("*" * 100, file=sys.stderr)
+        print(
+            "Warning: Credentials invalid or not configured. See `proxygen credentials`.",
+            file=sys.stderr,
+        )
+        details = "  " + "\n  ".join(
+            f"{error['loc'][0]}: {error['msg']}" for error in errors
+        )
+        print(details, file=sys.stderr)
+        print("*" * 100, file=sys.stderr)
+        _CREDENTIALS = None
 
 
 def get_credentials():
+    initialise_credentials()
     global _CREDENTIALS
     return _CREDENTIALS
