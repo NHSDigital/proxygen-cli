@@ -37,7 +37,7 @@ class Credentials(BaseSettings):
     private_key_path: Optional[str] = None
     key_id: Optional[str] = None
     client_id: str
-    client_secret: str = None
+    client_secret: Optional[str] = None
     username: Optional[str] = None
     password: Optional[str] = None
 

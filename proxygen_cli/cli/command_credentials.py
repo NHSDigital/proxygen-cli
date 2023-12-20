@@ -63,7 +63,7 @@ def set(custom_pairs, force):
 
     if not base_credentials_set or force:
         client_id = click.prompt("Enter client_id")
-        client_secret = click.prompt("Enter client_secret")
+        client_secret = click.prompt("Enter client_secret", default="", show_default=False)
         username = click.prompt("Enter username", default="", show_default=False)
         password = click.prompt("Enter password", default="", show_default=False)
 
