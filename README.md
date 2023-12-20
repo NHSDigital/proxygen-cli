@@ -14,19 +14,19 @@ Type `proxygen` to see a list of available commands.
 
 ### Credentials
 
-All users should have individual credentials.
-`proxygen-cli` needs to know about them.
-
-```
-proxygen credentials set username <USERNAME>
-proxygen credentials set password <PASSWORD>
-```
-
 The CLI has its own client credentials, which need to be input.
 Contact `deathstar` squad or the `platforms-api-producer-support` slack channel to find out what they are.
+
+All users should also have individual credentials. `proxygen-cli` needs to know about them.
+
+Simply execute the following command which will prompt you to enter your `client_id`, `client_secret`, `username`, and `password`:
 ```
-proxgen credentials set client_id <CLIENT_ID>
-proxgen credentials set client_secret <CLIENT_SECRET>
+proxygen credentials set
+```
+
+If you need to update any credentials in the future, use the following command:
+```
+proxygen credentials set <KEY> <VALUE>
 ```
 
 
