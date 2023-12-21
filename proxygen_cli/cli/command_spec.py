@@ -11,6 +11,8 @@ from proxygen_cli.lib.settings import SETTINGS
 CHOICE_OF_ENVS = click.Choice(get_args(LITERAL_ENVS))
 PUBLISH_SPEC_POP_KEYS = ["x-nhsd-apim"]  # Don't publish deployment information
 
+HELP_NO_CONFIRM = "Do not prompt for confirmation."
+HELP_UAT = "Target the UAT instance of API catalogue"
 
 @click.group()
 @click.option(
@@ -22,7 +24,7 @@ PUBLISH_SPEC_POP_KEYS = ["x-nhsd-apim"]  # Don't publish deployment information
 @click.option(
     "--uat",
     default=False,
-    help="Specification is in the UAT environment",
+    help=HELP_UAT,
     is_flag=True
 )
 @click.pass_context
@@ -39,12 +41,12 @@ def spec(ctx, api, uat):
     "--no-confirm",
     is_flag=True,
     show_default=True,
-    help="Do not prompt for confirmation.",
+    help=HELP_NO_CONFIRM,
 )
 @click.option(
     "--uat",
     default=False,
-    help="Specification is in the UAT environment",
+    help=HELP_UAT,
     is_flag=True
 )
 @click.pass_context
@@ -88,7 +90,7 @@ def serve(spec_file):
 @click.option(
     "--uat",
     default=False,
-    help="Specification is in the UAT environment",
+    help=HELP_UAT,
     is_flag=True
 )
 @click.pass_context
@@ -106,12 +108,12 @@ def get(ctx, uat):
     "--no-confirm",
     is_flag=True,
     show_default=True,
-    help="Do not prompt for confirmation.",
+    help=HELP_NO_CONFIRM,
 )
 @click.option(
     "--uat",
     default=False,
-    help="Specification is in the UAT environment",
+    help=HELP_UAT,
     is_flag=True
 )
 @click.pass_context
