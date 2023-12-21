@@ -12,9 +12,12 @@ CHOICE_OF_ENVS = click.Choice(get_args(LITERAL_ENVS))
 PUBLISH_SPEC_POP_KEYS = ["x-nhsd-apim"]  # Don't publish deployment information
 
 
-@click.group()
+@click.group(chain=True)
 @click.option(
-    "--api", default=SETTINGS.api, help="Override the default API", show_default=True
+    "--api",
+    default=SETTINGS.api,
+    help="Override the default API",
+    show_default=True
 )
 @click.option(
     "--uat",
@@ -27,7 +30,7 @@ def spec(ctx, api, uat):
     """Publish/update/delete specifications on the API catalogue."""
     ctx.ensure_object(dict)
     ctx.obj["api"] = api
-    ctx.obj["uat"] = uat or False
+    ctx.obj['uat'] = uat
 
 
 @spec.command()
@@ -45,13 +48,12 @@ def spec(ctx, api, uat):
     is_flag=True
 )
 @click.pass_context
-def publish(ctx, spec_file, no_confirm):
+def publish(ctx, spec_file, no_confirm, uat):
     """
     Publish <SPEC_FILE>.
     """
 
     api = ctx.obj["api"]
-    uat = ctx.obj["uat"]
     paas_open_api = lib_spec.resolve(spec_file, pop_keys=PUBLISH_SPEC_POP_KEYS)
 
     if not no_confirm:
@@ -90,12 +92,11 @@ def serve(spec_file):
     is_flag=True
 )
 @click.pass_context
-def get(ctx):
+def get(ctx, uat):
     """
     Get the API published spec.
     """
     api = ctx.obj["api"]
-    uat = ctx.obj["uat"]
     result = proxygen_api.get_spec(api, uat)
     output.print_spec(result)
 
@@ -114,12 +115,11 @@ def get(ctx):
     is_flag=True
 )
 @click.pass_context
-def delete(ctx, no_confirm):
+def delete(ctx, no_confirm, uat):
     """
     Delete the published spec.
     """
     api = ctx.obj["api"]
-    uat = ctx.obj["uat"]
     if not no_confirm:
         result = proxygen_api.get_spec(api, uat)
         if not result:
