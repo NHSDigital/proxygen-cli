@@ -12,7 +12,7 @@ CHOICE_OF_ENVS = click.Choice(get_args(LITERAL_ENVS))
 PUBLISH_SPEC_POP_KEYS = ["x-nhsd-apim"]  # Don't publish deployment information
 
 
-@click.group(chain=True)
+@click.group()
 @click.option(
     "--api",
     default=SETTINGS.api,
