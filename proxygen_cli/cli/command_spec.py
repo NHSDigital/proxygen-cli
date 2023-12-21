@@ -14,6 +14,19 @@ PUBLISH_SPEC_POP_KEYS = ["x-nhsd-apim"]  # Don't publish deployment information
 HELP_NO_CONFIRM = "Do not prompt for confirmation."
 HELP_UAT = "Target the UAT instance of API catalogue."
 
+UAT_KWARGS = {
+    'default': False,
+    'help': HELP_UAT,
+    'is_flag': True
+}
+
+NO_CONFIRM_KWARGS = {
+    'is_flag': True,
+    'show_default': True,
+    'help': HELP_NO_CONFIRM,
+}
+
+
 @click.group()
 @click.option(
     "--api",
@@ -23,9 +36,7 @@ HELP_UAT = "Target the UAT instance of API catalogue."
 )
 @click.option(
     "--uat",
-    default=False,
-    help=HELP_UAT,
-    is_flag=True
+    **UAT_KWARGS
 )
 @click.pass_context
 def spec(ctx, api, uat):
@@ -39,15 +50,11 @@ def spec(ctx, api, uat):
 @click.argument("spec_file")
 @click.option(
     "--no-confirm",
-    is_flag=True,
-    show_default=True,
-    help=HELP_NO_CONFIRM,
+    **NO_CONFIRM_KWARGS
 )
 @click.option(
     "--uat",
-    default=False,
-    help=HELP_UAT,
-    is_flag=True
+    **UAT_KWARGS
 )
 @click.pass_context
 def publish(ctx, spec_file, no_confirm, uat):
@@ -89,9 +96,7 @@ def serve(spec_file):
 @spec.command()
 @click.option(
     "--uat",
-    default=False,
-    help=HELP_UAT,
-    is_flag=True
+    **UAT_KWARGS
 )
 @click.pass_context
 def get(ctx, uat):
@@ -106,15 +111,11 @@ def get(ctx, uat):
 @spec.command()
 @click.option(
     "--no-confirm",
-    is_flag=True,
-    show_default=True,
-    help=HELP_NO_CONFIRM,
+    **NO_CONFIRM_KWARGS
 )
 @click.option(
     "--uat",
-    default=False,
-    help=HELP_UAT,
-    is_flag=True
+    **UAT_KWARGS
 )
 @click.pass_context
 def delete(ctx, no_confirm, uat):
