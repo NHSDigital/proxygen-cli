@@ -12,7 +12,7 @@ CHOICE_OF_ENVS = click.Choice(get_args(LITERAL_ENVS))
 PUBLISH_SPEC_POP_KEYS = ["x-nhsd-apim"]  # Don't publish deployment information
 
 HELP_NO_CONFIRM = "Do not prompt for confirmation."
-HELP_UAT = "Target the UAT instance of API catalogue"
+HELP_UAT = "Target the UAT instance of API catalogue."
 
 @click.group()
 @click.option(
