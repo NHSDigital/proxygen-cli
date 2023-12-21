@@ -3,7 +3,8 @@ from typing import get_args
 import click
 from yaspin import yaspin
 
-from proxygen_cli.lib import output, proxygen_api, spec, spec_server
+from proxygen_cli.lib import output, proxygen_api, spec as lib_spec, \
+      spec_server
 from proxygen_cli.lib.constants import LITERAL_ENVS
 from proxygen_cli.lib.settings import SETTINGS
 
@@ -15,13 +16,21 @@ PUBLISH_SPEC_POP_KEYS = ["x-nhsd-apim"]  # Don't publish deployment information
 @click.option(
     "--api", default=SETTINGS.api, help="Override the default API", show_default=True
 )
+@click.option(
+    "--uat",
+    default=False,
+    help="Specification is in the UAT environment",
+    is_flag=True
+)
 @click.pass_context
-def spec_cmd(ctx, api):
+def spec(ctx, api, uat):
+    """Publish/update/delete specifications on the API catalogue."""
     ctx.ensure_object(dict)
     ctx.obj["api"] = api
+    ctx.obj["uat"] = uat or False
 
 
-@spec_cmd.command()
+@spec.command()
 @click.argument("spec_file")
 @click.option(
     "--no-confirm",
@@ -30,16 +39,20 @@ def spec_cmd(ctx, api):
     help="Do not prompt for confirmation.",
 )
 @click.option(
-    "--uat", default=False, help="Spec for UAT environment", is_flag=True
+    "--uat",
+    default=False,
+    help="Specification is in the UAT environment",
+    is_flag=True
 )
 @click.pass_context
-def publish(ctx, spec_file, no_confirm, uat):
+def publish(ctx, spec_file, no_confirm):
     """
     Publish <SPEC_FILE>.
     """
 
     api = ctx.obj["api"]
-    paas_open_api = spec.resolve(spec_file, pop_keys=PUBLISH_SPEC_POP_KEYS)
+    uat = ctx.obj["uat"]
+    paas_open_api = lib_spec.resolve(spec_file, pop_keys=PUBLISH_SPEC_POP_KEYS)
 
     if not no_confirm:
         output.print_spec(paas_open_api)
@@ -69,21 +82,25 @@ def serve(spec_file):
     spec_server.serve(spec_file, pop_keys=PUBLISH_SPEC_POP_KEYS)
 
 
-@spec_cmd.command()
+@spec.command()
 @click.option(
-    "--uat", default=False, help="Spec for UAT environment", is_flag=True
+    "--uat",
+    default=False,
+    help="Specification is in the UAT environment",
+    is_flag=True
 )
 @click.pass_context
-def get(ctx, uat):
+def get(ctx):
     """
     Get the API published spec.
     """
     api = ctx.obj["api"]
+    uat = ctx.obj["uat"]
     result = proxygen_api.get_spec(api, uat)
     output.print_spec(result)
 
 
-@spec_cmd.command()
+@spec.command()
 @click.option(
     "--no-confirm",
     is_flag=True,
@@ -91,14 +108,18 @@ def get(ctx, uat):
     help="Do not prompt for confirmation.",
 )
 @click.option(
-    "--uat", default=False, help="Spec for UAT environment", is_flag=True
+    "--uat",
+    default=False,
+    help="Specification is in the UAT environment",
+    is_flag=True
 )
 @click.pass_context
-def delete(ctx, no_confirm, uat):
+def delete(ctx, no_confirm):
     """
     Delete the published spec.
     """
     api = ctx.obj["api"]
+    uat = ctx.obj["uat"]
     if not no_confirm:
         result = proxygen_api.get_spec(api, uat)
         if not result:

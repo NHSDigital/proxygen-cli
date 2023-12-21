@@ -23,7 +23,7 @@ def main():
 main.add_command(command_settings.settings)
 main.add_command(command_credentials.credentials)
 main.add_command(command_instance.instance)
-main.add_command(command_spec.spec_cmd, name="spec")
+main.add_command(command_spec.spec, name="spec")
 main.add_command(command_secret.secret)
 main.add_command(command_docker.docker)
 
