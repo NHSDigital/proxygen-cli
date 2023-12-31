@@ -205,3 +205,11 @@ def test_instance_get(patch_request, patch_pathlib, patch_access_token):
         )
 
     assert "mocked-spec-yaml: mocked-spec-goes-here" in result.output.strip()
+
+
+def test_instance_delete_with_confirm():
+    pass
+
+
+def test_instance_delete_no_confirm():
+    pass
