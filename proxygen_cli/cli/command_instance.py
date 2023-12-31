@@ -80,6 +80,7 @@ def deploy(ctx, env, base_path, spec_file, no_confirm):
         try:
             result = proxygen_api.put_instance(api, env, instance, paas_open_api)
             if result is None:
+                sp.fail("✘")
                 raise click.ClickException(f"No such instance {_url}")
 
             sp.ok("✔")
@@ -134,9 +135,11 @@ def delete(ctx, env, base_path, no_confirm):
         try:
             result = proxygen_api.delete_instance(api, env, instance)
             if result is None:
+                sp.fail("✘")
                 raise click.ClickException(f"No such instance {_url}")
 
             sp.ok("✔")
+
         except Exception as e:
             sp.fail("✘")
             click.echo(f"Failed to deploy instance {_url}. Error: {str(e)}")
