@@ -80,7 +80,7 @@ def deploy(ctx, env, base_path, spec_file, no_confirm):
         try:
             result = proxygen_api.put_instance(api, env, instance, paas_open_api)
             if result is None:
-                raise click.ClickException(f"No such instance {_url}")
+                raise click.ClickException(f"Invalid instance {_url}")
 
             sp.ok("✔")
 
