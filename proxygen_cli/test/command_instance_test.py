@@ -208,7 +208,7 @@ def test_instance_deploy_invalid_instance_name(patch_pathlib, patch_access_token
         )
 
     assert (
-        "No such instance https://internal-dev.api.service.nhs.uk/mock-api-base-path"
+        "Invalid instance https://internal-dev.api.service.nhs.uk/mock-api-base-path"
         in result.output.strip())
 
 
