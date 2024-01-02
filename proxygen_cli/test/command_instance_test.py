@@ -191,6 +191,27 @@ def test_instance_deploy_with_confirm(patch_pathlib, patch_access_token, patch_r
     assert "Aborted!" in result.output.strip()
 
 
+def test_instance_deploy_invalid_instance_name(patch_pathlib, patch_access_token, patch_request):
+    env = "internal-dev"
+
+    runner = CliRunner()
+    with patch(
+        "proxygen_cli.lib.proxygen_api.access_token"
+    ) as _access_token, patch_request(404, {}), patch_pathlib(
+        "test-yaml-key: test-yaml-value"
+    ):
+        _access_token.return_value = "12345"
+        result = runner.invoke(
+            cmd_instance.deploy,
+            [env, "mock-api-base-path", "specification/mock-api-spec", "--no-confirm"],
+            obj={"api": "mock-api"},
+        )
+
+    assert (
+        "Invalid instance https://internal-dev.api.service.nhs.uk/mock-api-base-path"
+        in result.output.strip())
+
+
 def test_instance_get(patch_request, patch_pathlib, patch_access_token):
     env = "internal-dev"
 
@@ -205,3 +226,73 @@ def test_instance_get(patch_request, patch_pathlib, patch_access_token):
         )
 
     assert "mocked-spec-yaml: mocked-spec-goes-here" in result.output.strip()
+
+
+def test_instance_delete_no_confirm(patch_request, patch_pathlib, patch_access_token):
+    env = "internal-dev"
+    base_path = "mock-api-base-path"
+    instance_name = "gp-registrations-mi"
+
+    # Mock the instance to be deleted
+    mock_instance = {
+        "environment": env,
+        "type": "instance",
+        "name": instance_name,
+        "last_modified": "2023-02-27T15:46:10+00:00",
+        "spec_hash": "31e4f4f2c85f133dd0ffb194c14c8bae",
+    }
+
+    runner = CliRunner()
+    with patch_access_token(), patch_request(200, mock_instance), patch_pathlib(
+        "test-yaml-key: test-yaml-value"
+    ):
+        result = runner.invoke(
+            cmd_instance.delete,
+            [env, base_path, "--no-confirm"],
+            obj={"api": "mock-api"},
+        )
+
+    assert "✔ Deleting https://internal-dev.api.service.nhs.uk/mock-api-base-path" in result.output.strip()
+
+
+def test_instance_delete_with_confirm(patch_request, patch_pathlib, patch_access_token):
+    env = "internal-dev"
+    base_path = "mock-api-base-path"
+    instance_name = "gp-registrations-mi"
+
+    # Mock the instance to be deleted
+    mock_instance = {
+        "environment": env,
+        "type": "instance",
+        "name": instance_name,
+        "last_modified": "2023-02-27T15:46:10+00:00",
+        "spec_hash": "31e4f4f2c85f133dd0ffb194c14c8bae",
+    }
+
+    runner = CliRunner()
+    with patch_access_token(), patch_request(200, mock_instance), patch_pathlib(
+        "test-yaml-key: test-yaml-value"
+    ), patch("click.confirm", return_value=True):
+        result = runner.invoke(
+            cmd_instance.delete,
+            [env, base_path],
+            obj={"api": "mock-api"},
+        )
+
+    assert "✔ Deleting https://internal-dev.api.service.nhs.uk/mock-api-base-path" in result.output.strip()
+
+
+def test_instance_delete_invalid_instance_name(patch_request, patch_pathlib, patch_access_token):
+    env = "internal-dev"
+
+    runner = CliRunner()
+    with patch_access_token(), patch_request(404, {}), patch_pathlib(
+        "test-yaml-key: test-yaml-value"
+    ):
+        result = runner.invoke(
+            cmd_instance.delete,
+            [env, "mock-api-base-path", "--no-confirm"],
+            obj={"api": "mock-api"},
+        )
+
+    assert "No such instance https://internal-dev.api.service.nhs.uk/mock-api-base-path" in result.output.strip()

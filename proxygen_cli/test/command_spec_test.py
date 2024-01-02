@@ -3,9 +3,11 @@ Tests around the spec CLI command.
 """
 from urllib.parse import urlparse
 from click.testing import CliRunner
+import pytest
 
 from proxygen_cli.cli.command_spec import get as spec_get, \
-    delete as spec_delete, publish as spec_publish
+    delete as spec_delete, publish as spec_publish, spec as spec_base, \
+    serve as spec_serve
 
 
 def test_publish_spec_std(patch_request, patch_access_token,
@@ -15,7 +17,7 @@ def test_publish_spec_std(patch_request, patch_access_token,
     """
 
     runner = CliRunner()
-    with patch_access_token(), patch_request(200, "TEST") as patched_request,\
+    with patch_access_token(), patch_request(200, "TEST") as patched_request, \
             patch_spec_resolver(), patch_click_confirm():
 
         runner.invoke(spec_publish, ["NoFile"], obj={"api": "mock-api"})
@@ -32,7 +34,7 @@ def test_publish_spec_uat(patch_request, patch_access_token,
     """
 
     runner = CliRunner()
-    with patch_access_token(), patch_request(200, "TEST") as patched_request,\
+    with patch_access_token(), patch_request(200, "TEST") as patched_request, \
             patch_spec_resolver(), patch_click_confirm():
 
         runner.invoke(
@@ -108,6 +110,30 @@ def test_delete_spec_uat(patch_request, patch_access_token,
         path = _extract_request_path(patched_request, "DELETE")
 
         assert path == "/apis/mock-api/spec/uat"
+
+
+@pytest.mark.parametrize("cmd, uat_expected", [
+    (spec_get, True),
+    (spec_delete, True),
+    (spec_publish, True),
+    (spec_serve, False),
+    (spec_base, True)
+])
+def test_uat_option_in_expected_command_help(cmd, uat_expected):
+    """
+    Ensure the --uat option is only available for the appropriate spec
+    commands.
+    """
+
+    runner = CliRunner()
+    result = runner.invoke(cmd, ["--help"])
+
+    if uat_expected:
+        assert "--uat" in result.output, \
+            f"--uat option was expected but not found for command {cmd}"
+    else:
+        assert "--uat" not in result.output, \
+            f"--uat option was not expected but found for command {cmd}"
 
 
 def _extract_request_path(mocked_request, method='GET'):

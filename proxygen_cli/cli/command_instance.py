@@ -70,14 +70,25 @@ def deploy(ctx, env, base_path, spec_file, no_confirm):
 
     if not no_confirm:
         output.print_spec(paas_open_api)
-        if not click.confirm(f"Deploy this spec to {_url}?"): # pragma: no cover
+        if not click.confirm(f"Deploy this spec to {_url}?"):  # pragma: no cover
             raise click.Abort()
 
     with yaspin() as sp:
         sp.text = f"Deploying {_url}"
         instance = parse.quote(base_path)
-        result = proxygen_api.put_instance(api, env, instance, paas_open_api)
-        sp.ok("✔")
+
+        try:
+            result = proxygen_api.put_instance(api, env, instance, paas_open_api)
+            if result is None:
+                raise click.ClickException(f"Invalid instance {_url}")
+
+            sp.ok("✔")
+
+        except Exception as e:
+            sp.fail("✘")
+            click.echo(f"Failed to deploy instance {_url}. Error: {str(e)}")
+
+
 @instance.command()
 @click.argument("env", type=CHOICE_OF_ENVS)
 @click.argument("base_path")
@@ -106,6 +117,7 @@ def delete(ctx, env, base_path, no_confirm):
     api = ctx.obj["api"]
     instance = parse.quote(base_path)
     _url = spec.url(env, base_path)
+
     if not no_confirm:
         result = proxygen_api.get_instance(api, env, instance)
         if not result:
@@ -116,7 +128,14 @@ def delete(ctx, env, base_path, no_confirm):
 
     with yaspin() as sp:
         sp.text = f"Deleting {_url}"
-        api = ctx.obj["api"]
-        instance = parse.quote(base_path)
-        result = proxygen_api.delete_instance(api, env, instance)
-        sp.ok("✔")
+
+        try:
+            result = proxygen_api.delete_instance(api, env, instance)
+            if result is None:
+                raise click.ClickException(f"No such instance {_url}")
+
+            sp.ok("✔")
+
+        except Exception as e:
+            sp.fail("✘")
+            click.echo(f"Failed to deploy instance {_url}. Error: {str(e)}")
