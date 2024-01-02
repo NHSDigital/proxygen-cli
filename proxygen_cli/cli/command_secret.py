@@ -5,10 +5,11 @@ from yaspin import yaspin
 
 from proxygen_cli.lib import output, proxygen_api, version
 from proxygen_cli.lib.settings import SETTINGS
-from proxygen_cli.lib.constants import LITERAL_ENVS
+from proxygen_cli.lib.constants import LITERAL_ENVS, LITERAL_SECRET_TYPES
 from typing import Optional
 
 CHOICE_OF_ENVS = click.Choice(get_args(LITERAL_ENVS))
+CHOICE_OF_SECRET_TYPES = click.Choice(get_args(LITERAL_SECRET_TYPES))
 
 
 @click.group()
@@ -132,13 +133,13 @@ def put(ctx, env, secret_name, secret_value, secret_file, apikey,
 
     api = ctx.obj["api"]
 
-    secret_type = _validate_put_options(
+    inferred_secret_type = _validate_put_options(
         secret_value, secret_file, apikey, mtls_cert, mtls_key)
 
     with yaspin() as spinner:
         spinner.text = f"Putting secret {secret_name} in {env}"
 
-        if secret_type == "mtls":
+        if inferred_secret_type == "mtls":
             mtls_cert = _read_or_fail(mtls_cert, "mTLS certificate")
             mtls_key = _read_or_fail(mtls_key, "mTLS private key")
             result = proxygen_api.put_mtls_secret(
@@ -147,8 +148,7 @@ def put(ctx, env, secret_name, secret_value, secret_file, apikey,
             secret_contents = secret_value or \
                 _read_or_fail(secret_file, "secret")
             result = proxygen_api.put_secret(
-                api, env, secret_name, secret_contents,
-                secret_type=secret_type
+                api, env, secret_name, inferred_secret_type, secret_contents
             )
 
         spinner.ok("✔")
@@ -158,32 +158,34 @@ def put(ctx, env, secret_name, secret_value, secret_file, apikey,
 
 @secret.command()
 @click.argument("env", type=CHOICE_OF_ENVS)
+@click.argument("secret_type", type=CHOICE_OF_SECRET_TYPES)
 @click.argument("secret_name")
 @click.pass_context
-def describe(ctx, env, secret_name):
+def describe(ctx, env, secret_type, secret_name):
     """
     Describe a secret.
     """
     api = ctx.obj["api"]
-    result = proxygen_api.get_secret(api, env, secret_name)
+    result = proxygen_api.get_secret(api, env, secret_type, secret_name)
     output.print_json(result)
 
 
 @secret.command()
 @click.argument("env", type=CHOICE_OF_ENVS)
+@click.argument("secret_type", type=CHOICE_OF_SECRET_TYPES)
 @click.argument("secret_name")
 @click.option(
     "--no-confirm", is_flag=True, show_default=True, help="Do not prompt for confirmation."
 )
 @click.pass_context
-def delete(ctx, env, secret_name, no_confirm):
+def delete(ctx, env, secret_type, secret_name, no_confirm):
     """
     Delete a secret.
     """
     api = ctx.obj["api"]
 
     if not no_confirm:
-        result = proxygen_api.get_secret(api, env, secret_name)
+        result = proxygen_api.get_secret(api, env, secret_type, secret_name)
         if result is None:
             raise click.BadArgumentUsage(f"A secret named {secret_name} does not exist in {env}.")
         output.print_json(result)
