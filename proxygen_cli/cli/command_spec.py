@@ -3,34 +3,58 @@ from typing import get_args
 import click
 from yaspin import yaspin
 
-from proxygen_cli.lib import output, proxygen_api, spec, spec_server
+from proxygen_cli.lib import output, proxygen_api, spec as lib_spec, \
+      spec_server
 from proxygen_cli.lib.constants import LITERAL_ENVS
 from proxygen_cli.lib.settings import SETTINGS
 
 CHOICE_OF_ENVS = click.Choice(get_args(LITERAL_ENVS))
 PUBLISH_SPEC_POP_KEYS = ["x-nhsd-apim"]  # Don't publish deployment information
 
+HELP_NO_CONFIRM = "Do not prompt for confirmation."
+HELP_UAT = "Target the UAT instance of API catalogue."
+
+UAT_KWARGS = {
+    'default': False,
+    'help': HELP_UAT,
+    'is_flag': True
+}
+
+NO_CONFIRM_KWARGS = {
+    'is_flag': True,
+    'show_default': True,
+    'help': HELP_NO_CONFIRM,
+}
+
 
 @click.group()
 @click.option(
-    "--api", default=SETTINGS.api, help="Override the default API", show_default=True
+    "--api",
+    default=SETTINGS.api,
+    help="Override the default API",
+    show_default=True
+)
+@click.option(
+    "--uat",
+    **UAT_KWARGS
 )
 @click.pass_context
-def spec_cmd(ctx, api):
+def spec(ctx, api, uat):
+    """Publish/update/delete specifications on the API catalogue."""
     ctx.ensure_object(dict)
     ctx.obj["api"] = api
+    ctx.obj['uat'] = uat
 
 
-@spec_cmd.command()
+@spec.command()
 @click.argument("spec_file")
 @click.option(
     "--no-confirm",
-    is_flag=True,
-    show_default=True,
-    help="Do not prompt for confirmation.",
+    **NO_CONFIRM_KWARGS
 )
 @click.option(
-    "--uat", default=False, help="Spec for UAT environment", is_flag=True
+    "--uat",
+    **UAT_KWARGS
 )
 @click.pass_context
 def publish(ctx, spec_file, no_confirm, uat):
@@ -39,7 +63,7 @@ def publish(ctx, spec_file, no_confirm, uat):
     """
 
     api = ctx.obj["api"]
-    paas_open_api = spec.resolve(spec_file, pop_keys=PUBLISH_SPEC_POP_KEYS)
+    paas_open_api = lib_spec.resolve(spec_file, pop_keys=PUBLISH_SPEC_POP_KEYS)
 
     if not no_confirm:
         output.print_spec(paas_open_api)
@@ -69,9 +93,10 @@ def serve(spec_file):
     spec_server.serve(spec_file, pop_keys=PUBLISH_SPEC_POP_KEYS)
 
 
-@spec_cmd.command()
+@spec.command()
 @click.option(
-    "--uat", default=False, help="Spec for UAT environment", is_flag=True
+    "--uat",
+    **UAT_KWARGS
 )
 @click.pass_context
 def get(ctx, uat):
@@ -83,15 +108,14 @@ def get(ctx, uat):
     output.print_spec(result)
 
 
-@spec_cmd.command()
+@spec.command()
 @click.option(
     "--no-confirm",
-    is_flag=True,
-    show_default=True,
-    help="Do not prompt for confirmation.",
+    **NO_CONFIRM_KWARGS
 )
 @click.option(
-    "--uat", default=False, help="Spec for UAT environment", is_flag=True
+    "--uat",
+    **UAT_KWARGS
 )
 @click.pass_context
 def delete(ctx, no_confirm, uat):

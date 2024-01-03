@@ -1,5 +1,6 @@
 from unittest.mock import patch
 
+import yaml
 import pytest
 from click.testing import CliRunner
 from pydantic.error_wrappers import ValidationError
@@ -72,7 +73,7 @@ def test_private_key_id_missing(patch_config):
     """
     mock_credentials = get_test_credentials()
 
-    with patch_config(credentials=mock_credentials),\
+    with patch_config(credentials=mock_credentials), \
             patch(("proxygen_cli.lib.credentials.Credentials."
                    "_validate_private_key_path")) as mock_creds:
         mock_creds.return_value = True
@@ -107,18 +108,72 @@ def test_set_credential(patch_config, credentials_file):
     assert credentials_file() == expected_credentials
 
 
-def test_set_invalid_setting():
-    runner = CliRunner()
-    result = runner.invoke(cmd_credentials.set, ["invalid", "new-username"])
+def test_update_credentials(patch_config, credentials_file):
+    mock_credentials = get_test_credentials()
 
-    assert "'invalid' is not one of 'base_url'" in result.output.strip()
+    # Convert mock_credentials to a dictionary
+    mock_credentials_dict = yaml.safe_load(mock_credentials)
 
+    # Set an initial value for the username field
+    initial_username = "old-username"
+    mock_credentials_dict["username"] = initial_username
 
-def test_set_invalid_private_key_path():
-    runner = CliRunner()
-    result = runner.invoke(
-        cmd_credentials.set, ["private_key_path", "invalid_private_key_path"]
+    with patch_config(credentials=mock_credentials):
+        runner = CliRunner()
+        runner.invoke(cmd_credentials.set, ["username", "new-username123"])
+
+    expected_credentials = "\n".join(
+        [
+            "base_url: https://mock-keycloak-url.nhs.uk",
+            "client_id: mock-api-client",
+            "client_secret: 1a2f4g5",
+            "password: mock-password",
+            "username: new-username123",  # Updated value
+        ]
     )
+
+    # Check the file has been written to
+    assert credentials_file() == expected_credentials
+
+
+def test_add_key_id(patch_config, credentials_file):
+    mock_credentials = get_test_credentials()
+
+    with patch_config(credentials=mock_credentials):
+        runner = CliRunner()
+        runner.invoke(cmd_credentials.set, ["key_id", "test_kid"])
+
+    expected_credentials = "\n".join(
+        [
+            "base_url: https://mock-keycloak-url.nhs.uk",
+            "client_id: mock-api-client",
+            "client_secret: 1a2f4g5",
+            "key_id: test_kid",
+            "password: mock-password",
+            "username: mock-user",
+        ]
+    )
+
+    # Check the file has been written to
+    assert credentials_file() == expected_credentials
+
+
+def test_set_invalid_setting(patch_config):
+    mock_credentials = get_test_credentials()
+    with patch_config(credentials=mock_credentials):
+        runner = CliRunner()
+        result = runner.invoke(cmd_credentials.set, ["invalid", "new-username"])
+
+    assert "Error: Invalid value: extra fields not permitted" in result.output.strip()
+
+
+def test_set_invalid_private_key_path(patch_config):
+    mock_credentials = get_test_credentials()
+    with patch_config(credentials=mock_credentials):
+        runner = CliRunner()
+        result = runner.invoke(
+            cmd_credentials.set, ["private_key_path", "invalid_private_key_path"]
+        )
 
     assert ".proxygen/invalid_private_key_path does not exist" in result.output.strip()
 
