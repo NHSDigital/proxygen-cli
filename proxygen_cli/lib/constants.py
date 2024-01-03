@@ -11,3 +11,8 @@ LITERAL_ENVS = Literal[
     "sandbox",
     "prod",
 ]
+
+LITERAL_SECRET_TYPES = Literal[
+    "apikey",
+    "mtls"
+]

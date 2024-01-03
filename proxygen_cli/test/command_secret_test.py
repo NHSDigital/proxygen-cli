@@ -10,6 +10,8 @@ import click
 API_NAME = "mock-api"
 API_ENV = "internal-dev"
 SECRET_NAME = "test-secret"
+MTLS_TYPE = "mtls"
+APIKEY_TYPE = "apikey"
 
 
 class TestSecretCliCommands:
@@ -51,6 +53,7 @@ class TestSecretCliCommands:
                 [
                     API_ENV,
                     "test-secret",
+                    "--apikey",
                     "--secret-file",
                     file_path
                 ],
@@ -61,9 +64,8 @@ class TestSecretCliCommands:
             _, (verb, url), content = patched_request.mock_calls[0]
             assert verb == "PUT"
             assert self._url_path(url) == (f"/apis/{API_NAME}/environments"
-                                           f"/{API_ENV}/secrets/{SECRET_NAME}")
+                                           f"/{API_ENV}/secrets/{APIKEY_TYPE}/{SECRET_NAME}")
             assert file_contents == content['data']
-            assert content['params'] == {}
 
     def test_secret_put_apikey(self, patch_access_token, patch_request):
         """
@@ -92,8 +94,7 @@ class TestSecretCliCommands:
             _, (verb, url), content = patched_request.mock_calls[0]
             assert verb == "PUT"
             assert self._url_path(url) == (f"/apis/{API_NAME}/environments"
-                                           f"/{API_ENV}/secrets/{SECRET_NAME}")
-            assert content['params']['type'] == 'apikey'
+                                           f"/{API_ENV}/secrets/{APIKEY_TYPE}/{SECRET_NAME}")
             assert content['data'] == secret_value
 
     def test_secret_put_mtls(self, patch_access_token, patch_request):
@@ -123,8 +124,7 @@ class TestSecretCliCommands:
             _, (verb, url), content = patched_request.mock_calls[0]
             assert verb == "PUT"
             assert self._url_path(url) == (f"/apis/{API_NAME}/environments"
-                                           f"/{API_ENV}/secrets/{SECRET_NAME}")
-            assert content['params']['type'] == 'mtls'
+                                           f"/{API_ENV}/secrets/{MTLS_TYPE}/{SECRET_NAME}")
             assert content['files']['cert'] == ('cert.pem', cert_contents)
             assert content['files']['key'] == ('key.pem', key_contents)
 

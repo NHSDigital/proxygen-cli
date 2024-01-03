@@ -9,7 +9,7 @@ import requests
 from proxygen_cli import __version__ as proxygen_cli_version
 from proxygen_cli import _package_name as proxygen_package_name
 from proxygen_cli.lib.auth import access_token
-from proxygen_cli.lib.constants import LITERAL_ENVS
+from proxygen_cli.lib.constants import LITERAL_ENVS, LITERAL_SECRET_TYPES
 from proxygen_cli.lib.settings import SETTINGS
 
 
@@ -158,9 +158,9 @@ def put_spec(api: str, paas_open_api: Dict[str, Any], uat: bool = False):
 
 
 # SECRET methods
-def get_secret(api: str, environment: LITERAL_ENVS, secret_name: str):
+def get_secret(api: str, environment: LITERAL_ENVS, secret_type: LITERAL_SECRET_TYPES, secret_name: str):
     resp = _session().get(
-        f"/apis/{api}/environments/{environment}/secrets/{secret_name}"
+        f"/apis/{api}/environments/{environment}/secrets/{secret_type}/{secret_name}"
     )
     return _resp_json(resp)
 
@@ -169,17 +169,12 @@ def put_secret(
     api: str,
     environment: LITERAL_ENVS,
     secret_name: str,
+    secret_type: LITERAL_SECRET_TYPES,
     secret_value: str,
-    secret_type: str = None,
 ):
-
-    params = {}
-    if secret_type:
-        params["type"] = secret_type
     resp = _session().put(
-        f"/apis/{api}/environments/{environment}/secrets/{secret_name}",
-        data=secret_value,
-        params=params,
+        f"/apis/{api}/environments/{environment}/secrets/{secret_type}/{secret_name}",
+        data=secret_value
     )
     return _resp_json(resp)
 
@@ -196,7 +191,7 @@ def put_mtls_secret(
     """
 
     resp = _session().put(
-        f"/apis/{api}/environments/{environment}/secrets/{secret_name}",
+        f"/apis/{api}/environments/{environment}/secrets/mtls/{secret_name}",
         files={
             'cert': ('cert.pem', mtls_cert),
             'key': ('key.pem', mtls_key)
@@ -208,8 +203,8 @@ def put_mtls_secret(
     return _resp_json(resp)
 
 
-def delete_secret(api: str, environment: LITERAL_ENVS, secret_name: str):
+def delete_secret(api: str, environment: LITERAL_ENVS, secret_type: LITERAL_SECRET_TYPES, secret_name: str):
     resp = _session().delete(
-        f"/apis/{api}/environments/{environment}/secrets/{secret_name}"
+        f"/apis/{api}/environments/{environment}/secrets/{secret_type}/{secret_name}"
     )
     return _resp_json(resp)
