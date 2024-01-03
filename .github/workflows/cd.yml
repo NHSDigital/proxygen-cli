@@ -22,8 +22,11 @@ jobs:
       - name: install poetry
         run: pip install --upgrade pip && pip install poetry
 
+      - name: set poetry credentials
+        run: poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
+
       - name: build
         run: poetry build
 
       - name: publish
-        run: poetry publish -u ${{ secrets.PYPI_USERNAME }} -p ${{ secrets.PYPI_PASSWORD }} 
+        run: poetry publish
