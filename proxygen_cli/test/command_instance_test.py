@@ -211,6 +211,7 @@ def test_instance_deploy_invalid_instance_name(patch_pathlib, patch_access_token
         "Invalid instance https://internal-dev.api.service.nhs.uk/mock-api-base-path"
         in result.output.strip())
 
+
 def test_instance_deploy_invalid_base_path(patch_pathlib, patch_access_token, patch_request):
     env = "internal-dev"
 
@@ -227,11 +228,12 @@ def test_instance_deploy_invalid_base_path(patch_pathlib, patch_access_token, pa
             obj={"api": "mock-api"},
         )
     assert (
-        "Multipart basepaths must include '_' instead of '/'"
+        "Multipart base paths must include '_' instead of '/'. " +
+        "This is to ensure a path-safe version. Proxygen will convert these underscores back in to '/' for the proxy."
         in result.output.strip())
 
 
-def test_instance_deploy_valid_base_path(patch_pathlib, patch_access_token, patch_request):
+def test_instance_deploy_valid_multipart_base_path(patch_pathlib, patch_access_token, patch_request):
     env = "internal-dev"
 
     runner = CliRunner()

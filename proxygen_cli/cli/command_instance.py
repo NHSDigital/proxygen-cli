@@ -62,7 +62,9 @@ def deploy(ctx, env, base_path, spec_file, no_confirm):
     """
 
     if "/" in base_path:
-        raise click.ClickException("Multipart basepaths must include '_' instead of '/'")
+        raise click.ClickException("Multipart base paths must include '_' instead of '/'. " +
+                                   "This is to ensure a path-safe version. " +
+                                   "Proxygen will convert these underscores back in to '/' for the proxy.")
 
     api = ctx.obj["api"]
     paas_open_api = spec.resolve(spec_file)
