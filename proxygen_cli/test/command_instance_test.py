@@ -211,6 +211,45 @@ def test_instance_deploy_invalid_instance_name(patch_pathlib, patch_access_token
         "Invalid instance https://internal-dev.api.service.nhs.uk/mock-api-base-path"
         in result.output.strip())
 
+def test_instance_deploy_invalid_base_path(patch_pathlib, patch_access_token, patch_request):
+    env = "internal-dev"
+
+    runner = CliRunner()
+    with patch(
+        "proxygen_cli.lib.proxygen_api.access_token"
+    ) as _access_token, patch_request(404, {}), patch_pathlib(
+        "test-yaml-key: test-yaml-value"
+    ):
+        _access_token.return_value = "12345"
+        result = runner.invoke(
+            cmd_instance.deploy,
+            [env, "mock-api/base/path", "specification/mock-api-spec", "--no-confirm"],
+            obj={"api": "mock-api"},
+        )
+    assert (
+        "Multipart basepaths must include '_' instead of '/'"
+        in result.output.strip())
+
+def test_instance_deploy_valid_base_path(patch_pathlib, patch_access_token, patch_request):
+    env = "internal-dev"
+
+    runner = CliRunner()
+    with patch(
+        "proxygen_cli.lib.proxygen_api.access_token"
+    ) as _access_token, patch_request(200, {}), patch_pathlib(
+        "test-yaml-key: test-yaml-value"
+    ):
+        _access_token.return_value = "12345"
+        result = runner.invoke(
+            cmd_instance.deploy,
+            [env, "mock-api_base_path", "specification/mock-api-spec", "--no-confirm"],
+            obj={"api": "mock-api"},
+        )
+    assert (
+        "✔ Deploying https://internal-dev.api.service.nhs.uk/mock-api-base-path"
+        in result.output.strip()
+    )
+
 
 def test_instance_get(patch_request, patch_pathlib, patch_access_token):
     env = "internal-dev"
