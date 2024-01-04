@@ -230,6 +230,7 @@ def test_instance_deploy_invalid_base_path(patch_pathlib, patch_access_token, pa
         "Multipart basepaths must include '_' instead of '/'"
         in result.output.strip())
 
+
 def test_instance_deploy_valid_base_path(patch_pathlib, patch_access_token, patch_request):
     env = "internal-dev"
 
@@ -246,7 +247,7 @@ def test_instance_deploy_valid_base_path(patch_pathlib, patch_access_token, patc
             obj={"api": "mock-api"},
         )
     assert (
-        "✔ Deploying https://internal-dev.api.service.nhs.uk/mock-api-base-path"
+        "✔ Deploying https://internal-dev.api.service.nhs.uk/mock-api_base_path"
         in result.output.strip()
     )
 
