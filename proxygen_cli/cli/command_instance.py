@@ -61,12 +61,18 @@ def deploy(ctx, env, base_path, spec_file, no_confirm):
     https://api.service.nhs.uk/<BASE_PATH>.
     """
 
+    if "/" in base_path:
+        raise click.ClickException("Multipart base paths must include '_' instead of '/'. "
+                                   "This is to ensure a path-safe version. "
+                                   "Proxygen will convert these underscores back in to '/' for the proxy.")
+
     api = ctx.obj["api"]
     paas_open_api = spec.resolve(spec_file)
+    _url = spec.url(env, base_path)
 
     # Overwrite the servers object to point to the values provided from the cli
-    _url = spec.url(env, base_path)
-    paas_open_api["servers"] = [{"url": _url}]
+    server_url = _url.replace("_", "/")
+    paas_open_api["servers"] = [{"url": server_url}]
 
     if not no_confirm:
         output.print_spec(paas_open_api)
