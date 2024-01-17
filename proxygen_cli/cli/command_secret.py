@@ -193,6 +193,6 @@ def delete(ctx, env, secret_type, secret_name, no_confirm):
             raise click.Abort()
     with yaspin() as sp:
         sp.text = f"Deleting secret {secret_name} from {env}"
-        result = proxygen_api.delete_secret(api, env, secret_name)
+        result = proxygen_api.delete_secret(api, env, secret_type, secret_name)
         sp.ok("✔")
 

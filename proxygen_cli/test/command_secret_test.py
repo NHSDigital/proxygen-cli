@@ -21,7 +21,6 @@ class TestSecretCliCommands:
 
     @staticmethod
     def _parse_fixture(filename):
-
         test_dir = os.path.dirname(os.path.abspath(__file__))
         file_path = f"{test_dir}/fixtures/{filename}"
 
@@ -50,22 +49,18 @@ class TestSecretCliCommands:
         with patch_access_token(), patch_request(200, {}) as patched_request:
             runner.invoke(
                 cmd_secret.put,
-                [
-                    API_ENV,
-                    "test-secret",
-                    "--apikey",
-                    "--secret-file",
-                    file_path
-                ],
+                [API_ENV, "test-secret", "--apikey", "--secret-file", file_path],
                 obj={"api": API_NAME},
-                catch_exceptions=False
+                catch_exceptions=False,
             )
 
             _, (verb, url), content = patched_request.mock_calls[0]
             assert verb == "PUT"
-            assert self._url_path(url) == (f"/apis/{API_NAME}/environments"
-                                           f"/{API_ENV}/secrets/{APIKEY_TYPE}/{SECRET_NAME}")
-            assert file_contents == content['data']
+            assert self._url_path(url) == (
+                f"/apis/{API_NAME}/environments"
+                f"/{API_ENV}/secrets/{APIKEY_TYPE}/{SECRET_NAME}"
+            )
+            assert file_contents == content["data"]
 
     def test_secret_put_apikey(self, patch_access_token, patch_request):
         """
@@ -79,23 +74,19 @@ class TestSecretCliCommands:
         with patch_access_token(), patch_request(200, {}) as patched_request:
             runner.invoke(
                 cmd_secret.put,
-                [
-                    API_ENV,
-                    "test-secret",
-                    "--apikey",
-                    "--secret-value",
-                    secret_value
-                ],
+                [API_ENV, "test-secret", "--apikey", "--secret-value", secret_value],
                 obj={"api": API_NAME},
-                catch_exceptions=False
+                catch_exceptions=False,
             )
 
             assert patched_request.call_count == 1, "Mock request not made"
             _, (verb, url), content = patched_request.mock_calls[0]
             assert verb == "PUT"
-            assert self._url_path(url) == (f"/apis/{API_NAME}/environments"
-                                           f"/{API_ENV}/secrets/{APIKEY_TYPE}/{SECRET_NAME}")
-            assert content['data'] == secret_value
+            assert self._url_path(url) == (
+                f"/apis/{API_NAME}/environments"
+                f"/{API_ENV}/secrets/{APIKEY_TYPE}/{SECRET_NAME}"
+            )
+            assert content["data"] == secret_value
 
     def test_secret_put_mtls(self, patch_access_token, patch_request):
         """
@@ -114,19 +105,23 @@ class TestSecretCliCommands:
                 [
                     API_ENV,
                     "test-secret",
-                    "--mtls-cert", cert_path,
-                    "--mtls-key", key_path
+                    "--mtls-cert",
+                    cert_path,
+                    "--mtls-key",
+                    key_path,
                 ],
                 obj={"api": API_NAME},
-                catch_exceptions=False
+                catch_exceptions=False,
             )
 
             _, (verb, url), content = patched_request.mock_calls[0]
             assert verb == "PUT"
-            assert self._url_path(url) == (f"/apis/{API_NAME}/environments"
-                                           f"/{API_ENV}/secrets/{MTLS_TYPE}/{SECRET_NAME}")
-            assert content['files']['cert'] == ('cert.pem', cert_contents)
-            assert content['files']['key'] == ('key.pem', key_contents)
+            assert self._url_path(url) == (
+                f"/apis/{API_NAME}/environments"
+                f"/{API_ENV}/secrets/{MTLS_TYPE}/{SECRET_NAME}"
+            )
+            assert content["files"]["cert"] == ("cert.pem", cert_contents)
+            assert content["files"]["key"] == ("key.pem", key_contents)
 
 
 class TestPutOptionValidation:
@@ -142,8 +137,7 @@ class TestPutOptionValidation:
     )
     ERR_MTLS_BOTH = "Please specify both --mtls-cert and --mtls-key."
     ERR_FILE_OR_VALUE = (
-        "Please specify one of --secret-value"
-        " and --secret-file, not both."
+        "Please specify one of --secret-value" " and --secret-file, not both."
     )
 
     # pylint: disable=protected-access
@@ -178,8 +172,7 @@ class TestPutOptionValidation:
         Ensure that we can't provide value and mTLS details
         """
         with pytest.raises(click.UsageError) as ex:
-            cmd_secret._validate_put_options("TEST", None, None, "TEST",
-                                             "TEST")
+            cmd_secret._validate_put_options("TEST", None, None, "TEST", "TEST")
         assert ex.value.message == self.ERR_TYPE_CONFLICT
 
     def test_file_and_mtls(self):
@@ -187,8 +180,7 @@ class TestPutOptionValidation:
         Ensure that we can't provide file and mTLS details
         """
         with pytest.raises(click.UsageError) as ex:
-            cmd_secret._validate_put_options(None, "TEST", None, "TEST",
-                                             "TEST")
+            cmd_secret._validate_put_options(None, "TEST", None, "TEST", "TEST")
         assert ex.value.message == self.ERR_TYPE_CONFLICT
 
     def test_file_and_value_and_mtls(self):
@@ -196,8 +188,7 @@ class TestPutOptionValidation:
         Ensure that we can't provide file, value and mTLS details
         """
         with pytest.raises(click.UsageError) as ex:
-            cmd_secret._validate_put_options("TEST", "TEST", None, "TEST",
-                                             "TEST")
+            cmd_secret._validate_put_options("TEST", "TEST", None, "TEST", "TEST")
         assert ex.value.message == self.ERR_TYPE_CONFLICT
 
     def test_value_and_file(self):
