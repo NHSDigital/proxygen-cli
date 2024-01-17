@@ -18,7 +18,6 @@ class ProxygenSession(requests.Session):
         super().__init__(**kwargs)
 
     def request(self, method, path, **kwargs):
-
         if path.startswith("/apis/"):
             headers = kwargs.get("headers", {})
             headers["Authorization"] = f"Bearer {access_token()}"
@@ -128,7 +127,6 @@ def delete_instance(api: str, environment: LITERAL_ENVS, instance_name: str):
 def put_instance(
     api: str, environment: LITERAL_ENVS, instance: str, paas_open_api: Dict[str, Any]
 ):
-
     resp = _session().put(
         f"/apis/{api}/environments/{environment}/instances/{instance}",
         data=json.dumps(paas_open_api, default=str),
@@ -158,7 +156,12 @@ def put_spec(api: str, paas_open_api: Dict[str, Any], uat: bool = False):
 
 
 # SECRET methods
-def get_secret(api: str, environment: LITERAL_ENVS, secret_type: LITERAL_SECRET_TYPES, secret_name: str):
+def get_secret(
+    api: str,
+    environment: LITERAL_ENVS,
+    secret_type: LITERAL_SECRET_TYPES,
+    secret_name: str,
+):
     resp = _session().get(
         f"/apis/{api}/environments/{environment}/secrets/{secret_type}/{secret_name}"
     )
@@ -174,17 +177,13 @@ def put_secret(
 ):
     resp = _session().put(
         f"/apis/{api}/environments/{environment}/secrets/{secret_type}/{secret_name}",
-        data=secret_value
+        data=secret_value,
     )
     return _resp_json(resp)
 
 
 def put_mtls_secret(
-    api: str,
-    environment: LITERAL_ENVS,
-    secret_name: str,
-    mtls_cert: str,
-    mtls_key: str
+    api: str, environment: LITERAL_ENVS, secret_name: str, mtls_cert: str, mtls_key: str
 ) -> dict:
     """
     Upload an mTLS certificate and key as a secret.
@@ -192,18 +191,18 @@ def put_mtls_secret(
 
     resp = _session().put(
         f"/apis/{api}/environments/{environment}/secrets/mtls/{secret_name}",
-        files={
-            'cert': ('cert.pem', mtls_cert),
-            'key': ('key.pem', mtls_key)
-        },
-        params={
-            'type': 'mtls'
-        },
+        files={"cert": ("cert.pem", mtls_cert), "key": ("key.pem", mtls_key)},
+        params={"type": "mtls"},
     )
     return _resp_json(resp)
 
 
-def delete_secret(api: str, environment: LITERAL_ENVS, secret_type: LITERAL_SECRET_TYPES, secret_name: str):
+def delete_secret(
+    api: str,
+    environment: LITERAL_ENVS,
+    secret_type: LITERAL_SECRET_TYPES,
+    secret_name: str,
+):
     resp = _session().delete(
         f"/apis/{api}/environments/{environment}/secrets/{secret_type}/{secret_name}"
     )
