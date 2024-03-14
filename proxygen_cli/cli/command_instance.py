@@ -25,7 +25,9 @@ def instance(ctx, api):
     ctx.ensure_object(dict)
     ctx.obj["api"] = api
     if api is None:
-        raise click.UsageError("You must set the API before using this command: see `proxygen settings`")
+        raise click.UsageError(
+            "You must set the API before using this command: see `proxygen settings`"
+        )
 
 
 @instance.command()
@@ -48,7 +50,10 @@ def list(ctx, env):
 @click.argument("base_path")
 @click.argument("spec_file")
 @click.option(
-    "--no-confirm", is_flag=True, show_default=True, help="Do not prompt for confirmation."
+    "--no-confirm",
+    is_flag=True,
+    show_default=True,
+    help="Do not prompt for confirmation.",
 )
 @click.pass_context
 def deploy(ctx, env, base_path, spec_file, no_confirm):
@@ -62,9 +67,11 @@ def deploy(ctx, env, base_path, spec_file, no_confirm):
     """
 
     if "/" in base_path:
-        raise click.ClickException("Multipart base paths must include '_' instead of '/'. "
-                                   "This is to ensure a path-safe version. "
-                                   "Proxygen will convert these underscores back in to '/' for the proxy.")
+        raise click.ClickException(
+            "Multipart base paths must include '_' instead of '/'. "
+            "This is to ensure a path-safe version. "
+            "Proxygen will convert these underscores back in to '/' for the proxy."
+        )
 
     api = ctx.obj["api"]
     paas_open_api = spec.resolve(spec_file)
@@ -92,7 +99,9 @@ def deploy(ctx, env, base_path, spec_file, no_confirm):
 
         except Exception as e:
             sp.fail("✘")
-            click.echo(f"Failed to deploy instance {_url}. Error: {str(e)}")
+            raise click.ClickException(
+                f"Failed to deploy instance {_url}. Error: {str(e)}"
+            )
 
 
 @instance.command()
@@ -113,7 +122,10 @@ def get(ctx, env, base_path):
 @click.argument("env", type=CHOICE_OF_ENVS)
 @click.argument("base_path")
 @click.option(
-    "--no-confirm", is_flag=True, show_default=True, help="Do not prompt for confirmation."
+    "--no-confirm",
+    is_flag=True,
+    show_default=True,
+    help="Do not prompt for confirmation.",
 )
 @click.pass_context
 def delete(ctx, env, base_path, no_confirm):
@@ -144,4 +156,4 @@ def delete(ctx, env, base_path, no_confirm):
 
         except Exception as e:
             sp.fail("✘")
-            click.echo(f"Failed to deploy instance {_url}. Error: {str(e)}")
+            raise click.ClickException(f"Failed to deploy instance {_url}. Error: {str(e)}")
