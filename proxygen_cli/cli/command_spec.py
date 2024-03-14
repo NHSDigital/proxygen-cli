@@ -72,8 +72,15 @@ def publish(ctx, spec_file, no_confirm, uat):
 
     with yaspin() as sp:
         sp.text = f"Publishing spec {api}"
-        proxygen_api.put_spec(api, paas_open_api, uat)
-        sp.ok("✔")
+
+        try:
+            result = proxygen_api.put_spec(api, paas_open_api, uat)
+            if not result:
+                raise click.ClickException(f"Failed to publish spec for {api}")
+            sp.ok("✔")
+        except Exception as ex:
+            sp.fail("✘")
+            raise click.ClickException(f"Failed to publish spec for {api}: {ex}")
 
 
 @click.command()
@@ -133,5 +140,12 @@ def delete(ctx, no_confirm, uat):
 
     with yaspin() as sp:
         sp.text = f"Deleting spec {api}"
-        result = proxygen_api.delete_spec(api, uat)
-        sp.ok("✔")
+
+        try:
+            result = proxygen_api.delete_spec(api, uat)
+            if result is None:
+                raise click.ClickException(f"Failed to delete spec for {api}")
+            sp.ok("✔")
+        except Exception as ex:
+            sp.fail("✘")
+            raise click.ClickException(f"Failed to delete spec for {api}: {ex}")
