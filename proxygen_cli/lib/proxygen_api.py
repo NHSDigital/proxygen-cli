@@ -42,7 +42,7 @@ def _session():
 
 
 def _resp_json(resp, none_on_404=True):
-    if resp.status_code == 200:
+    if resp.status_code in [200, 201]:
         if resp.text:
             return resp.json()
         return ""
