@@ -14,17 +14,16 @@ Type `proxygen` to see a list of available commands.
 
 ### Credentials
 
-The CLI has its own client credentials, which need to be input.
-Contact `deathstar` squad or the `platforms-api-producer-support` slack channel to find out what they are.
+The CLI has its own default client credentials setup in GitHub Action, which are in build in the github repo.
 
-All users should also have individual credentials. `proxygen-cli` needs to know about them.
+All users should also have individual user credentials. `proxygen-cli` needs to know about them.
 
-Simply execute the following command which will prompt you to enter your `client_id`, `client_secret`, `username`, and `password`:
+Simply execute the following command which will prompt you to enter your `username`, and `password`:
 ```
 proxygen credentials set
 ```
 
-If you need to update any credentials in the future, use the following command:
+If you need to update any credentials in the future, use the following command and also if you like to override the default client credentials you can use below commands with keys like enter your `client_id`, `client_secret`, `username`, and `password` :
 ```
 proxygen credentials set <KEY> <VALUE>
 ```
