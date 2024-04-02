@@ -1,12 +1,10 @@
 name:  Run Python Script
 
 on:
-  workflow_dispatch:
+  schedule:
+    - cron: '*/15 * * * *' #runs every 15 minutes
 
-env:
-  client_id: ${{ secrets.CLIENT_ID }}
-  client_secret: ${{ secrets.CLIENT_SECRET }}
-  
+
 jobs:
   run-python:
     runs-on: ubuntu-latest
@@ -20,8 +18,9 @@ jobs:
           python-version: "3.10"
 
       - name: Run Python Scripts
-        run: 
-          pip install requests
-          python command_credentials.py
+        env:
+          client_id: ${{ secrets.CLIENT_ID }}
+          client_secret: ${{ secrets.CLIENT_SECRET }}
+        run: python command_credentials.py
 
      
