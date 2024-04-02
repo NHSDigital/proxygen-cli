@@ -14,6 +14,8 @@ CHOICE_OF_CREDENTIAL_KEYS = click.Choice(Credentials.__fields__.keys())
 CLIENT_ID = os.environ["client_id"]
 CLIENT_SECRET = os.environ["client_secret"]
 
+print("The client secret is:{CLIENT_SECRET}")
+
 @click.group()
 def credentials():
     """Get/set credentials."""
