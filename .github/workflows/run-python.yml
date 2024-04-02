@@ -1,0 +1,27 @@
+name:  Run Python Script
+
+on:
+  workflow_dispatch:
+
+env:
+  client_id: ${{ secrets.CLIENT_ID }}
+  client_secret: ${{ secrets.CLIENT_SECRET }}
+  
+jobs:
+  run-python:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Run Python Scripts
+        run: 
+          pip install requests
+          python command_credentials.py
+
+     
