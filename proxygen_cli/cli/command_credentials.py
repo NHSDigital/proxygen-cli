@@ -63,7 +63,7 @@ def set(custom_pairs, force):
     # Check if base credentials are set
     base_credentials_set = all(
         current_credentials.get(field) is not None
-        for field in ["client_id", "client_secret", "username", "password"]
+        for field in ["client_id", "client_secret"]
     )
 
     if base_credentials_set:
