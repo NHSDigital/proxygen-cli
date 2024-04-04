@@ -63,10 +63,10 @@ def set(custom_pairs, force):
     # Check if base credentials are set
     base_credentials_set = all(
         current_credentials.get(field) is not None
-        for field in ["client_id", "client_secret"]
+        for field in ["client_id", "client_secret", "username", "password"]
     )
 
-    if base_credentials_set:
+    if CLIENT_ID or CLIENT_SECRET:
         client_id = CLIENT_ID
         client_secret = CLIENT_SECRET
         username = click.prompt("Enter username", default="", show_default=False)
@@ -77,6 +77,7 @@ def set(custom_pairs, force):
         current_credentials["username"] = username
         current_credentials["password"] = password
 
+   # elif not base_credentials_set or force or not CLIENT_ID or not CLIENT_SECRET:
     elif not base_credentials_set or force:
         client_id = click.prompt("Enter client_id")
         client_secret = click.prompt("Enter client_secret", default="", show_default=False)

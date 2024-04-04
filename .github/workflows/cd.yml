@@ -1,7 +1,6 @@
 name: Release
-on:
-  workflow_dispatch:
-    
+on: workflow_dispatch
+
 env:
   client_id: ${{ secrets.CLIENT_ID }}
   client_secret: ${{ secrets.CLIENT_SECRET }}
@@ -32,3 +31,4 @@ jobs:
 
       - name: publish
         run: poetry publish
+      
