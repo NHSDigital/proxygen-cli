@@ -6,7 +6,12 @@ import os
 
 from proxygen_cli.lib import output
 from proxygen_cli.lib.credentials import (
-    Credentials, get_credentials, _yaml_credentials_file_source, create_yaml_credentials_file, initialise_credentials)
+    Credentials,
+    get_credentials,
+    _yaml_credentials_file_source,
+    create_yaml_credentials_file,
+    initialise_credentials,
+)
 from proxygen_cli.lib.dot_proxygen import credentials_file
 
 CHOICE_OF_CREDENTIAL_KEYS = click.Choice(Credentials.__fields__.keys())
@@ -27,7 +32,9 @@ def list():
     List all credentials values.
     """
     if not _yaml_credentials_file_source(None):
-        click.echo("Credentials file does not exist. Please run 'proxygen credentials set'")
+        click.echo(
+            "Credentials file does not exist. Please run 'proxygen credentials set'"
+        )
         exit()
 
     creds = get_credentials()
@@ -41,7 +48,9 @@ def get(key):
     Read a value from your credentials.
     """
     if not _yaml_credentials_file_source(None):
-        click.echo("Credentials file does not exist. Please run 'proxygen credentials set'")
+        click.echo(
+            "Credentials file does not exist. Please run 'proxygen credentials set'"
+        )
         exit()
 
     creds = get_credentials()
@@ -67,8 +76,17 @@ def set(custom_pairs, force):
     )
 
     if not base_credentials_set or force:
-        client_id = click.prompt("Enter client_id")
-        client_secret = click.prompt("Enter client_secret", default="", show_default=False)
+        if CLIENT_ID:
+            client_id = CLIENT_ID
+        else:
+            client_id = click.prompt("Enter client_id")
+        if CLIENT_SECRET:
+            client_secret = CLIENT_SECRET
+        else:
+            client_secret = click.prompt(
+                "Enter client_secret", default="", show_default=False
+            )
+
         username = click.prompt("Enter username", default="", show_default=False)
         password = click.prompt("Enter password", default="", show_default=False)
 
@@ -90,11 +108,13 @@ def set(custom_pairs, force):
 
     # Prompt for individual custom key-value pairs
     for i in range(0, len(custom_pairs), 2):
-        key, value = custom_pairs[i:i + 2]
+        key, value = custom_pairs[i : i + 2]
         current_credentials[key] = value
 
     try:
-        new_credentials = json.loads(Credentials(**current_credentials).json(exclude_none=True))
+        new_credentials = json.loads(
+            Credentials(**current_credentials).json(exclude_none=True)
+        )
     except pydantic.ValidationError as e:
         errors = json.loads(e.json())
         raise click.BadParameter("\n".join(error["msg"] for error in errors))
