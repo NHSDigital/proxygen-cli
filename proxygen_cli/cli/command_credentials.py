@@ -10,6 +10,7 @@ from proxygen_cli.lib.credentials import (
     Credentials, get_credentials, _yaml_credentials_file_source, create_yaml_credentials_file, initialise_credentials)
 from proxygen_cli.lib.dot_proxygen import credentials_file
 
+print("Start of changes")
 CHOICE_OF_CREDENTIAL_KEYS = click.Choice(Credentials.__fields__.keys())
 CLIENT_ID = os.environ["client_id"]
 CLIENT_SECRET = os.environ["client_secret"]
