@@ -9,7 +9,7 @@ pip install proxygen-cli
 After installation, the `proxygen` executable is available. Typing `proxygen` displays a list of available commands.
 
 
-## Configuration
+## Configuration 
 
 ### Credentials
 
