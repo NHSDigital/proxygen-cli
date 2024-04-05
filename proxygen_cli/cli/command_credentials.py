@@ -76,17 +76,17 @@ def set(custom_pairs, force):
         current_credentials["client_secret"] = client_secret
         current_credentials["username"] = username
         current_credentials["password"] = password
-        
-    elif CLIENT_ID or CLIENT_SECRET:
-        client_id = CLIENT_ID
-        client_secret = CLIENT_SECRET
-        username = click.prompt("Enter username", default="", show_default=False)
-        password = click.prompt("Enter password", default="", show_default=False)
 
-        current_credentials["client_id"] = client_id
-        current_credentials["client_secret"] = client_secret
-        current_credentials["username"] = username
-        current_credentials["password"] = password
+    # elif CLIENT_ID or CLIENT_SECRET:
+    #     client_id = CLIENT_ID
+    #     client_secret = CLIENT_SECRET
+    #     username = click.prompt("Enter username", default="", show_default=False)
+    #     password = click.prompt("Enter password", default="", show_default=False)
+
+    #     current_credentials["client_id"] = client_id
+    #     current_credentials["client_secret"] = client_secret
+    #     current_credentials["username"] = username
+    #     current_credentials["password"] = password
 
     # Prompt for individual custom key-value pairs
     for i in range(0, len(custom_pairs), 2):
