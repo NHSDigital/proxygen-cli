@@ -2,12 +2,14 @@ from unittest.mock import patch
 
 import yaml
 import pytest
+import os
 from click.testing import CliRunner
 from pydantic.error_wrappers import ValidationError
 
 import proxygen_cli.cli.command_credentials as cmd_credentials
 from proxygen_cli.lib.credentials import Credentials
-
+CLIENT_ID = os.environ["client_id"]
+CLIENT_SECRET = os.environ["client_secret"]
 
 def get_test_credentials(**kwargs):
     base_credentials = {
@@ -26,6 +28,19 @@ def get_test_credentials(**kwargs):
 
     return "\n".join(text_format_credentials)
 
+def get_test_client_credentials(**kwargs):
+    client_credentials = {
+        "client_id": CLIENT_ID,
+        "client_secret": CLIENT_SECRET
+    }
+
+    updated_credentials = client_credentials | kwargs
+
+    text_format_credentials = [
+        f"{key}: {value}" for key, value in updated_credentials.items()
+    ]
+
+    return "\n".join(text_format_credentials)
 
 def test_missing_credentials(update_config):
     mock_credentials = get_test_credentials(username="")
