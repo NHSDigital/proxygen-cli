@@ -17,12 +17,17 @@ The CLI requires client credentials, which can be obtained from the `platforms-a
 
 The Proxygen CLI client credentials are setup now as part of proxygen cli package.
 
-Now as part of crdential setting only input values for prompts  `username`, and `password` keep the `client_id`, `client_secret` as blank as it will take default value set up as part of package installation and if in case to update the credentials in the future, use: 
+Now as part of credential setting only input values for prompts  `username`, and `password` 
+
+proxygen credentials set
+```
+
+if in case client credentials are not setup as part of package installation or you want to update  the credentials in the future, use: 
 
 proxygen credentials set
 ```
 This command prompts you to enter your `client_id`, `client_secret`, `username`, and `password`.
-To update the default client credentials (`client_id`, `client_secret`) in the future, use:
+and also this will help to update the default client credentials (`client_id`, `client_secret`) in the future, use:
 ```
 proxygen credentials set <KEY> <VALUE>
 ```
