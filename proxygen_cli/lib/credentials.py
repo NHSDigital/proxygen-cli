@@ -15,10 +15,10 @@ from pydantic import (
 
 from . import dot_proxygen
 
-CLIENT_ID = os.environ["client_id"]
-CLIENT_SECRET = os.environ["client_secret"]
+PROXYGEN_CLIENT_ID = os.environ["proxygen_client_id"]
+PROXYGEN_CLIENT_SECRET = os.environ["proxygen_client_secret"]
 
-data = {"client_id": CLIENT_ID, "client_secret": CLIENT_SECRET}
+data = {"proxygen_client_id": PROXYGEN_CLIENT_ID, "proxygen_client_secret": PROXYGEN_CLIENT_SECRET}
 
 
 def _yaml_credentials_file_source(_):
@@ -42,12 +42,12 @@ class Credentials(BaseSettings):
     )
     private_key_path: Optional[str] = None
     key_id: Optional[str] = None
-    client_id: str
-    client_secret: Optional[str] = None
+    proxygen_client_id: str
+    proxygen_client_secret: Optional[str] = None
     username: Optional[str] = None
     password: Optional[str] = None
 
-    @validator("username", "password", "client_secret", "client_id")
+    @validator("username", "password", "proxygen_client_secret", "proxygen_client_id")
     def validate_humans_users(cls, value, values):
         if values.get("private_key_path") is None and value is None:
             raise ValueError("field required")
