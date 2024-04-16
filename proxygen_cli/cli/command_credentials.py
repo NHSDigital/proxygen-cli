@@ -10,8 +10,8 @@ from proxygen_cli.lib.credentials import (
 from proxygen_cli.lib.dot_proxygen import credentials_file
 
 CHOICE_OF_CREDENTIAL_KEYS = click.Choice(Credentials.__fields__.keys())
-CLIENT_ID = os.environ["client_id"]
-CLIENT_SECRET = os.environ["client_secret"]
+proxygen_client_id = os.environ["proxygen_client_id"]
+proxygen_client_secret = os.environ["proxygen_client_secret"]
 
 @click.group()
 def credentials():
@@ -57,7 +57,7 @@ def set(custom_pairs, force):
 
     current_credentials = _yaml_credentials_file_source(None)
 
-    # Check if base credentials are set
+    # Check if user credentials are set
     base_credentials_set = all(
         current_credentials.get(field) is not None
         for field in ["username", "password"]
@@ -70,16 +70,16 @@ def set(custom_pairs, force):
         current_credentials["username"] = username
         current_credentials["password"] = password
 
-    # Check if client credentials are set
-    client_credentials_set = all(
+    # Check if proxygen client credentials are set
+    """proxygen_client_credentials_set = all(
         current_credentials.get(field) is not None
-        for field in ["client_id", "client_secret"]
+        for field in ["proxygen_client_id", "proxygen_client_secret"]
     )
-    if not client_credentials_set or force:
-        client_id = click.prompt("Enter client_id", default="", show_default=False)
-        client_secret = click.prompt("Enter client_secret", default="", show_default=False)
-        current_credentials["client_id"] = client_id
-        current_credentials["client_secret"] = client_secret
+    if not proxygen_client_credentials_set or force:
+        proxygen_client_id = click.prompt("Enter proxygen_client_id", default="", show_default=False)
+        proxygen_client_secret = click.prompt("Enter proxygen_client_secret", default="", show_default=False)
+        current_credentials["proxygen_client_id"] = proxygen_client_id
+        current_credentials["proxygen_client_secret"] = proxygen_client_secret"""
         
     # Prompt for individual custom key-value pairs
     for i in range(0, len(custom_pairs), 2):
