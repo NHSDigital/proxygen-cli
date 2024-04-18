@@ -35,8 +35,8 @@ def default_config_files_fixture(tmp_path):
     # Add some default credentials
     default_credentials = "\n".join(
         [
-            "client_id: hello-world-client",
-            "client_secret: 12345",
+            "proxygen_client_id: hello-world-client",
+            "proxygen_client_secret: 12345",
             "private_key_path: private_key_path.pem",
             "username: deathstar",
             "password: mock-password",

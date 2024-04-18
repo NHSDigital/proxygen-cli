@@ -47,7 +47,7 @@ def get_test_proxygen_client_credentials(**kwargs):
     return "\n".join(text_format_credentials)
 
 #set username and password must be successful
-def test_set_credential(patch_config, credentials_file):
+def test_set_proxygen_user_credential(patch_config, credentials_file):
     mock_credentials = get_test_credentials()
 
     with patch_config(credentials=mock_credentials):
