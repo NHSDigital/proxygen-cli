@@ -71,7 +71,7 @@ def set(custom_pairs, force):
         current_credentials["password"] = password
 
     # Check if proxygen client credentials are set
-    """proxygen_client_credentials_set = all(
+    proxygen_client_credentials_set = all(
         current_credentials.get(field) is not None
         for field in ["proxygen_client_id", "proxygen_client_secret"]
     )
@@ -79,7 +79,7 @@ def set(custom_pairs, force):
         proxygen_client_id = click.prompt("Enter proxygen_client_id", default="", show_default=False)
         proxygen_client_secret = click.prompt("Enter proxygen_client_secret", default="", show_default=False)
         current_credentials["proxygen_client_id"] = proxygen_client_id
-        current_credentials["proxygen_client_secret"] = proxygen_client_secret"""
+        current_credentials["proxygen_client_secret"] = proxygen_client_secret
         
     # Prompt for individual custom key-value pairs
     for i in range(0, len(custom_pairs), 2):
