@@ -5,8 +5,8 @@ on:
     branches:
       - "*"
 env:
-  proxygen_client_id: ${{ secrets.CLIENT_ID }}
-  proxygen_client_secret: ${{ secrets.CLIENT_SECRET }}
+  proxygen_client_id: ${{ secrets.PROXYGEN_CLIENT_ID }}
+  proxygen_client_secret: ${{ secrets.PROXYGEN_CLIENT_SECRET }}
 jobs:
   build:
     name: ci-checks
