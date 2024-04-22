@@ -123,10 +123,10 @@ def test_update_proxygen_client_credentials(patch_config, credentials_file):
     expected_credentials = "\n".join(
         [
             "base_url: https://mock-keycloak-url.nhs.uk",
-            "client_id: "+CLIENT_ID,
-            "client_secret: "+CLIENT_SECRET,
-            "password: new-clientid123",
-            "username: new-clientsecret123",
+            "client_id: new-clientid123",
+            "client_secret: new-clientsecret123",
+            "password: mock-password",
+            "username: mock-user",
         ]
     )
 
