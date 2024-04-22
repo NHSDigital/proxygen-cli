@@ -3,7 +3,9 @@ on:
   push:
     branches:
       - main
-
+env:
+  client_id: ${{ secrets.CLIENT_ID }}
+  client_secret: ${{ secrets.CLIENT_SECRET }}
 jobs:
   publish:
     runs-on: ubuntu-latest
