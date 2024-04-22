@@ -36,12 +36,12 @@ class Credentials(BaseSettings):
     )
     private_key_path: Optional[str] = None
     key_id: Optional[str] = None
-    client_id: str
-    client_secret: Optional[str] = None
+    proxygen_client_id: str
+    proxygen_client_secret: Optional[str] = None
     username: Optional[str] = None
     password: Optional[str] = None
 
-    @validator("username", "password", "client_secret", "client_id")
+    @validator("username", "password", "proxygen_client_secret", "proxygen_client_id")
     def validate_humans_users(cls, value, values):
         if values.get("private_key_path") is None and value is None:
             raise ValueError("field required")

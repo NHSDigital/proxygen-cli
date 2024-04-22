@@ -12,8 +12,8 @@ from proxygen_cli.lib.credentials import Credentials
 def get_test_credentials(**kwargs):
     base_credentials = {
         "base_url": "https://mock-keycloak-url.nhs.uk",
-        "client_id": "mock-api-client",
-        "client_secret": "1a2f4g5",
+        "proxygen_client_id": "mock-api-client",
+        "proxygen_client_secret": "1a2f4g5",
         "password": "mock-password",
         "username": "mock-user",
     }
@@ -50,7 +50,7 @@ def test_get_credential(patch_config):
 
     with patch_config(credentials=mock_credentials):
         runner = CliRunner()
-        result = runner.invoke(cmd_credentials.get, ["client_id"])
+        result = runner.invoke(cmd_credentials.get, ["proxygen_client_id"])
 
     assert result.output.strip() == "mock-api-client"
 
@@ -97,8 +97,8 @@ def test_set_credential(patch_config, credentials_file):
     expected_credentials = "\n".join(
         [
             "base_url: https://mock-keycloak-url.nhs.uk",
-            "client_id: mock-api-client",
-            "client_secret: 1a2f4g5",
+            "proxygen_client_id: mock-api-client",
+            "proxygen_client_secret: 1a2f4g5",
             "password: mock-password",
             "username: new-username",
         ]
@@ -125,8 +125,8 @@ def test_update_credentials(patch_config, credentials_file):
     expected_credentials = "\n".join(
         [
             "base_url: https://mock-keycloak-url.nhs.uk",
-            "client_id: mock-api-client",
-            "client_secret: 1a2f4g5",
+            "proxygen_client_id: mock-api-client",
+            "proxygen_client_secret: 1a2f4g5",
             "password: mock-password",
             "username: new-username123",  # Updated value
         ]
@@ -146,8 +146,8 @@ def test_add_key_id(patch_config, credentials_file):
     expected_credentials = "\n".join(
         [
             "base_url: https://mock-keycloak-url.nhs.uk",
-            "client_id: mock-api-client",
-            "client_secret: 1a2f4g5",
+            "proxygen_client_id: mock-api-client",
+            "proxygen_client_secret: 1a2f4g5",
             "key_id: test_kid",
             "password: mock-password",
             "username: mock-user",
@@ -188,8 +188,8 @@ def test_remove_setting(patch_config, credentials_file):
     expected_credentials = "\n".join(
         [
             "base_url: https://mock-keycloak-url.nhs.uk",
-            "client_id: mock-api-client",
-            "client_secret: 1a2f4g5",
+            "proxygen_client_id: mock-api-client",
+            "proxygen_client_secret: 1a2f4g5",
             "password: mock-password",
             "username: mock-user",
         ]
