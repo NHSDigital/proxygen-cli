@@ -57,8 +57,8 @@ def test_set_proxygen_user_credential(patch_config, credentials_file):
     expected_credentials = "\n".join(
         [
             "base_url: https://mock-keycloak-url.nhs.uk",
-            "client_id: mock-api-client",
-            "client_secret: 1a2f4g5",
+            "client_id: "+CLIENT_ID,
+            "client_secret: "+CLIENT_SECRET,
             "password: mock-password",
             "username: new-username",
         ]
@@ -90,8 +90,8 @@ def test_update_proxygen_user_credentials(patch_config, credentials_file):
     expected_credentials = "\n".join(
         [
             "base_url: https://mock-keycloak-url.nhs.uk",
-            "client_id: ",CLIENT_ID,
-            "client_secret: ",CLIENT_SECRET,
+            "client_id: "+CLIENT_ID,
+            "client_secret: "+CLIENT_SECRET,
             "password: new-password123",
             "username: new-username123",
         ]
@@ -123,8 +123,8 @@ def test_update_proxygen_client_credentials(patch_config, credentials_file):
     expected_credentials = "\n".join(
         [
             "base_url: https://mock-keycloak-url.nhs.uk",
-            "client_id: ",CLIENT_ID,
-            "client_secret: ",CLIENT_SECRET,
+            "client_id: "+CLIENT_ID,
+            "client_secret: "+CLIENT_SECRET,
             "password: new-clientid123",
             "username: new-clientsecret123",
         ]
