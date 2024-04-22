@@ -4,8 +4,8 @@ on:
     branches:
       - main
 env:
-  client_id: ${{ secrets.CLIENT_ID }}
-  client_secret: ${{ secrets.CLIENT_SECRET }}
+  proxygen_client_id: ${{ secrets.PROXYGEN_CLIENT_ID }}
+  proxygen_client_secret: ${{ secrets.PROXYGEN_CLIENT_SECRET }}
 jobs:
   publish:
     runs-on: ubuntu-latest

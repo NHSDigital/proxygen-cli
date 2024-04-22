@@ -10,8 +10,8 @@ from proxygen_cli.lib.credentials import (
 from proxygen_cli.lib.dot_proxygen import credentials_file
 
 CHOICE_OF_CREDENTIAL_KEYS = click.Choice(Credentials.__fields__.keys())
-client_id = os.environ["client_id"]
-client_secret = os.environ["client_secret"]
+#client_id = os.environ["proxygen_client_id"]
+#client_secret = os.environ["proxygen_client_secret"]
 
 @click.group()
 def credentials():

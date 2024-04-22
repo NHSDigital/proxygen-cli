@@ -15,8 +15,8 @@ from pydantic import (
 
 from . import dot_proxygen
 
-CLIENT_ID = os.environ["client_id"]
-CLIENT_SECRET = os.environ["client_secret"]
+CLIENT_ID = os.environ["proxygen_client_id"]
+CLIENT_SECRET = os.environ["proxygen_client_secret"]
 
 data = {"client_id": CLIENT_ID, "client_secret": CLIENT_SECRET}
 
