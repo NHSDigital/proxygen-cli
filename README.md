@@ -13,7 +13,7 @@ After installation, the `proxygen` executable is available. Typing `proxygen` di
 
 ### Credentials
 
-The Proxygen CLI client credentials `proxygen_client_id`, `proxygen_client_secret` are setup as part of proxygen CLI package.
+The Proxygen CLI client credentials `client_id`, `client_secret` are setup as part of proxygen CLI package.
 
 All users should have individual credentials. `proxygen-cli` needs to know about them. You can setup your user credentials in proxygen-cli using:
 ```
@@ -21,7 +21,7 @@ proxygen credentials set
 ```
 This command prompts you to enter your `username`, and `password`.
 
-To update any credentials `proxygen_client_id`/ `proxygen_client_secret`/ `username`/ `password` in the future, use:
+To update any credentials `client_id`/ `client_secret`/ `username`/ `password` in the future, use:
 ```
 proxygen credentials set <KEY> <VALUE>
 ```

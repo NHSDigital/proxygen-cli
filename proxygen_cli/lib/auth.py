@@ -80,8 +80,8 @@ def _get_token_data_from_refresh_token(
         f"{CREDENTIALS.base_url}/protocol/openid-connect/token",
         data={
             "grant_type": "refresh_token",
-            "proxygen_client_id": CREDENTIALS.proxygen_client_id,
-            "proxygen_client_secret": CREDENTIALS.proxygen_client_secret,
+            "client_id": CREDENTIALS.client_id,
+            "client_secret": CREDENTIALS.client_secret,
             "refresh_token": refresh_token,
         },
     )
@@ -96,7 +96,7 @@ def _get_token_data_from_user_login():
     login_page_resp = session.get(
         f"{CREDENTIALS.base_url}/protocol/openid-connect/auth",
         params={
-            "proxygen_client_id": CREDENTIALS.proxygen_client_id,
+            "client_id": CREDENTIALS.client_id,
             "redirect_uri": redirect_uri,
             "response_type": "code",
             "state": "123",
@@ -136,8 +136,8 @@ def _get_token_data_from_user_login():
             "grant_type": "authorization_code",
             "code": auth_code,
             "redirect_uri": redirect_uri,
-            "proxygen_client_id": CREDENTIALS.proxygen_client_id,
-            "proxygen_client_secret": CREDENTIALS.proxygen_client_secret,
+            "client_id": CREDENTIALS.client_id,
+            "client_secret": CREDENTIALS.client_secret,
         },
     )
     if token_response.status_code != 200:
@@ -157,8 +157,8 @@ def _get_token_data_from_machine_user():
     private_key = CREDENTIALS.private_key()
 
     claims = {
-        "sub": CREDENTIALS.proxygen_client_id,
-        "iss": CREDENTIALS.proxygen_client_id,
+        "sub": CREDENTIALS.client_id,
+        "iss": CREDENTIALS.client_id,
         "jti": str(uuid.uuid4()),
         "aud": aud,
         "exp": int(time()) + 300,  # 5mins in the future
