@@ -31,11 +31,11 @@ def get_test_credentials(**kwargs):
 #get mock values for credentials.yaml file
 def get_test_proxygen_client_credentials(**kwargs):
     client_credentials = {
-        #"base_url": "https://mock-keycloak-url.nhs.uk",
+        "base_url": "https://mock-keycloak-url.nhs.uk",
         "client_id": CLIENT_ID,
         "client_secret": CLIENT_SECRET,
-        #"password": "mock-password",
-        #"username": "mock-user",
+        "password": "mock-password",
+        "username": "mock-user",
     }
 
     updated_credentials = client_credentials | kwargs
@@ -52,7 +52,7 @@ def test_set_proxygen_user_credential(patch_config, credentials_file):
 
     with patch_config(credentials=mock_credentials):
         runner = CliRunner()
-        runner.invoke(cmd_credentials.set, ["username", "new-username"])
+        runner.invoke(cmd_credentials.set, ["username", "new-username"] )
 
     expected_credentials = "\n".join(
         [
