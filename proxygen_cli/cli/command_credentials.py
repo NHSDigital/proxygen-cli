@@ -10,8 +10,6 @@ from proxygen_cli.lib.credentials import (
 from proxygen_cli.lib.dot_proxygen import credentials_file
 
 CHOICE_OF_CREDENTIAL_KEYS = click.Choice(Credentials.__fields__.keys())
-#client_id = os.environ["proxygen_client_id"]
-#client_secret = os.environ["proxygen_client_secret"]
 
 @click.group()
 def credentials():
@@ -70,17 +68,6 @@ def set(custom_pairs, force):
         current_credentials["username"] = username
         current_credentials["password"] = password
 
-    # Check if proxygen client credentials are set
-    """client_credentials_set = all(
-        current_credentials.get(field) is not None
-        for field in ["client_id", "client_secret"]
-    )
-    if not client_credentials_set or force:
-        client_id = click.prompt("Enter client_id", default="", show_default=False)
-        client_secret = click.prompt("Enter client_secret", default="", show_default=False)
-        current_credentials["client_id"] = client_id
-        current_credentials["client_secret"] = client_secret"""
-        
     # Prompt for individual custom key-value pairs
     for i in range(0, len(custom_pairs), 2):
         key, value = custom_pairs[i:i + 2]
