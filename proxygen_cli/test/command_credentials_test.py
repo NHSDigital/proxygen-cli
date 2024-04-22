@@ -106,7 +106,8 @@ def test_update_proxygen_client_credentials(patch_config, credentials_file):
 
     # Convert mock_credentials to a dictionary
     mock_credentials_dict = yaml.safe_load(mock_credentials)
-
+    print("HELLO")
+    print(mock_credentials_dict)
     # Set an initial value for the username and password field
     initial_clientid = "old-clientid"
     mock_credentials_dict["username"] = initial_clientid
