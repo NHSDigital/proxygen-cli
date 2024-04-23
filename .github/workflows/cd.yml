@@ -3,9 +3,6 @@ on:
   push:
     branches:
       - main
-env:
-  proxygen_client_id: ${{ secrets.PROXYGEN_CLIENT_ID }}
-  proxygen_client_secret: ${{ secrets.PROXYGEN_CLIENT_SECRET }}
 jobs:
   publish:
     runs-on: ubuntu-latest

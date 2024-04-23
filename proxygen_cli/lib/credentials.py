@@ -15,11 +15,6 @@ from pydantic import (
 
 from . import dot_proxygen
 
-CLIENT_ID = os.environ["proxygen_client_id"]
-CLIENT_SECRET = os.environ["proxygen_client_secret"]
-
-data = {"client_id": CLIENT_ID, "client_secret": CLIENT_SECRET}
-
 
 def _yaml_credentials_file_source(_):
     with dot_proxygen.credentials_file().open() as yaml_file:
@@ -31,8 +26,7 @@ def create_yaml_credentials_file():
     file_path = os.path.expanduser("~/.proxygen/credentials.yaml")
 
     if not os.path.exists(file_path):
-        with open(file_path, "w"):
-            yaml.dump(data, file_path)
+        with open(file_path, 'w'):
             pass
 
 
@@ -119,8 +113,6 @@ class Credentials(BaseSettings):
 
 
 _CREDENTIALS = None
-
-
 def initialise_credentials():
     global _CREDENTIALS
     try:

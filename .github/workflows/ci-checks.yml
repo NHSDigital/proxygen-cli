@@ -4,9 +4,6 @@ on:
   pull_request:
     branches:
       - "*"
-env:
-  proxygen_client_id: ${{ secrets.PROXYGEN_CLIENT_ID }}
-  proxygen_client_secret: ${{ secrets.PROXYGEN_CLIENT_SECRET }}
 jobs:
   build:
     name: ci-checks
