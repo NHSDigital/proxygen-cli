@@ -84,6 +84,11 @@ def get_docker_login(api: str):
     return _resp_json(resp)
 
 
+def get_pytest_nhsd_apim_token(api: str):
+    resp = _session().get(f"/apis/{api}/pytest-nhsd-apim-token")
+    return _resp_json(resp)
+
+
 def get_resources(
     api: str,
     _type: Optional[Literal["instance", "secret"]] = None,
