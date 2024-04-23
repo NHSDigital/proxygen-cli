@@ -13,15 +13,15 @@ After installation, the `proxygen` executable is available. Typing `proxygen` di
 
 ### Credentials
 
-The CLI requires client credentials, which can be obtained from the `platforms-api-producer-support` Slack channel.
+The Proxygen CLI client credentials `client_id`, `client_secret` are setup as part of proxygen CLI package.
 
-All users should also have individual credentials. `proxygen-cli` needs to know about them.
-You can setup the credentials in `proxygen-cli` using:
+All users should have individual credentials. `proxygen-cli` needs to know about them. You can setup your user credentials in proxygen-cli using:
 ```
 proxygen credentials set
 ```
-This command prompts you to enter your `client_id`, `client_secret`, `username`, and `password`. 
-To update credentials in the future, use:
+This command prompts you to enter your `username`, and `password`.
+
+To update any credentials `client_id`/ `client_secret`/ `username`/ `password` in the future, use:
 ```
 proxygen credentials set <KEY> <VALUE>
 ```
