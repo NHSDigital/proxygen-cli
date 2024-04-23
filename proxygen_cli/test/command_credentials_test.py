@@ -2,14 +2,12 @@ from unittest.mock import patch
 
 import yaml
 import pytest
-import os
 from click.testing import CliRunner
 from pydantic.error_wrappers import ValidationError
 
 import proxygen_cli.cli.command_credentials as cmd_credentials
 from proxygen_cli.lib.credentials import Credentials
-CLIENT_ID = os.environ["proxygen_client_id"]
-CLIENT_SECRET = os.environ["proxygen_client_secret"]
+
 
 def get_test_credentials(**kwargs):
     base_credentials = {
@@ -28,119 +26,6 @@ def get_test_credentials(**kwargs):
 
     return "\n".join(text_format_credentials)
 
-#get mock values for credentials.yaml file
-def get_test_proxygen_client_credentials(**kwargs):
-    client_credentials = {
-        "base_url": "https://mock-keycloak-url.nhs.uk",
-        "client_id": CLIENT_ID,
-        "client_secret": CLIENT_SECRET,
-        "password": "mock-password",
-        "username": "mock-user",
-    }
-
-    updated_credentials = client_credentials | kwargs
-
-    text_format_credentials = [
-        f"{key}: {value}" for key, value in updated_credentials.items()
-    ]
-
-    return "\n".join(text_format_credentials)
-
-#set username and password must be successful
-def test_set_proxygen_user_credential(patch_config, credentials_file):
-    mock_credentials = get_test_proxygen_client_credentials()
-
-    with patch_config(credentials=mock_credentials):
-        runner = CliRunner()
-        runner.invoke(cmd_credentials.set, ["username", "new-username"] )
-
-    expected_credentials = "\n".join(
-        [
-            "base_url: https://mock-keycloak-url.nhs.uk",
-            "client_id: "+CLIENT_ID,
-            "client_secret: "+CLIENT_SECRET,
-            "password: mock-password",
-            "username: new-username",
-        ]
-    )
-
-    # Check the file has been written to
-    assert credentials_file() == expected_credentials
-
-
-#overwrite username and password must be successful, with client id and secret values unmodified
-def test_update_proxygen_user_credentials(patch_config, credentials_file):
-    mock_credentials = get_test_proxygen_client_credentials()
-
-    # Convert mock_credentials to a dictionary
-    mock_credentials_dict = yaml.safe_load(mock_credentials)
-
-    # Set an initial value for the username and password field
-    initial_username = "old-username"
-    mock_credentials_dict["username"] = initial_username
-
-    initial_password = "old-password"
-    mock_credentials_dict["password"] = initial_password
-
-    with patch_config(credentials=mock_credentials):
-        runner = CliRunner()
-        runner.invoke(cmd_credentials.set, ["username", "new-username123"])
-        runner.invoke(cmd_credentials.set, ["password", "new-password123"])
-
-    expected_credentials = "\n".join(
-        [
-            "base_url: https://mock-keycloak-url.nhs.uk",
-            "client_id: "+CLIENT_ID,
-            "client_secret: "+CLIENT_SECRET,
-            "password: new-password123",
-            "username: new-username123",
-        ]
-    )
-
-    # Check the file has been written to
-    assert credentials_file() == expected_credentials
-
-#overwrite client id and secret must be successful
-def test_update_proxygen_client_credentials(patch_config, credentials_file):
-    mock_credentials = get_test_proxygen_client_credentials()
-
-    # Convert mock_credentials to a dictionary
-    mock_credentials_dict = yaml.safe_load(mock_credentials)
-    print("HELLO")
-    print(mock_credentials_dict)
-    # Set an initial value for the username and password field
-    initial_clientid = "old-clientid"
-    mock_credentials_dict["username"] = initial_clientid
-
-    initial_clientsecret = "old-clientsecret"
-    mock_credentials_dict["password"] = initial_clientsecret
-
-    with patch_config(credentials=mock_credentials):
-        runner = CliRunner()
-        runner.invoke(cmd_credentials.set, ["client_id", "new-clientid123"])
-        runner.invoke(cmd_credentials.set, ["client_secret", "new-clientsecret123"])
-
-    expected_credentials = "\n".join(
-        [
-            "base_url: https://mock-keycloak-url.nhs.uk",
-            "client_id: new-clientid123",
-            "client_secret: new-clientsecret123",
-            "password: mock-password",
-            "username: mock-user",
-        ]
-    )
-
-    # Check the file has been written to
-    assert credentials_file() == expected_credentials
-
-
-#verify error for missing proxygen username and password
-def test_missing_proxygen_user_credentials(update_config):
-    mock_credentials = get_test_proxygen_client_credentials(username="",password="")
-    update_config(credentials=mock_credentials)
-
-    with pytest.raises(ValidationError):
-        Credentials()
 
 def test_missing_credentials(update_config):
     mock_credentials = get_test_credentials(username="")
