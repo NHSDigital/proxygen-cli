@@ -9,6 +9,7 @@ from proxygen_cli.cli import (
     command_spec,
     command_secret,
     command_docker,
+    command_pytest_nhsd_apim_token
 )
 
 
@@ -23,6 +24,7 @@ main.add_command(command_instance.instance)
 main.add_command(command_spec.spec)
 main.add_command(command_secret.secret)
 main.add_command(command_docker.docker)
+main.add_command(command_pytest_nhsd_apim_token.pytest_nhsd_apim)
 
 
 @main.command()
