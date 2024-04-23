@@ -77,3 +77,10 @@ Use the following command to obtain a docker token:
 ```
 $(proxygen docker get-login)
 ```
+### Retrieving a token to use with the pytest-nhsd-apim python testing package
+When testing using the pytest-nhsd-apim python testing package, an apigee management api token is needed. This endpoint provides this token for use in automated tests.
+
+Use the following command to obtain the pytest-nhsd-apim token:
+```
+$(proxygen pytest_nhsd_apim get_token)
+```
