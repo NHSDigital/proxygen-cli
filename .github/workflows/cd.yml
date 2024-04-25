@@ -3,10 +3,6 @@ on:
   push:
     branches:
       - main
-env:
-  PROXYGEN_CLIENT_ID: ${{ secrets.PROXYGEN_CLIENT_ID }}
-  PROXYGEN_CLIENT_SECRET: ${{ secrets.PROXYGEN_CLIENT_SECRET }}
-
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -33,4 +29,4 @@ jobs:
         run: poetry build
 
       - name: publish
-        run: poetry publish $PROXYGEN_CLIENT_ID $PROXYGEN_CLIENT_SECRET
+        run: poetry publish
