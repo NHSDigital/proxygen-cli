@@ -13,9 +13,12 @@ from pydantic import (
 )
 
 from . import dot_proxygen
-from constants import PROXYGEN_CLIENT_ID, PROXYGEN_CLIENT_SECRET
+from . import constants
 
-data = {"client_id": PROXYGEN_CLIENT_ID, "client_secret": PROXYGEN_CLIENT_SECRET}
+data = {
+    "client_id": constants.PROXYGEN_CLIENT_ID,
+    "client_secret": constants.PROXYGEN_CLIENT_SECRET,
+}
 
 
 def _yaml_credentials_file_source(_):
