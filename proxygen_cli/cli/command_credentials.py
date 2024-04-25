@@ -2,6 +2,7 @@ import json
 import click
 import yaml
 import pydantic
+import os
 
 from proxygen_cli.lib import output
 from proxygen_cli.lib.credentials import (
@@ -9,7 +10,6 @@ from proxygen_cli.lib.credentials import (
 from proxygen_cli.lib.dot_proxygen import credentials_file
 
 CHOICE_OF_CREDENTIAL_KEYS = click.Choice(Credentials.__fields__.keys())
-
 
 @click.group()
 def credentials():
@@ -55,20 +55,16 @@ def set(custom_pairs, force):
 
     current_credentials = _yaml_credentials_file_source(None)
 
-    # Check if base credentials are set
+    # Check if user credentials are set
     base_credentials_set = all(
         current_credentials.get(field) is not None
-        for field in ["client_id", "client_secret", "username", "password"]
+        for field in ["username", "password"]
     )
 
     if not base_credentials_set or force:
-        client_id = click.prompt("Enter client_id")
-        client_secret = click.prompt("Enter client_secret", default="", show_default=False)
         username = click.prompt("Enter username", default="", show_default=False)
         password = click.prompt("Enter password", default="", show_default=False)
 
-        current_credentials["client_id"] = client_id
-        current_credentials["client_secret"] = client_secret
         current_credentials["username"] = username
         current_credentials["password"] = password
 
