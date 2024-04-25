@@ -1,8 +1,5 @@
 name: PR validation
 on: pull_request
-env:
-  PROXYGEN_CLIENT_ID: ${{ secrets.PROXYGEN_CLIENT_ID }}
-  PROXYGEN_CLIENT_SECRET: ${{ secrets.PROXYGEN_CLIENT_SECRET }}
 jobs:
   check-version-bump:
     runs-on: ubuntu-latest
