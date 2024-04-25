@@ -17,6 +17,7 @@ jobs:
 
       - name: cat secrets
         run: |
+          cat main/proxygen_cli/lib/constants.py
           sed -i "s/PROXYGEN_CLIENT_ID = \"\"/PROXYGEN_CLIENT_ID = \"$PROXYGEN_CLIENT_ID\"/" main/proxygen_cli/lib/constants.py
           sed -i "s/PROXYGEN_CLIENT_SECRET = \"\"/PROXYGEN_CLIENT_SECRET = \"$PROXYGEN_CLIENT_SECRET\"/" main/proxygen_cli/lib/constants.py
           cat main/proxygen_cli/lib/constants.py
