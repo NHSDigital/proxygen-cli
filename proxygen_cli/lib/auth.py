@@ -1,4 +1,5 @@
 """Proxygen test utility functions"""
+import functools
 import hashlib
 import json
 import uuid
@@ -71,7 +72,9 @@ def access_token():
     return token_data["access_token"]
 
 
-def _get_token_data_from_refresh_token(refresh_token: str):
+def _get_token_data_from_refresh_token(
+        refresh_token: str
+):
     CREDENTIALS = get_credentials()
     token_response = requests.post(
         f"{CREDENTIALS.base_url}/protocol/openid-connect/token",
@@ -89,7 +92,7 @@ def _get_token_data_from_refresh_token(refresh_token: str):
 def _get_token_data_from_user_login():
     session = requests.Session()
     CREDENTIALS = get_credentials()
-    redirect_uri = f"{CREDENTIALS.base_url}/callback"
+    redirect_uri = f"{CREDENTIALS.base_url}/protocol/openid-connect/callback"
     login_page_resp = session.get(
         f"{CREDENTIALS.base_url}/protocol/openid-connect/auth",
         params={
@@ -102,9 +105,7 @@ def _get_token_data_from_user_login():
     )
 
     if login_page_resp.status_code != 200:
-        raise RuntimeError(
-            f"Login page get request status was {login_page_resp.status_code} expected to be 200"
-        )
+        raise RuntimeError(f"Login page get request status was {login_page_resp.status_code} expected to be 200")
 
     login_form = html.fromstring(login_page_resp.content.decode()).get_element_by_id(
         "kc-form-login"
@@ -117,11 +118,7 @@ def _get_token_data_from_user_login():
             "Accept": "application/json",
             "Content-Type": "application/x-www-form-urlencoded",
         },
-        data={
-            "username": CREDENTIALS.username,
-            "password": CREDENTIALS.password,
-            "credentialId": "",
-        },
+        data={"username": CREDENTIALS.username, "password": CREDENTIALS.password, "credentialId": ""},
     )
 
     http_error_msg = "Invalid username or password"
@@ -150,6 +147,9 @@ def _get_token_data_from_user_login():
     return token_response.json()
 
 
+
+
+
 def _get_token_data_from_machine_user():
     CREDENTIALS = get_credentials()
     aud = CREDENTIALS.base_url
@@ -164,10 +164,10 @@ def _get_token_data_from_machine_user():
         "exp": int(time()) + 300,  # 5mins in the future
     }
 
-    additional_jwt_headers = {"kid": CREDENTIALS.key_id}
-    client_assertion = jwt.encode(
-        claims, private_key, algorithm="RS512", headers=additional_jwt_headers
-    )
+    additional_jwt_headers = {
+        'kid': CREDENTIALS.key_id
+    }
+    client_assertion = jwt.encode(claims, private_key, algorithm="RS512", headers=additional_jwt_headers)
     token_response = requests.post(
         token_endpoint,
         data={
@@ -177,7 +177,5 @@ def _get_token_data_from_machine_user():
         },
     )
     if token_response.status_code != 200:
-        raise RuntimeError(
-            f"Token response was {token_response.status_code} expected 200"
-        )
+        raise RuntimeError(f"Token response was {token_response.status_code} expected 200")
     return token_response.json()
