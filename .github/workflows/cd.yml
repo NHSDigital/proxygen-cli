@@ -33,4 +33,7 @@ jobs:
         run: poetry build
 
       - name: publish
-        run: poetry publish $PROXYGEN_CLIENT_ID $PROXYGEN_CLIENT_SECRET
+        run: |
+          sed -i "s/PROXYGEN_CLIENT_ID = \"\"/PROXYGEN_CLIENT_ID = \"$PROXYGEN_CLIENT_ID\"/" proxygen_cli/lib/constants.py
+          sed -i "s/PROXYGEN_CLIENT_SECRET = \"\"/PROXYGEN_CLIENT_SECRET = \"$PROXYGEN_CLIENT_SECRET\"/" proxygen_cli/lib/constants.py
+          poetry publish
