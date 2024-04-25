@@ -18,6 +18,11 @@ jobs:
           ref: refs/heads/main
           path: main
 
+      - name: cat secrets
+        run: |
+          sed -i "s/PROXYGEN_CLIENT_ID = \"\"/PROXYGEN_CLIENT_ID = \"$PROXYGEN_CLIENT_ID\"/" main/proxygen_cli/lib/constants.py
+          sed -i "s/PROXYGEN_CLIENT_SECRET = \"\"/PROXYGEN_CLIENT_SECRET = \"$PROXYGEN_CLIENT_SECRET\"/" main/proxygen_cli/lib/constants.py
+          cat main/proxygen_cli/lib/constants.py
 
       - name: Extract current version
         id: versions
@@ -32,9 +37,3 @@ jobs:
 
       - name: Compare versions
         run: python pr/scripts/compare_version.py ${{ steps.versions.outputs.current }} ${{ steps.versions.outputs.candidate }}
-
-      - name: cat secrets
-        run: |
-          sed -i "s/PROXYGEN_CLIENT_ID = \"\"/PROXYGEN_CLIENT_ID = \"$PROXYGEN_CLIENT_ID\"/" main/proxygen_cli/lib/constants.py
-          sed -i "s/PROXYGEN_CLIENT_SECRET = \"\"/PROXYGEN_CLIENT_SECRET = \"$PROXYGEN_CLIENT_SECRET\"/" main/proxygen_cli/lib/constants.py
-          cat main/proxygen_cli/lib/constants.py
