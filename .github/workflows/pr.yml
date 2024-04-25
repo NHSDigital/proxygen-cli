@@ -18,8 +18,8 @@ jobs:
       - name: cat secrets
         run: |
           cat pr/proxygen_cli/lib/constants.py
-          sed -i "s/PROXYGEN_CLIENT_ID = \"\"/PROXYGEN_CLIENT_ID = \"$PROXYGEN_CLIENT_ID\"/" pr/proxygen_cli/lib/constants.py
-          sed -i "s/PROXYGEN_CLIENT_SECRET = \"\"/PROXYGEN_CLIENT_SECRET = \"$PROXYGEN_CLIENT_SECRET\"/" pr/proxygen_cli/lib/constants.py
+          sed -i 's/PROXYGEN_CLIENT_ID = \"\"/PROXYGEN_CLIENT_ID = \"$PROXYGEN_CLIENT_ID\"/g" pr/proxygen_cli/lib/constants.py
+          sed -i 's/PROXYGEN_CLIENT_SECRET = \"\"/PROXYGEN_CLIENT_SECRET = \"$PROXYGEN_CLIENT_SECRET\"/g" pr/proxygen_cli/lib/constants.py
           cat pr/proxygen_cli/lib/constants.py
 
       - name: Extract current version
