@@ -1,4 +1,9 @@
 name: Release
+
+env:
+  PROXYGEN_CLIENT_ID: ${{ secrets.PROXYGEN_CLIENT_ID }}
+  PROXYGEN_CLIENT_SECRET: ${{ secrets.PROXYGEN_CLIENT_SECRET }}
+
 on:
   push:
     branches:
