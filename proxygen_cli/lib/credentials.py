@@ -5,7 +5,6 @@ import yaml
 import sys
 import os
 
-import click
 from pydantic import (
     BaseSettings,
     validator,
@@ -15,8 +14,6 @@ from pydantic import (
 
 from . import dot_proxygen
 from constants import PROXYGEN_CLIENT_ID, PROXYGEN_CLIENT_SECRET
-# CLIENT_ID = os.environ["PROXYGEN_CLIENT_ID"]
-# CLIENT_SECRET = os.environ["PROXYGEN_CLIENT_SECRET"]
 
 data = {"client_id": PROXYGEN_CLIENT_ID, "client_secret": PROXYGEN_CLIENT_SECRET}
 
