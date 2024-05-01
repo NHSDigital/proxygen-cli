@@ -11,21 +11,6 @@ After installation, the `proxygen` executable is available. Typing `proxygen` di
 
 ## Configuration
 
-### Credentials
-
-The Proxygen CLI client credentials `client_id`, `client_secret` are setup as part of proxygen CLI package.
-
-All users should have individual credentials. `proxygen-cli` needs to know about them. You can setup your user credentials in proxygen-cli using:
-```
-proxygen credentials set
-```
-This command prompts you to enter your `username`, and `password`.
-
-To update any credentials `client_id`/ `client_secret`/ `username`/ `password` in the future, use:
-```
-proxygen credentials set <KEY> <VALUE>
-```
-
 
 ### Settings
 To specify the API you are developing for, use:
@@ -33,6 +18,43 @@ To specify the API you are developing for, use:
 proxygen settings set api <API-NAME>
 ```
 Your user must have the appropriate permissions for managing instances, secrets, and specifications related to the specified API. If permissions are insufficient, commands will fail. Reach out to the `platforms-api-producer-support` channel for assistance with permissions.
+
+
+### Credentials
+There are two ways to authenticate via the Proxygen CLI. Either via user login credentials such as a username and password or as a machine user using your private key and client_id.
+
+#### Setting up for user access
+If you are setting up user access for the first time you will first need to request a user account. Contact the [platforms-api-producer-support](https://nhsdigital-platforms.slack.com/archives/C016JRWN6AY) channel asking for a proxygen user account to be set up providing:
+
+- Your nhs.net email address
+- The proxygen-managed api/s your account will need access to
+
+To setup the Proxygen CLI credentials for the first time with user access enter the following command:
+```
+proxygen credentials set
+```
+The CLI will ask you for your username, and password. These credentials will be securely stored on your local machine in the directory ~/.proxygen/credentials.yaml. The client_id and secret used for user access will be automatically added to this file after running the command.
+
+Your user must have permissions to manipulate instances/secrets/specs for the API you set here. If you do not have sufficient permissions commands will fail. If you believe your permissions are incorrect, contact the API platform team via the [platforms-api-producer-support](https://nhsdigital-platforms.slack.com/archives/C016JRWN6AY) channel.
+
+#### Setting up for machine-user access
+After having set up your API using the instructions at [Getting set up with proxy generator](https://nhsd-confluence.digital.nhs.uk/display/APM/Getting+set+up+with+proxy+generator), you should have the following:
+
+- A private key from a key pair for machine user access
+- The key id for that specific key pair
+- The client_id for your api machine user access (usually <your-api-name>-client)
+
+Using this information enter the following command:
+```
+proxygen credentials set private_key_path <PATH_TO_PRIVATE_KEY> key_id <KEY_ID_FOR_PRIVATE_KEY> client_id <MACHINE_USER_CLIENT_ID>
+```
+The CLI will ask you for your username, and password. For machine authentication, the username and password must be left blank. The credentials will be securely stored in the directory ~/.proxygen/credentials.yaml.
+
+> **_NOTE:_**  If you are switching between using user access and machine-user access bare in mind:
+> - proxygen-cli will favour user access if username and password credentials are set
+> - User access uses proxygen-cli-user-client as a client_id. If you switch between access modes remember to switch the client_id
+> - The value for client_secret should remain untouched as it is not used for machine-user access
+> - If you lose the client_secret for then proxygen-cli-user-client then reach out to the platforms-api-producer-support channel for it
 
 
 ## Commands
