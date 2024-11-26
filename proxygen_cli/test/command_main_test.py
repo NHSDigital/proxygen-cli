@@ -44,4 +44,4 @@ def test_proxygen_version():
 
     # Assert that the command runs successfully and outputs the correct version
     assert result.exit_code == 0
-    assert result.output.strip() == "proxygen, version 2.1.17"
+    assert result.output.strip() == "proxygen, version 2.1.18"

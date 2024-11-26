@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "proxygen-cli"
-version = "2.1.17"
+version = "2.1.18"
 description = "CLI for interacting with NHSD APIM's proxygen service"
 authors = ["Ben Strutt <ben.strutt1@nhs.net>"]
 readme = "README.md"
@@ -22,8 +22,7 @@ pyyaml = "^6.0"
 yaspin = "^2.2.0"
 tabulate = "^0.9.0"
 packaging = "^24.2"
-toml = "^0.10.2"
-
+toml = "^0.10.2"  # <-- Added toml dependency
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.1"
