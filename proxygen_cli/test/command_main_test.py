@@ -39,7 +39,7 @@ def test_proxygen_version():
     runner = CliRunner()
 
     # Mock the version function to return a fixed value
-    with patch("proxygen_cli.cli.command_main.get_version", return_value="2.1.17"):
+    with patch("proxygen_cli.cli.command_main.get_version", return_value="2.1.18"):
         result = runner.invoke(main, ['version'])  # Correct invocation of version command via main
 
     # Assert that the command runs successfully and outputs the correct version
