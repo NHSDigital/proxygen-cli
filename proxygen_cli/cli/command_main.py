@@ -1,6 +1,4 @@
 import click
-import toml
-from pathlib import Path
 from proxygen_cli.lib.settings import SETTINGS
 from proxygen_cli.lib import proxygen_api, output
 from proxygen_cli.cli import (
@@ -17,12 +15,6 @@ from proxygen_cli.cli import (
 @click.version_option(prog_name="proxygen")  # Automatically adds version option
 def main():
     """Main group"""
-
-@main.command()
-def version():
-    """Show the version of proxygen-cli."""
-    # The version will be automatically printed by Click
-    pass
 
 main.add_command(command_settings.settings)
 main.add_command(command_credentials.credentials)
