@@ -8,7 +8,7 @@ from proxygen_cli.cli import (
     command_spec,
     command_secret,
     command_docker,
-    command_pytest_nhsd_apim_token,
+    command_pytest_nhsd_apim_token
 )
 
 @click.group()
