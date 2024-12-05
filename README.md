@@ -6,7 +6,7 @@ Installation is straightforward using pip:
 ```
 pip install proxygen-cli
 ```
-After installation, the `proxygen` executable is available. Typing `proxygen` displays a list of available commands. `proxygen --version` will show the version of the CLI installed
+After installation, the `proxygen` executable is available. Typing `proxygen` displays a list of available commands. The `proxygen --version` command will show the version of the CLI installed.
 
 
 ## Configuration
