@@ -4,13 +4,28 @@ import json
 import uuid
 from time import time
 from urllib.parse import parse_qs, urlparse
+from html.parser import HTMLParser
 
 import jwt
 import requests
-from lxml import html
 
 from .credentials import get_credentials
 from .dot_proxygen import token_cache_file
+
+
+class KeycloakFormParser(HTMLParser):
+    action = None
+
+    def handle_starttag(self, tag, attrs):
+        if tag != 'form':
+            return
+
+        attributes = dict(attrs)
+
+        if attributes.get('id') != "kc-form-login":
+            return
+
+        self.action = attributes.get('action')
 
 
 def cache_key():
@@ -106,11 +121,10 @@ def _get_token_data_from_user_login():
             f"Login page get request status was {login_page_resp.status_code} expected to be 200"
         )
 
-    login_form = html.fromstring(login_page_resp.content.decode()).get_element_by_id(
-        "kc-form-login"
-    )
+    parser = KeycloakFormParser()
+    parser.feed(login_page_resp.content.decode())
+    url = parser.action
 
-    url = login_form.action
     user_login_resp = session.post(
         url,
         headers={
