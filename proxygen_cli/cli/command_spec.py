@@ -1,3 +1,5 @@
+import os
+import sys
 from typing import get_args
 
 import click
@@ -13,6 +15,7 @@ PUBLISH_SPEC_POP_KEYS = ["x-nhsd-apim"]  # Don't publish deployment information
 
 HELP_NO_CONFIRM = "Do not prompt for confirmation."
 HELP_UAT = "Target the UAT instance of API catalogue."
+HELP_QUIET = "Suppress spinner output."
 
 UAT_KWARGS = {
     'default': False,
@@ -24,6 +27,12 @@ NO_CONFIRM_KWARGS = {
     'is_flag': True,
     'show_default': True,
     'help': HELP_NO_CONFIRM,
+}
+
+QUIET_KWARGS = {
+    'is_flag': True,
+    'show_default': True,
+    'help': HELP_QUIET,
 }
 
 
@@ -56,8 +65,12 @@ def spec(ctx, api, uat):
     "--uat",
     **UAT_KWARGS
 )
+@click.option(
+    "--quiet",
+    **QUIET_KWARGS
+)
 @click.pass_context
-def publish(ctx, spec_file, no_confirm, uat):
+def publish(ctx, spec_file, no_confirm, uat, quiet):
     """
     Publish <SPEC_FILE>.
     """
@@ -70,7 +83,7 @@ def publish(ctx, spec_file, no_confirm, uat):
         if not click.confirm(f"Publish this spec for {api}?"):
             raise click.Abort()
 
-    with yaspin() as sp:
+    with yaspin(stream=open(os.devnull, 'w') if quiet else sys.stdout) as sp:
         sp.text = f"Publishing spec {api}"
 
         try:
@@ -124,8 +137,12 @@ def get(ctx, uat):
     "--uat",
     **UAT_KWARGS
 )
+@click.option(
+    "--quiet",
+    **QUIET_KWARGS
+)
 @click.pass_context
-def delete(ctx, no_confirm, uat):
+def delete(ctx, no_confirm, uat, quiet):
     """
     Delete the published spec.
     """
@@ -138,7 +155,7 @@ def delete(ctx, no_confirm, uat):
         if not click.confirm(f"Delete the spec at {api}?"):
             raise click.Abort()
 
-    with yaspin() as sp:
+    with yaspin(stream=open(os.devnull, 'w') if quiet else sys.stdout) as sp:
         sp.text = f"Deleting spec {api}"
 
         try:

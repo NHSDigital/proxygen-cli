@@ -1,3 +1,5 @@
+import os
+import sys
 from typing import get_args
 from urllib import parse
 
@@ -55,8 +57,14 @@ def list(ctx, env):
     show_default=True,
     help="Do not prompt for confirmation.",
 )
+@click.option(
+    "--quiet",
+    is_flag=True,
+    show_default=True,
+    help="Suppress spinner output.",
+)
 @click.pass_context
-def deploy(ctx, env, base_path, spec_file, no_confirm):
+def deploy(ctx, env, base_path, spec_file, no_confirm, quiet):
     """
     Deploy <SPEC_FILE> to <ENV> under <BASE_PATH>
 
@@ -86,7 +94,7 @@ def deploy(ctx, env, base_path, spec_file, no_confirm):
         if not click.confirm(f"Deploy this spec to {_url}?"):  # pragma: no cover
             raise click.Abort()
 
-    with yaspin() as sp:
+    with yaspin(stream=open(os.devnull, 'w') if quiet else sys.stdout) as sp:
         sp.text = f"Deploying {_url}"
         instance = parse.quote(base_path)
 
@@ -127,8 +135,14 @@ def get(ctx, env, base_path):
     show_default=True,
     help="Do not prompt for confirmation.",
 )
+@click.option(
+    "--quiet",
+    is_flag=True,
+    show_default=True,
+    help="Suppress spinner output.",
+)
 @click.pass_context
-def delete(ctx, env, base_path, no_confirm):
+def delete(ctx, env, base_path, no_confirm, quiet):
     """
     Delete the instance deployed on <BASE_PATH> in environment <ENV>.
     """
@@ -144,7 +158,7 @@ def delete(ctx, env, base_path, no_confirm):
         if not click.confirm(f"Delete the instance at {_url}?"):
             raise click.Abort()
 
-    with yaspin() as sp:
+    with yaspin(stream=open(os.devnull, 'w') if quiet else sys.stdout) as sp:
         sp.text = f"Deleting {_url}"
 
         try:
