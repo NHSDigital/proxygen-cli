@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 from click.testing import CliRunner
-from pydantic.error_wrappers import ValidationError
+from pydantic.v1.error_wrappers import ValidationError
 
 import proxygen_cli.cli.command_settings as cmd_settings
 from proxygen_cli.lib.settings import Settings

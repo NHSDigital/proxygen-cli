@@ -1,7 +1,13 @@
 from typing import Literal
-from pydantic import BaseSettings, AnyUrl
 
 import yaml
+
+# Compatability shim to support users with v1 and v2 installed
+try:
+    from pydantic.v1 import BaseSettings, AnyUrl
+except ImportError:
+    from pydantic import BaseSettings, AnyUrl
+
 
 from .dot_proxygen import settings_file
 
