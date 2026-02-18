@@ -5,12 +5,21 @@ import yaml
 import sys
 import os
 
-from pydantic import (
-    BaseSettings,
-    validator,
-    AnyHttpUrl,
-    ValidationError,
-)
+# Compatability shim to support users with v1 and v2 installed
+try:
+    from pydantic.v1 import (
+        BaseSettings,
+        validator,
+        AnyHttpUrl,
+        ValidationError,
+    )
+except ImportError:
+    from pydantic import (
+        BaseSettings,
+        validator,
+        AnyHttpUrl,
+        ValidationError,
+    )
 
 from . import dot_proxygen
 from . import constants

@@ -1,8 +1,12 @@
 import json
 import click
 import yaml
-import pydantic
-import os
+
+# Compatability shim to support users with v1 and v2 installed
+try:
+    from pydantic import v1 as pydantic
+except ImportError:
+    import pydantic
 
 from proxygen_cli.lib import output
 from proxygen_cli.lib.credentials import (
