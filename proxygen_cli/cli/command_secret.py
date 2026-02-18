@@ -1,3 +1,5 @@
+import os
+import sys
 from typing import get_args
 
 import click
@@ -119,8 +121,14 @@ def _read_or_fail(secret_file: str, type_label: str) -> str:
 @click.option(
     "--mtls-key", help="Provide a path to a PEM encoded private key for mutual TLS"
 )
+@click.option(
+    "--quiet",
+    is_flag=True,
+    show_default=True,
+    help="Suppress spinner output.",
+)
 @click.pass_context
-def put(ctx, env, secret_name, secret_value, secret_file, apikey, mtls_cert, mtls_key):
+def put(ctx, env, secret_name, secret_value, secret_file, apikey, mtls_cert, mtls_key, quiet):
     """
     Create or overwrite a secret.
 
@@ -133,7 +141,7 @@ def put(ctx, env, secret_name, secret_value, secret_file, apikey, mtls_cert, mtl
         secret_value, secret_file, apikey, mtls_cert, mtls_key
     )
 
-    with yaspin() as spinner:
+    with yaspin(stream=open(os.devnull, 'w') if quiet else sys.stdout) as spinner:
         spinner.text = f"Putting secret {secret_name} in {env}"
 
         try:
@@ -183,8 +191,14 @@ def describe(ctx, env, secret_type, secret_name):
     show_default=True,
     help="Do not prompt for confirmation.",
 )
+@click.option(
+    "--quiet",
+    is_flag=True,
+    show_default=True,
+    help="Suppress spinner output.",
+)
 @click.pass_context
-def delete(ctx, env, secret_type, secret_name, no_confirm):
+def delete(ctx, env, secret_type, secret_name, no_confirm, quiet):
     """
     Delete a secret.
     """
@@ -199,7 +213,7 @@ def delete(ctx, env, secret_type, secret_name, no_confirm):
         output.print_json(result)
         if not click.confirm(f"Delete secret {secret_name} from {env}?"):
             raise click.Abort()
-    with yaspin() as sp:
+    with yaspin(stream=open(os.devnull, 'w') if quiet else sys.stdout) as sp:
         sp.text = f"Deleting secret {secret_name} from {env}"
         try:
             result = proxygen_api.delete_secret(api, env, secret_type, secret_name)

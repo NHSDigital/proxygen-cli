@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "proxygen-cli"
-version = "3.0.0"
+version = "3.0.1"
 description = "CLI for interacting with NHSD APIM's proxygen service"
 authors = ["Ben Strutt <ben.strutt1@nhs.net>"]
 readme = "README.md"
