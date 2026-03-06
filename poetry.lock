@@ -715,14 +715,14 @@ testing = ["fields", "hunter", "process-tests", "pytest-xdist", "six", "virtuale
 
 [[package]]
 name = "pytest-icdiff"
-version = "0.6"
+version = "0.9"
 description = "use icdiff for better error messages in pytest assertions"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 groups = ["dev"]
 files = [
-    {file = "pytest-icdiff-0.6.tar.gz", hash = "sha256:e8f1ef4550a893b4f0a0ea7e7a8299b12ded72c086101d7811ddec0d85fd1bad"},
-    {file = "pytest_icdiff-0.6-py3-none-any.whl", hash = "sha256:93ba20b71e51db7abecf99abee8fd13abd9ba7934f8e6838d1c4f443b4fc56a7"},
+    {file = "pytest-icdiff-0.9.tar.gz", hash = "sha256:13aede616202e57fcc882568b64589002ef85438046f012ac30a8d959dac8b75"},
+    {file = "pytest_icdiff-0.9-py3-none-any.whl", hash = "sha256:efee0da3bd1b24ef2d923751c5c547fbb8df0a46795553fba08ef57c3ca03d82"},
 ]
 
 [package.dependencies]
@@ -913,4 +913,4 @@ termcolor = ">=3.2,<4.0"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.13"
-content-hash = "963172633ea4e2d038bea35a43d221cff3640f7fad6ae1a90334f9550e5e93f2"
+content-hash = "9745ff001c9133d6983331cf2a8f10bedb5044b82977573d98c05babf0d0fd47"
