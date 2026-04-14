@@ -4,6 +4,7 @@ import yaml
 import pydantic
 import os
 
+from proxygen_cli.lib import constants
 from proxygen_cli.lib import output
 from proxygen_cli.lib.credentials import (
     Credentials, get_credentials, _yaml_credentials_file_source, create_yaml_credentials_file, initialise_credentials)
@@ -42,11 +43,11 @@ def get(key):
     creds = get_credentials()
     click.echo(getattr(creds, key))
 
-
 @credentials.command()
 @click.argument("custom_pairs", nargs=-1, metavar="KEY VALUE", required=False)
 @click.option("--force", is_flag=True, help="Force re-entry of standard credentials")
-def set(custom_pairs, force):
+@click.option("--env", type=click.Choice(["prod", "ptl"], case_sensitive=False), default="prod", help="Environment to use for authentication")
+def set(custom_pairs, force, env):
     """
     Write a value to your credentials.
     """
@@ -55,18 +56,32 @@ def set(custom_pairs, force):
 
     current_credentials = _yaml_credentials_file_source(None)
 
-    # Check if user credentials are set
-    base_credentials_set = all(
-        current_credentials.get(field) is not None
-        for field in ["username", "password"]
-    )
+    #current_credentials["env"] = env.lower()
 
-    if not base_credentials_set or force:
-        username = click.prompt("Enter username", default="", show_default=False)
-        password = click.prompt("Enter password", default="", show_default=False)
+    KEYCLOAK_URLS = {
+        "prod": "https://identity.prod.api.platform.nhs.uk/realms/api-producers",
+        "ptl":  "https://identity.ptl.api.platform.nhs.uk/realms/api-producers",
+    }
 
-        current_credentials["username"] = username
-        current_credentials["password"] = password
+    PROXYGEN_CLIENT_IDS = {
+        "prod": constants.PROXYGEN_CLIENT_ID,
+        "ptl": constants.PTL_PROXYGEN_CLIENT_ID,
+    }
+
+    PROXYGEN_CLIENT_SECRETS = {
+        "prod": constants.PROXYGEN_CLIENT_SECRET,
+        "ptl": constants.PTL_PROXYGEN_CLIENT_SECRET,
+    }
+
+    current_credentials["base_url"] = KEYCLOAK_URLS[env.lower()]
+    current_credentials["client_id"] = PROXYGEN_CLIENT_IDS[env.lower()]
+    current_credentials["client_secret"] = PROXYGEN_CLIENT_SECRETS[env.lower()]
+
+    username = click.prompt("Enter username", default="", show_default=False)
+    password = click.prompt("Enter password", default="", show_default=False)
+
+    current_credentials["username"] = username
+    current_credentials["password"] = password
 
     # Prompt for individual custom key-value pairs
     for i in range(0, len(custom_pairs), 2):

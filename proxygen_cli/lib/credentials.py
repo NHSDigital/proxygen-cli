@@ -31,13 +31,11 @@ def create_yaml_credentials_file():
 
 
 class Credentials(BaseSettings):
-    base_url: AnyHttpUrl = (
-        "https://identity.prod.api.platform.nhs.uk/realms/api-producers"
-    )
+    base_url: AnyHttpUrl
     private_key_path: Optional[str] = None
     key_id: Optional[str] = None
-    client_id: str = constants.PROXYGEN_CLIENT_ID
-    client_secret: Optional[str] = constants.PROXYGEN_CLIENT_SECRET
+    client_id: str = None
+    client_secret: Optional[str] = None
     username: Optional[str] = None
     password: Optional[str] = None
 
