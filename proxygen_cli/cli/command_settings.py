@@ -19,7 +19,6 @@ def settings():
     """
 
 
-
 def _get_setting(key):
     return getattr(SETTINGS, key)
 
@@ -30,6 +29,7 @@ def list():
     List all settings values.
     """
     output.print_spec(json.loads(SETTINGS.json(exclude_none=True)))
+
 
 @settings.command()
 @click.argument("key", type=CHOICE_OF_SETTINGS_KEYS)
@@ -43,14 +43,23 @@ def get(key):
 @settings.command()
 @click.argument("key", type=CHOICE_OF_SETTINGS_KEYS)
 @click.argument("value")
-def set(key, value):
+@click.option("--env", type=click.Choice(["prod", "ptl"], case_sensitive=False), default="prod", help="Environment to use for authentication")
+def set(key, value, env):
     """
     Write a value to your settings.
     """
     _get_setting(key)
 
     current_settings = _yaml_settings_file_source(None)
+
+    PROXYGEN_URLS = {
+        "prod": "https://proxygen.prod.api.platform.nhs.uk",
+        "ptl":  "https://proxygen.ptl.api.platform.nhs.uk",
+    }
+
+    current_settings["endpoint_url"] = PROXYGEN_URLS[env.lower()]
     current_settings[key] = value
+
     try:
         new_settings = json.loads(Settings(**current_settings).json(exclude_none=True))
     except pydantic.ValidationError as e:
