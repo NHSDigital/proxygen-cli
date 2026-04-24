@@ -16,6 +16,3 @@ LITERAL_SECRET_TYPES = Literal[
     "apikey",
     "mtls"
 ]
-
-PROXYGEN_CLIENT_ID = ""
-PROXYGEN_CLIENT_SECRET = ""

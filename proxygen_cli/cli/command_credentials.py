@@ -4,7 +4,6 @@ import yaml
 import pydantic
 import os
 
-from proxygen_cli.lib import constants
 from proxygen_cli.lib import output
 from proxygen_cli.lib.credentials import (
     Credentials, get_credentials, _yaml_credentials_file_source, create_yaml_credentials_file, initialise_credentials)
@@ -63,25 +62,19 @@ def set(custom_pairs, force, env):
         "ptl":  "https://identity.ptl.api.platform.nhs.uk/realms/api-producers",
     }
 
-    PROXYGEN_CLIENT_IDS = {
-        "prod": constants.PROXYGEN_CLIENT_ID,
-        "ptl": constants.PTL_PROXYGEN_CLIENT_ID,
-    }
-
-    PROXYGEN_CLIENT_SECRETS = {
-        "prod": constants.PROXYGEN_CLIENT_SECRET,
-        "ptl": constants.PTL_PROXYGEN_CLIENT_SECRET,
-    }
-
     current_credentials["base_url"] = KEYCLOAK_URLS[env.lower()]
-    current_credentials["client_id"] = PROXYGEN_CLIENT_IDS[env.lower()]
-    current_credentials["client_secret"] = PROXYGEN_CLIENT_SECRETS[env.lower()]
 
-    username = click.prompt("Enter username", default="", show_default=False)
-    password = click.prompt("Enter password", default="", show_default=False)
+    context = click.get_current_context()
+    if ("private_key_path" not in context.params["custom_pairs"]):
+        clientID = click.prompt("Enter client ID", default="", show_default=False)
+        clientSecret = click.prompt("Enter client secret", default="", show_default=False)
+        username = click.prompt("Enter username", default="", show_default=False)
+        password = click.prompt("Enter password", default="", show_default=False)
 
-    current_credentials["username"] = username
-    current_credentials["password"] = password
+        current_credentials["client_id"] = clientID
+        current_credentials["client_secret"] = clientSecret
+        current_credentials["username"] = username
+        current_credentials["password"] = password
 
     # Prompt for individual custom key-value pairs
     for i in range(0, len(custom_pairs), 2):

@@ -13,7 +13,7 @@ def _yaml_settings_file_source(_):
 
 
 class Settings(BaseSettings):
-    endpoint_url: AnyUrl
+    endpoint_url: AnyUrl = None
     spec_output_format: Literal["json", "yaml"] = "yaml"
     api: str = None
 

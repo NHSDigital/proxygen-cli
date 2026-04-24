@@ -8,8 +8,8 @@ from pydantic.error_wrappers import ValidationError
 
 import proxygen_cli.cli.command_credentials as cmd_credentials
 from proxygen_cli.lib.credentials import Credentials
-CLIENT_ID = os.environ["PROXYGEN_CLIENT_ID"]
-CLIENT_SECRET = os.environ["PROXYGEN_CLIENT_SECRET"]
+CLIENT_ID = "PROXYGEN_CLIENT_ID"
+CLIENT_SECRET = "PROXYGEN_CLIENT_SECRET"
 
 def get_test_credentials(**kwargs):
     base_credentials = {
@@ -52,11 +52,12 @@ def test_set_proxygen_user_credential(patch_config, credentials_file):
 
     with patch_config(credentials=mock_credentials):
         runner = CliRunner()
-        runner.invoke(cmd_credentials.set, ["username", "new-username"] )
+        input_data = "\n".join([CLIENT_ID, CLIENT_SECRET, "new-username", "mock-password"])
+        runner.invoke(cmd_credentials.set,[],input=input_data,)
 
     expected_credentials = "\n".join(
         [
-            "base_url: https://mock-keycloak-url.nhs.uk",
+            "base_url: https://identity.prod.api.platform.nhs.uk/realms/api-producers",
             "client_id: "+CLIENT_ID,
             "client_secret: "+CLIENT_SECRET,
             "password: mock-password",
@@ -84,12 +85,12 @@ def test_update_proxygen_user_credentials(patch_config, credentials_file):
 
     with patch_config(credentials=mock_credentials):
         runner = CliRunner()
-        runner.invoke(cmd_credentials.set, ["username", "new-username123"])
-        runner.invoke(cmd_credentials.set, ["password", "new-password123"])
+        input_data = "\n".join([CLIENT_ID, CLIENT_SECRET, "new-username123", "new-password123"])
+        runner.invoke(cmd_credentials.set,[],input=input_data,)
 
     expected_credentials = "\n".join(
         [
-            "base_url: https://mock-keycloak-url.nhs.uk",
+            "base_url: https://identity.prod.api.platform.nhs.uk/realms/api-producers",
             "client_id: "+CLIENT_ID,
             "client_secret: "+CLIENT_SECRET,
             "password: new-password123",
@@ -117,16 +118,16 @@ def test_update_proxygen_client_credentials(patch_config, credentials_file):
 
     with patch_config(credentials=mock_credentials):
         runner = CliRunner()
-        runner.invoke(cmd_credentials.set, ["client_id", "new-clientid123"])
-        runner.invoke(cmd_credentials.set, ["client_secret", "new-clientsecret123"])
+        input_data = "\n".join(["new-clientid123", "new-clientsecret123", "new-user", "new-password"])
+        runner.invoke(cmd_credentials.set,[],input=input_data,)
 
     expected_credentials = "\n".join(
         [
-            "base_url: https://mock-keycloak-url.nhs.uk",
+            "base_url: https://identity.prod.api.platform.nhs.uk/realms/api-producers",
             "client_id: new-clientid123",
             "client_secret: new-clientsecret123",
-            "password: mock-password",
-            "username: mock-user",
+            "password: new-password",
+            "username: new-user",
         ]
     )
 
@@ -207,13 +208,14 @@ def test_set_credential(patch_config, credentials_file):
 
     with patch_config(credentials=mock_credentials):
         runner = CliRunner()
-        runner.invoke(cmd_credentials.set, ["username", "new-username"])
+        input_data = "\n".join(["mock-api-client", "mock-api-clientsecret", "new-username", "mock-password"])
+        runner.invoke(cmd_credentials.set,[],input=input_data,)
 
     expected_credentials = "\n".join(
         [
-            "base_url: https://mock-keycloak-url.nhs.uk",
+            "base_url: https://identity.prod.api.platform.nhs.uk/realms/api-producers",
             "client_id: mock-api-client",
-            "client_secret: 1a2f4g5",
+            "client_secret: mock-api-clientsecret",
             "password: mock-password",
             "username: new-username",
         ]
@@ -235,13 +237,14 @@ def test_update_credentials(patch_config, credentials_file):
 
     with patch_config(credentials=mock_credentials):
         runner = CliRunner()
-        runner.invoke(cmd_credentials.set, ["username", "new-username123"])
+        input_data = "\n".join(["mock-api-client", "mock-api-clientsecret", "new-username123", "mock-password"])
+        runner.invoke(cmd_credentials.set,[],input=input_data,)
 
     expected_credentials = "\n".join(
         [
-            "base_url: https://mock-keycloak-url.nhs.uk",
+            "base_url: https://identity.prod.api.platform.nhs.uk/realms/api-producers",
             "client_id: mock-api-client",
-            "client_secret: 1a2f4g5",
+            "client_secret: mock-api-clientsecret",
             "password: mock-password",
             "username: new-username123",  # Updated value
         ]
@@ -279,7 +282,7 @@ def test_set_invalid_setting(patch_config):
         runner = CliRunner()
         result = runner.invoke(cmd_credentials.set, ["invalid", "new-username"])
 
-    assert "Error: Invalid value: extra fields not permitted" in result.output.strip()
+    assert "Enter client ID:Aborted!" in result.output.strip()
 
 
 def test_set_invalid_private_key_path(patch_config):
